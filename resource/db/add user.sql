@@ -1,0 +1,4 @@
+CREATE USER 'transfer'@'localhost' IDENTIFIED BY '123456';
+GRANT ALL PRIVILEGES ON *.* TO 'transfer'@'localhost' WITH GRANT OPTION;
+CREATE USER 'transfer'@'%' IDENTIFIED BY '123456';
+GRANT ALL PRIVILEGES ON *.* TO 'transfer'@'%' WITH GRANT OPTION;
