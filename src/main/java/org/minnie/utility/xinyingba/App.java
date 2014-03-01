@@ -100,32 +100,31 @@ public class App {
 		logger.info("加载系统配置耗时 "
 				+ (configurationEndTime - configurationStartTime) + "ms");
 
-		// 获取电影数目
-//		int year = DateUtil.getCurrentYear();
-
-		long countStartTime = System.currentTimeMillis();
-		int total = getTotal(videoCategory, 0);
-		long countEndTime = System.currentTimeMillis();
-		logger.info("获取影片数量[" + total + "]耗时 "
-				+ (countEndTime - countStartTime) + "ms");
-
-		int pages = Double.valueOf(Math.ceil(total / (double) videoPerPage))
-				.intValue();
-		for (int j = 1; j <= pages; j++) {
-			long startTime = System.currentTimeMillis();
-			getVideoListByCategory(j, videoCategory, 0);
-			long endTime = System.currentTimeMillis();
-			logger.info("获取第" + j + "页影片信息耗时 " + (endTime - startTime) + "ms");
-		}
-
-		long dbStartTime = System.currentTimeMillis();
-		// MysqlDatabseHelper.batchAddVideo(movieList);
-		MysqlDatabseHelper.batchAddVideoWithoutImage(movieList);
-		long dbEndTime = System.currentTimeMillis();
-		logger.info("信息写入数据库耗时 " + (dbEndTime - dbStartTime) + "ms");
-
-		logger.info("程序结束执行时间：" + DateUtil.getTime(dbEndTime));
-		logger.info("程序耗时 " + (dbEndTime - configurationStartTime) + "ms");
+//		long countStartTime = System.currentTimeMillis();
+//		// 获取电影数目
+//		int total = getTotal(videoCategory, 0);
+//		long countEndTime = System.currentTimeMillis();
+//		logger.info("获取影片数量[" + total + "]耗时 "
+//				+ (countEndTime - countStartTime) + "ms");
+//
+//		int pages = Double.valueOf(Math.ceil(total / (double) videoPerPage))
+//				.intValue();
+//		for (int j = 1; j <= pages; j++) {
+//			long startTime = System.currentTimeMillis();
+//			getVideoListByCategory(j, videoCategory, 0);
+//			long endTime = System.currentTimeMillis();
+//			logger.info("获取第" + j + "页影片信息耗时 " + (endTime - startTime) + "ms");
+//		}
+//
+//		long dbStartTime = System.currentTimeMillis();
+//		// MysqlDatabseHelper.batchAddVideo(movieList);
+//		MysqlDatabseHelper.batchAddVideoWithoutImage(movieList);
+//		long dbEndTime = System.currentTimeMillis();
+//		logger.info("信息写入数据库耗时 " + (dbEndTime - dbStartTime) + "ms");
+//
+//		logger.info("程序结束执行时间：" + DateUtil.getTime(dbEndTime));
+//		logger.info("程序耗时 " + (dbEndTime - configurationStartTime) + "ms");
+		MysqlDatabseHelper.batchUpdateImage(MysqlDatabseHelper.getVideoList());
 	}
 
 	/**

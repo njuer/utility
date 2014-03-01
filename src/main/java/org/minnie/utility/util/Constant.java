@@ -37,6 +37,7 @@ public class Constant {
 	public static final String ENCODING_UTF8 = "UTF-8";
 	public static final String REG_DL = "[a-zA-z]+-\\d+";
 	public static final String REG_DL_ID = "\\d+";
+	public static final String REG_URL = "(http|ftp|https)://([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?";
 	
 	public static final String TAG_DD_ATTRIBUTE_CLASS_VIDEO_COVER = "video-cover";
 	public static final String TAG_DD_ATTRIBUTE_CLASS_VIDEO_INTRO = "video-intro";

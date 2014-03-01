@@ -2,6 +2,7 @@ package org.minnie.utility.xinyingba;
 
 public class Video {
 	
+	public String uuid;//uuid
 	public int number;//影片编号
 	public String title;//影片名称
 	public String url;//影片地址
@@ -12,6 +13,14 @@ public class Video {
 	public float rate;//影片评分
 	public String introduction;//影片简介
 	
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
 	public int getNumber() {
 		return number;
 	}
@@ -84,13 +93,13 @@ public class Video {
 		this.introduction = introduction;
 	}
 
+	@Override
 	public String toString() {
-		return "Video [number=" + number + ", title=" + title + ", url=" + url
-				+ ", imageSource=" + imageSource + ", category=" + category
-				+ ", year=" + year + ", starring=" + starring + ", rate="
-				+ rate + ", introduction=" + introduction + "]";
+		return "Video [uuid=" + uuid + ", number=" + number + ", title="
+				+ title + ", url=" + url + ", imageSource=" + imageSource
+				+ ", category=" + category + ", year=" + year + ", starring="
+				+ starring + ", rate=" + rate + ", introduction="
+				+ introduction + "]";
 	}
 
-	
-	
 }
