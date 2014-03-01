@@ -22,6 +22,10 @@ public class MysqlDatabseHelper {
 	private static Logger logger = Logger.getLogger(MysqlDatabseHelper.class
 			.getName());
 
+	/**
+	 * 批量导入影片信息[不包含缺二进制图片]
+	 * @param list	影片列表
+	 */
 	public static void batchAddVideoWithoutImage(List<Video> list) {
 
 		Connection conn = null;
@@ -69,6 +73,10 @@ public class MysqlDatabseHelper {
 		}
 	}
 
+	/**
+	 * 批量导入影片信息[包含缺二进制图片]
+	 * @param list	影片列表
+	 */
 	public static void batchAddVideo(List<Video> list) {
 
 		Connection conn = null;
@@ -96,7 +104,11 @@ public class MysqlDatabseHelper {
 						imgSrcUrl = Constant.URL_XINYINGBA + imgSrcUrl;
 					}
 					InputStream is = ImageUtil.getInputStream(imgSrcUrl);
-					pst.setBinaryStream(6, is, is.available());
+					if(null != is){
+						pst.setBinaryStream(6, is, is.available());
+					} else {
+						pst.setBinaryStream(6, null);
+					}
 					pst.setString(7, video.getCategory());
 					pst.setInt(8, video.getYear());
 					pst.setString(9, video.getStarring());
@@ -120,70 +132,6 @@ public class MysqlDatabseHelper {
 			// e.printStackTrace();
 			logger.error("IOException[MysqlDatabseHelper->batchAddVideo]: "
 					+ e.getMessage());
-		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
-		}
-	}
-
-	public static void batchAddVideo1() {
-
-		Connection conn = null;
-		PreparedStatement pst = null;
-
-		// File file = new
-		// File("http://yezi-img.stor.sinaapp.com/dy/201402/17775.jpg");
-		// 构造URL
-		URL url;
-
-		try {
-
-			url = new URL(
-					"http://yezi-img.stor.sinaapp.com/dy/201402/17775.jpg");
-
-			// 打开连接
-			URLConnection con = url.openConnection();
-			// 输入流
-			InputStream is = con.getInputStream();
-
-			conn = MysqlConnectionManager.getConnection();
-			// 关闭事务自动提交
-			conn.setAutoCommit(false);
-
-			if (conn != null) {
-				pst = (PreparedStatement) conn.prepareStatement("insert into "
-						+ " test " + "(image) " + " VALUES (?)");
-				pst.setBinaryStream(1, is, is.available());
-				pst.addBatch();
-				// for(Video video : list){
-				// pst.setString(1, UUID.randomUUID().toString());
-				// pst.setInt(2, video.getNumber());
-				// pst.setString(3, video.getTitle());
-				// pst.setString(4, video.getUrl());
-				// pst.setString(5, video.getImageSource());
-				// pst.setString(6, video.getCategory());
-				// pst.setInt(7, video.getYear());
-				// pst.setString(8, video.getStarring());
-				// pst.setFloat(9, video.getRate());
-				// pst.setString(10, video.getIntroduction());
-				// // 把一个SQL命令加入命令列表
-				// pst.addBatch();
-				// }
-
-				// 执行批量更新
-				pst.executeBatch();
-				// 语句执行完毕，提交本事务
-				conn.commit();
-				logger.info("批量导入影片信息成功！");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} finally {
 			MysqlConnectionManager.closePreparedStatement(pst);
 			MysqlConnectionManager.closeConnection(conn);
