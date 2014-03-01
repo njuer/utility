@@ -48,8 +48,8 @@ public class App {
 	 */
 	public static void main(String[] args) {
 
-		int videoPerPage = 14;
-		String videoCategory = "";
+		// 获取加载系统配置时间
+		long configurationStartTime = System.currentTimeMillis();
 
 		/**
 		 * 读取log4j配置
@@ -57,6 +57,11 @@ public class App {
 		// BasicConfigurator.configure();// 默认配置
 		PropertyConfigurator.configure(System.getProperty("user.dir")
 				+ Constant.LOG_LOG4J_PARAM_FILE);
+
+		logger.info("程序开始执行时间：" + DateUtil.getTime(configurationStartTime));
+
+		int videoPerPage = 14;
+		String videoCategory = "";
 
 		/**
 		 * 加载系统参数
@@ -71,14 +76,13 @@ public class App {
 			logger.info("加载系统参数......");
 			videoPerPage = Integer.valueOf(rb.getString("video.per.page"))
 					.intValue();
-			if(videoPerPage == 0){
+			if (videoPerPage == 0) {
 				videoPerPage = 14;
 			}
 			logger.info("\t video.per.page = " + videoPerPage);
-			
+
 			videoCategory = rb.getString("video.category");
 			logger.info("\t video.category = " + videoCategory);
-
 
 			// 关闭inputStream
 			if (null != inputStream) {
@@ -90,26 +94,49 @@ public class App {
 			logger.error(ioe.getMessage());
 		}
 
-		// Math.Ceiling(32.6)=33
-		
-		//获取电影数目
-		int year = DateUtil.getCurrentYear();
-			int total = getTotal(videoCategory, 0);
-			int pages = Double.valueOf(Math.ceil(total/(double)videoPerPage)).intValue();
-			for(int j = 1; j <= pages; j++){
-				getVideoListByCategory(j, videoCategory, 2014);
-			}
+		// 获取加载系统配置结束时间
+		long configurationEndTime = System.currentTimeMillis();
 
-//		getMovieList(null, 2014, Constant.URL_XINYINGBA_MOVIE_2014);
-		MysqlDatabseHelper.batchAddVideo(movieList);
+		logger.info("加载系统配置耗时 "
+				+ (configurationEndTime - configurationStartTime) + "ms");
+
+		// 获取电影数目
+//		int year = DateUtil.getCurrentYear();
+
+		long countStartTime = System.currentTimeMillis();
+		int total = getTotal(videoCategory, 0);
+		long countEndTime = System.currentTimeMillis();
+		logger.info("获取影片数量[" + total + "]耗时 "
+				+ (countEndTime - countStartTime) + "ms");
+
+		int pages = Double.valueOf(Math.ceil(total / (double) videoPerPage))
+				.intValue();
+		for (int j = 1; j <= pages; j++) {
+			long startTime = System.currentTimeMillis();
+			getVideoListByCategory(j, videoCategory, 0);
+			long endTime = System.currentTimeMillis();
+			logger.info("获取第" + j + "页影片信息耗时 " + (endTime - startTime) + "ms");
+		}
+
+		long dbStartTime = System.currentTimeMillis();
+		// MysqlDatabseHelper.batchAddVideo(movieList);
+		MysqlDatabseHelper.batchAddVideoWithoutImage(movieList);
+		long dbEndTime = System.currentTimeMillis();
+		logger.info("信息写入数据库耗时 " + (dbEndTime - dbStartTime) + "ms");
+
+		logger.info("程序结束执行时间：" + DateUtil.getTime(dbEndTime));
+		logger.info("程序耗时 " + (dbEndTime - configurationStartTime) + "ms");
 	}
 
 	/**
 	 * 获取某类电影的数量
 	 * 
-	 * @param category	影片分类，包括：
-	 * 						电影(dianying)、电视(dianshi)、综艺(zongyi)、动漫(dongman)、更新(jinri)、预告(yugao)等
-	 * @param year	只有电影(dianying)、电视(dianshi)需要填写年份
+	 * @param category
+	 *            影片分类，包括：
+	 *            电影(dianying)、电视(dianshi)、综艺(zongyi)、动漫(dongman)、更新(jinri
+	 *            )、预告(yugao)等
+	 * @param year
+	 *            只有电影(dianying)、电视(dianshi)需要填写年份
 	 * @return
 	 */
 	public static int getTotal(String category, int year) {
@@ -123,7 +150,7 @@ public class App {
 			sb.append("/");
 			sb.append(category);
 			sb.append("/");
-			if(year > 0){
+			if (year > 0) {
 				sb.append(year);
 				sb.append("-nian.htm");
 			}
@@ -141,7 +168,8 @@ public class App {
 		Parser parser;
 		try {
 			parser = new Parser(
-					(HttpURLConnection) (new URL(sb.toString())).openConnection());
+					(HttpURLConnection) (new URL(sb.toString()))
+							.openConnection());
 			// 找到class="blue"的em
 			NodeFilter filter = new HasAttributeFilter("class", "blue");
 			NodeList nodes = parser.extractAllNodesThatMatch(filter);
@@ -161,39 +189,49 @@ public class App {
 
 		return total;
 	}
-	
+
 	/**
 	 * 根据地区获取电影清单
-	 * @param page		第几页
-	 * @param region	地区，包括：
-	 * 						欧美(oumei)、大陆(dalu)、香港(xianggang)、台湾(taiwan)、韩国(hanguo)、日本(riben)
+	 * 
+	 * @param page
+	 *            第几页
+	 * @param region
+	 *            地区，包括：
+	 *            欧美(oumei)、大陆(dalu)、香港(xianggang)、台湾(taiwan)、韩国(hanguo)、日本
+	 *            (riben)
 	 */
 	public static void getMovieListByRegion(int page, String region) {
 		getVideoListByRegion(page, region);
 	}
-	
+
 	/**
 	 * 根据地区获取电视剧清单
-	 * @param page		第几页
-	 * @param region	地区，包括：
-	 * 						国产剧(guochan)、港台剧(gangtai)、日韩剧(rihan)、欧美剧(oumeiju)、新马泰剧(xinmatai)、其他片(qitapian)
+	 * 
+	 * @param page
+	 *            第几页
+	 * @param region
+	 *            地区，包括：
+	 *            国产剧(guochan)、港台剧(gangtai)、日韩剧(rihan)、欧美剧(oumeiju)、新马泰剧(xinmatai
+	 *            )、其他片(qitapian)
 	 */
 	public static void getTvListByRegion(int page, String region) {
 		getVideoListByRegion(page, region);
 	}
-	
-	
+
 	/**
 	 * 根据地区获取影片清单
-	 * @param page		第几页
-	 * @param region	地区
+	 * 
+	 * @param page
+	 *            第几页
+	 * @param region
+	 *            地区
 	 */
 	public static void getVideoListByRegion(int page, String region) {
 
-		if(page <= 0){
-			return ;
+		if (page <= 0) {
+			return;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(Constant.URL_XINYINGBA);
 		sb.append("/");
@@ -201,24 +239,29 @@ public class App {
 		sb.append("/");
 		sb.append(page);
 		sb.append(".htm");
-		
+
 		getVideoList(sb.toString());
 	}
-	
-	
+
 	/**
 	 * 根据影片分类获取影片清单
-	 * @param page		第几页
-	 * @param category	影片分类，包括：
-	 * 						电影(dianying)、电视(dianshi)、综艺(zongyi)、动漫(dongman)、更新(jinri)、预告(yugao)等
-	 * @param year	只有电影(dianying)、电视(dianshi)需要填写年份
+	 * 
+	 * @param page
+	 *            第几页
+	 * @param category
+	 *            影片分类，包括：
+	 *            电影(dianying)、电视(dianshi)、综艺(zongyi)、动漫(dongman)、更新(jinri
+	 *            )、预告(yugao)等
+	 * @param year
+	 *            只有电影(dianying)、电视(dianshi)需要填写年份
 	 */
-	public static void getVideoListByCategory(int page, String category, int year) {
+	public static void getVideoListByCategory(int page, String category,
+			int year) {
 
-		if(page <= 0){
-			return ;
+		if (page <= 0) {
+			return;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(Constant.URL_XINYINGBA);
 		if (Constant.CATEGORY_XINYINGBA_MOVIE.equals(category)
@@ -226,7 +269,7 @@ public class App {
 			sb.append("/");
 			sb.append(category);
 			sb.append("/");
-			if(year > 0){
+			if (year > 0) {
 				sb.append(year);
 				sb.append("-nian-");
 			}
@@ -242,27 +285,29 @@ public class App {
 			sb.append(page);
 			sb.append(".htm");
 		} else {
-			return ;
+			return;
 		}
-		
+
 		getVideoList(sb.toString());
 	}
-	
+
 	/**
 	 * 获取影片信息
-	 * @param url	分类URL地址
+	 * 
+	 * @param url
+	 *            分类URL地址
 	 */
 	public static void getVideoList(String url) {
-		
+
 		// 注册使用DlTag
 		PrototypicalNodeFactory factory = new PrototypicalNodeFactory();
 		factory.registerTag(new DlTag());
 		factory.registerTag(new DtTag());
 		factory.registerTag(new DdTag());
 		factory.registerTag(new EmTag());
-		
+
 		Pattern pattern = Pattern.compile(Constant.REG_DL_ID);
-		
+
 		Parser parser;
 		try {
 			parser = new Parser(
@@ -271,11 +316,11 @@ public class App {
 			// 找到class=video-list gclearfix的div
 			NodeFilter filter = new HasAttributeFilter("class", "section");
 			NodeList nodes = parser.extractAllNodesThatMatch(filter);
-			
+
 			if (nodes != null) {
 				for (int i = 0; i < nodes.size(); i++) {
 					Video video = new Video();
-					
+
 					Node node = (Node) nodes.elementAt(i);
 					if (node instanceof DlTag) {
 						DlTag dlTag = (DlTag) node;
@@ -288,6 +333,7 @@ public class App {
 					}
 					traversal(node, video, 1);
 					// System.out.println(video.toString());
+					logger.info(video.toString());
 					movieList.add(video);
 				}
 			}
@@ -298,7 +344,7 @@ public class App {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public static void getMovieListByFile(String filePath) {
@@ -388,7 +434,11 @@ public class App {
 					// System.out.println("TAG_ATTRIBUTE_CLASS_VIDEO_INTRO :" +
 					// childNode.getText());
 					// 获取影片类型地址
-					video.setIntroduction(childNode.getFirstChild().getText());
+					Node cnf = childNode.getFirstChild();
+					if (null != cnf) {
+						video.setIntroduction(cnf.getText());
+					}
+
 				} else if (Constant.TAG_DD_ATTRIBUTE_CLASS_VIDEO_GRADE
 						.equals(ddTag.getAttribute("class"))) {
 					NodeList childNodeList = childNode.getChildren();
@@ -404,9 +454,11 @@ public class App {
 								LinkTag linkTag = (LinkTag) ddNode;
 								if (Constant.TAG_LINK_ATTRIBUTE_CLASS_GRADE_SCORE
 										.equals(linkTag.getAttribute("class"))) {
-									video.setRate(Float.valueOf(
-											linkTag.getFirstChild().getText())
-											.floatValue());
+									Node ltfc = linkTag.getFirstChild();
+									if (null != ltfc) {
+										video.setRate(Float.valueOf(
+												ltfc.getText()).floatValue());
+									}
 									break;
 								}
 							}
@@ -426,34 +478,32 @@ public class App {
 								continue;
 							}
 							if (ddNode instanceof EmTag) {
-								if (Constant.TAG_EM_VALUE_CATEGORY
-										.equals(ddNode.getFirstChild()
-												.getText())) {
-									flag = 1;
-								} else if (Constant.TAG_EM_VALUE_STARRING
-										.equals(ddNode.getFirstChild()
-												.getText())) {
-									flag = 2;
-								} else if (Constant.TAG_EM_VALUE_YEAR
-										.equals(ddNode.getFirstChild()
-												.getText())) {
-									flag = 3;
+								Node emfc = ddNode.getFirstChild();
+								if (null != emfc) {
+									if (Constant.TAG_EM_VALUE_CATEGORY
+											.equals(emfc.getText())) {
+										flag = 1;
+									} else if (Constant.TAG_EM_VALUE_STARRING
+											.equals(emfc.getText())) {
+										flag = 2;
+									} else if (Constant.TAG_EM_VALUE_YEAR
+											.equals(emfc.getText())) {
+										flag = 3;
+									}
 								}
 							} else if (ddNode instanceof LinkTag) {
-								if (flag == 1) {
-									video.setCategory(ddNode.getFirstChild()
-											.getText());
-								} else if (flag == 2) {
-									String tp = ddNode.getFirstChild()
-											.getText();
-									list.add(tp);
-									// System.out.println("<a>: " + tp);
-								} else if (flag == 3) {
-									video.setYear(Integer.valueOf(
-											ddNode.getFirstChild().getText())
-											.intValue());
+								Node lnkfc = ddNode.getFirstChild();
+								if (null != lnkfc) {
+									if (flag == 1) {
+										video.setCategory(lnkfc.getText());
+									} else if (flag == 2) {
+										// String tp = lnkfc.getText();
+										list.add(lnkfc.getText());
+									} else if (flag == 3) {
+										video.setYear(Integer.valueOf(
+												lnkfc.getText()).intValue());
+									}
 								}
-
 							}
 						}
 						if (flag == 2) {
@@ -467,7 +517,6 @@ public class App {
 			// traversal(childNode, video, level + 1);
 		}
 	}
-	
 
 	/**
 	 * 从html文件获取电影的数量
