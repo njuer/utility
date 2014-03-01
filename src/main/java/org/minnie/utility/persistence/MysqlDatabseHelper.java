@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.minnie.utility.util.Constant;
+import org.minnie.utility.util.ImageUtil;
 import org.minnie.utility.xinyingba.Video;
 
 
@@ -24,12 +25,8 @@ public class MysqlDatabseHelper {
 	private static Logger logger = Logger.getLogger(MysqlDatabseHelper.class
 			.getName());
 	
-	public static void batchAddVideo(List<Video> list,String table) {
+	public static void batchAddVideo(List<Video> list) {
 
-		if(null == table || Constant.BLANK.equals(table)){
-			return ;
-		}
-		
 		Connection conn = null;
 		PreparedStatement pst = null;
  
@@ -41,20 +38,23 @@ public class MysqlDatabseHelper {
 			if (conn != null) {
 				pst = (PreparedStatement) conn
 						.prepareStatement("insert into "
-								+ table
-								+ "(uuid, number, title, url, imageSource, category, year, starring, rate, introduction) " 
-								+ " VALUES (?,?,?,?,?,?,?,?,?,?)");
+								+ " ent_movie "
+								+ "(uuid, number, title, url, imageSource, image, category, year, starring, rate, introduction) " 
+								+ " VALUES (?,?,?,?,?,?,?,?,?,?,?)");
 				for(Video video : list){
 					pst.setString(1, UUID.randomUUID().toString());
 					pst.setInt(2, video.getNumber());
 					pst.setString(3, video.getTitle());
 					pst.setString(4, video.getUrl());
-					pst.setString(5, video.getImageSource());
-					pst.setString(6, video.getCategory());
-					pst.setInt(7, video.getYear());
-					pst.setString(8, video.getStarring());
-					pst.setFloat(9, video.getRate());
-					pst.setString(10, video.getIntroduction());
+					String imgSrcUrl = video.getImageSource();
+					pst.setString(5, imgSrcUrl);
+					InputStream is = ImageUtil.getInputStream(imgSrcUrl);
+					pst.setBinaryStream(6, is, is.available());
+					pst.setString(7, video.getCategory());
+					pst.setInt(8, video.getYear());
+					pst.setString(9, video.getStarring());
+					pst.setFloat(10, video.getRate());
+					pst.setString(11, video.getIntroduction());
 					// 把一个SQL命令加入命令列表
 					pst.addBatch();
 				}
@@ -66,7 +66,11 @@ public class MysqlDatabseHelper {
 				logger.info("批量导入影片信息成功！");
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			logger.error("SQLException[MysqlDatabseHelper->batchAddVideo]: " + e.getMessage());
+		} catch (IOException e) {
+//			e.printStackTrace();
+			logger.error("IOException[MysqlDatabseHelper->batchAddVideo]: " + e.getMessage());
 		} finally {
 			MysqlConnectionManager.closePreparedStatement(pst);
 			MysqlConnectionManager.closeConnection(conn);
@@ -91,6 +95,7 @@ public class MysqlDatabseHelper {
 		    URLConnection con = url.openConnection();
 		    // 输入流
 		    InputStream is = con.getInputStream();
+		    
 			
 			
 			conn = MysqlConnectionManager.getConnection();
