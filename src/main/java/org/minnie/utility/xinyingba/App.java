@@ -49,6 +49,7 @@ public class App {
 	public static void main(String[] args) {
 
 		int videoPerPage = 14;
+		String videoCategory = "";
 
 		/**
 		 * 读取log4j配置
@@ -74,6 +75,10 @@ public class App {
 				videoPerPage = 14;
 			}
 			logger.info("\t video.per.page = " + videoPerPage);
+			
+			videoCategory = rb.getString("video.category");
+			logger.info("\t video.category = " + videoCategory);
+
 
 			// 关闭inputStream
 			if (null != inputStream) {
@@ -89,13 +94,11 @@ public class App {
 		
 		//获取电影数目
 		int year = DateUtil.getCurrentYear();
-		for(int i = 0; i < 1; i++ ){
-			int total = getTotal(Constant.CATEGORY_XINYINGBA_MOVIE,year - i);
+			int total = getTotal(videoCategory, 0);
 			int pages = Double.valueOf(Math.ceil(total/(double)videoPerPage)).intValue();
 			for(int j = 1; j <= pages; j++){
-				getVideoListByCategory(j, Constant.CATEGORY_XINYINGBA_MOVIE, 2014);
+				getVideoListByCategory(j, videoCategory, 2014);
 			}
-		}
 
 //		getMovieList(null, 2014, Constant.URL_XINYINGBA_MOVIE_2014);
 		MysqlDatabseHelper.batchAddVideo(movieList);
@@ -120,8 +123,10 @@ public class App {
 			sb.append("/");
 			sb.append(category);
 			sb.append("/");
-			sb.append(year);
-			sb.append("-nian.htm");
+			if(year > 0){
+				sb.append(year);
+				sb.append("-nian.htm");
+			}
 		} else if (Constant.CATEGORY_XINYINGBA_VARIETY_SHOW.equals(category)
 				|| Constant.CATEGORY_XINYINGBA_ANIMATION.equals(category)
 				|| Constant.CATEGORY_XINYINGBA_UPDATE_TODAY.equals(category)
@@ -129,6 +134,8 @@ public class App {
 			sb.append("/");
 			sb.append(category);
 			sb.append("/");
+		} else {
+			return 0;
 		}
 
 		Parser parser;
@@ -232,6 +239,10 @@ public class App {
 			sb.append("/");
 			sb.append(category);
 			sb.append("/");
+			sb.append(page);
+			sb.append(".htm");
+		} else {
+			return ;
 		}
 		
 		getVideoList(sb.toString());
