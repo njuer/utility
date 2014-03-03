@@ -38,7 +38,11 @@ public class ImageUtil {
 					.openConnection();
 
 			// 设定timeout时间
-			httpUrlConnection.setConnectTimeout(5 * 1000);
+			httpUrlConnection.setReadTimeout(30 * 1000);
+			httpUrlConnection.setConnectTimeout(15 * 1000);
+			
+			httpUrlConnection.setDoInput(true);
+			
 //			httpUrlConnection.setRequestMethod("GET");
 //			httpUrlConnection
 //					.setRequestProperty(
@@ -66,6 +70,7 @@ public class ImageUtil {
 			if (HttpURLConnection.HTTP_OK == status) {
 				is = httpUrlConnection.getInputStream();
 				logger.info("下载图片:" + imageSource);
+				is.close();
 			} else {
 				switch (status) {
 					case HttpURLConnection.HTTP_FORBIDDEN:// 403

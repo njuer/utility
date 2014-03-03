@@ -29,7 +29,7 @@ public class MysqlDatabseHelper {
 	 * 批量导入影片信息[不包含缺二进制海报图片]
 	 * @param list	影片列表
 	 */
-	public static void batchAddVideoWithoutImage(List<Video> list) {
+	public static void batchAddVideoWithoutImage(List<Video> list, String sql) {
 
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -40,11 +40,10 @@ public class MysqlDatabseHelper {
 			conn.setAutoCommit(false);
 
 			if (conn != null) {
-				pst = (PreparedStatement) conn
-						.prepareStatement("insert into "
-								+ " ent_movie "
-								+ "(uuid, number, title, url, imageSource, category, year, starring, rate, introduction) "
-								+ " VALUES (?,?,?,?,?,?,?,?,?,?)");
+				if(null == sql || Constant.BLANK.equals(sql)){
+					sql = "insert into ent_movie (uuid, number, title, url, imageSource, category, year, starring, rate, introduction) VALUES (?,?,?,?,?,?,?,?,?,?)";
+				}
+				pst = (PreparedStatement) conn.prepareStatement(sql);
 				for (Video video : list) {
 					pst.setString(1, UUID.randomUUID().toString());
 					pst.setInt(2, video.getNumber());
@@ -79,7 +78,7 @@ public class MysqlDatabseHelper {
 	 * 批量导入影片信息[包含缺二进制海报图片]
 	 * @param list	影片列表
 	 */
-	public static void batchAddVideo(List<Video> list) {
+	public static void batchAddVideo(List<Video> list, String sql) {
 
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -90,11 +89,12 @@ public class MysqlDatabseHelper {
 			conn.setAutoCommit(false);
 
 			if (conn != null) {
-				pst = (PreparedStatement) conn
-						.prepareStatement("insert into "
-								+ " ent_movie "
-								+ "(uuid, number, title, url, imageSource, image, category, year, starring, rate, introduction) "
-								+ " VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+				
+				if(null == sql || Constant.BLANK.equals(sql)){
+					sql = "insert into ent_movie (uuid, number, title, url, imageSource, image, category, year, starring, rate, introduction) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+				}
+				
+				pst = (PreparedStatement) conn.prepareStatement(sql);
 				for (Video video : list) {
 					pst.setString(1, UUID.randomUUID().toString());
 					pst.setInt(2, video.getNumber());
@@ -140,7 +140,12 @@ public class MysqlDatabseHelper {
 		}
 	}
 	
-	public static List<Video> getVideoList() {
+	/**
+	 * 获取影片列表
+	 * @param sql	执行SQL
+	 * @return
+	 */
+	public static List<Video> getVideoList(String sql) {
 		
 		Connection conn = null;
 		Statement stmt = null;
@@ -151,7 +156,10 @@ public class MysqlDatabseHelper {
 			conn = MysqlConnectionManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
-				rs = stmt.executeQuery("SELECT uuid,number,imageSource FROM ent_movie");
+				if(null == sql || Constant.BLANK.equals(sql)){
+					sql = "SELECT uuid,number,imageSource FROM ent_movie";
+				}
+				rs = stmt.executeQuery(sql);
 				while (rs.next()) {
 					Video video = new Video();
 					video.setUuid(rs.getString(1));
@@ -174,7 +182,12 @@ public class MysqlDatabseHelper {
 		return list;
 	}
 	
-	public static void batchUpdateImage(List<Video> list) {
+	/**
+	 * 批量更新图片
+	 * @param list	影片列表
+	 * @param sql	执行SQL
+	 */
+	public static void batchUpdateImage(List<Video> list, String sql) {
 
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -185,8 +198,11 @@ public class MysqlDatabseHelper {
 			conn.setAutoCommit(false);
 
 			if (conn != null) {
-				pst = (PreparedStatement) conn
-						.prepareStatement("UPDATE ent_movie SET image = ? WHERE uuid = ?");
+				
+				if(null == sql || Constant.BLANK.equals(sql)){
+					sql = "UPDATE ent_movie SET image = ? WHERE uuid = ?";
+				}
+				pst = (PreparedStatement) conn.prepareStatement(sql);
 //				int i = 0;
 				for (Video video : list) {
 //					stmt.addBatch("UPDATE ent_movie SET image = ? WHERE uuid = '" + video.getUuid() + "'");
@@ -197,6 +213,7 @@ public class MysqlDatabseHelper {
 					InputStream is = ImageUtil.getInputStream(video.getImageSource());
 					if(null != is){
 						pst.setBinaryStream(1, is, is.available());
+						is.close();
 					} else {
 						pst.setNull(1, java.sql.Types.BLOB);
 					}
@@ -213,7 +230,7 @@ public class MysqlDatabseHelper {
 				pst.executeBatch();
 				// 语句执行完毕，提交本事务
 				conn.commit();
-				logger.info("批量更新影片海报信息成功！");
+//				logger.info("批量更新影片海报信息成功！");
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException[MysqlDatabseHelper->batchUpdateImage]: "

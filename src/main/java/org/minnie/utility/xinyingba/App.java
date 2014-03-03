@@ -60,8 +60,18 @@ public class App {
 
 		logger.info("程序开始执行时间：" + DateUtil.getTime(configurationStartTime));
 
+		//每页影片数量
 		int videoPerPage = 14;
+		//影片分类
 		String videoCategory = "";
+		//批量导入影片信息[不包含缺二进制海报图片]SQL
+		String sqlBatchAddVideoWithoutImage = null;
+		//批量导入影片信息[包含缺二进制海报图片]SQL
+		String sqlBatchAddVideoWithImage = null;
+		//获取影片列表
+		String sqlVideoList = null;
+		//批量更新图片SQL
+		String sqlBatchUpdateImage = null;
 
 		/**
 		 * 加载系统参数
@@ -83,6 +93,18 @@ public class App {
 
 			videoCategory = rb.getString("video.category");
 			logger.info("\t video.category = " + videoCategory);
+
+			sqlBatchAddVideoWithoutImage = rb.getString("sql.batchAddVideo.withoutImage");
+			logger.info("\t sql.batchAddVideo.withoutImage = " + sqlBatchAddVideoWithoutImage);
+			
+			sqlBatchAddVideoWithImage = rb.getString("sql.batchAddVideo.withImage");
+			logger.info("\t sql.batchAddVideo.withImage = " + sqlBatchAddVideoWithImage);
+			
+			sqlVideoList = rb.getString("sql.video.list");
+			logger.info("\t sql.video.list = " + sqlVideoList);
+			
+			sqlBatchUpdateImage = rb.getString("sql.batchUpdateImage");
+			logger.info("\t sql.batchUpdateImage = " + sqlBatchUpdateImage);
 
 			// 关闭inputStream
 			if (null != inputStream) {
@@ -117,14 +139,14 @@ public class App {
 //		}
 //
 //		long dbStartTime = System.currentTimeMillis();
-//		// MysqlDatabseHelper.batchAddVideo(movieList);
-//		MysqlDatabseHelper.batchAddVideoWithoutImage(movieList);
+//		// MysqlDatabseHelper.batchAddVideo(movieList, sqlBatchAddVideoWithImage);
+//		MysqlDatabseHelper.batchAddVideoWithoutImage(movieList, sqlBatchAddVideoWithoutImage);
 //		long dbEndTime = System.currentTimeMillis();
 //		logger.info("信息写入数据库耗时 " + (dbEndTime - dbStartTime) + "ms");
 //
 //		logger.info("程序结束执行时间：" + DateUtil.getTime(dbEndTime));
 //		logger.info("程序耗时 " + (dbEndTime - configurationStartTime) + "ms");
-		MysqlDatabseHelper.batchUpdateImage(MysqlDatabseHelper.getVideoList());
+		MysqlDatabseHelper.batchUpdateImage(MysqlDatabseHelper.getVideoList(sqlVideoList), sqlBatchUpdateImage);
 	}
 
 	/**
