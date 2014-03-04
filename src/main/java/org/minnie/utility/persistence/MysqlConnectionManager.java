@@ -33,6 +33,8 @@ public class MysqlConnectionManager {
 	private static ComboPooledDataSource ds;
 	private static ResourceBundle rb;
 	private static BufferedInputStream inputStream;
+	
+	public static int batchSize = 50;
 
 	private MysqlConnectionManager() {
 
@@ -110,7 +112,9 @@ public class MysqlConnectionManager {
 		// 用户修改系统配置参数执行前最多等待的秒数。默认为300
 		ds.setPropertyCycle(Integer.valueOf(rb.getString("propertyCycle"))
 				.intValue());
-
+		
+		batchSize = Integer.valueOf(rb.getString("batchSize")).intValue();
+		
 	}
 
 	public static Connection getConnection() throws SQLException {

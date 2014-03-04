@@ -146,7 +146,11 @@ public class App {
 //
 //		logger.info("程序结束执行时间：" + DateUtil.getTime(dbEndTime));
 //		logger.info("程序耗时 " + (dbEndTime - configurationStartTime) + "ms");
+		
+		long dbStartTime = System.currentTimeMillis();
 		MysqlDatabseHelper.batchUpdateImage(MysqlDatabseHelper.getVideoList(sqlVideoList), sqlBatchUpdateImage);
+		long dbEndTime = System.currentTimeMillis();
+		logger.info("信息写入数据库耗时 " + (dbEndTime - dbStartTime) + "ms");
 	}
 
 	/**
