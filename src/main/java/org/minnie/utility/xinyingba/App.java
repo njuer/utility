@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +45,13 @@ public class App {
 	private static BufferedInputStream inputStream;
 
 	public static List<Video> movieList = new ArrayList<Video>();
+	
+	private static final ExecutorService DEFAULT_TASK_EXECUTOR;
+
+	static {
+		DEFAULT_TASK_EXECUTOR = (ExecutorService) Executors
+				.newFixedThreadPool(10);
+	};
 
 	/**
 	 * @param args
@@ -148,9 +158,33 @@ public class App {
 //		logger.info("程序耗时 " + (dbEndTime - configurationStartTime) + "ms");
 		
 		long dbStartTime = System.currentTimeMillis();
-		MysqlDatabseHelper.batchUpdateImage(MysqlDatabseHelper.getVideoList(sqlVideoList), sqlBatchUpdateImage);
+		List<Video> list = MysqlDatabseHelper.getVideoList(sqlVideoList);
 		long dbEndTime = System.currentTimeMillis();
-		logger.info("信息写入数据库耗时 " + (dbEndTime - dbStartTime) + "ms");
+		logger.info("信息从数据库加载耗时 " + (dbEndTime - dbStartTime) + "ms");
+
+		long queueStartTime = System.currentTimeMillis();
+		// 队列
+		LinkedBlockingQueue<Video> queue = new LinkedBlockingQueue<Video>(
+				list.size());
+		for (Video video : list) {
+			try {
+				queue.put(video);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		long queueEndTime = System.currentTimeMillis();
+		logger.info("载入LinkedBlockingQueue耗时 "
+				+ (queueEndTime - queueStartTime) + "ms");
+
+		// 消费者
+		Consumer consumer = new Consumer(queue, DEFAULT_TASK_EXECUTOR);
+		for (int i = 0; i < 10; i++) {
+			// new Thread(consumer).start();
+			DEFAULT_TASK_EXECUTOR.execute(consumer);
+		}
+
 	}
 
 	/**
