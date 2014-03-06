@@ -1,6 +1,5 @@
 package org.minnie.utility.module.hoopchina;
 
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,32 +7,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 import org.minnie.utility.util.HtmlUtil;
 
-public class Producer implements Runnable {
+public class ProducerV2 implements Runnable {
 
-	private static Logger logger = Logger.getLogger(Producer.class.getName());
+	private static Logger logger = Logger.getLogger(ProducerV2.class.getName());
 
-	private BlockingQueue<String> queue;
+	private BlockingQueue<HoopChina> queue;
 	private ExecutorService executorService;
 	private String homeURL;
 	private AtomicInteger atomic;
-	private int total;
+	private HoopChina hoopChina;
 
-	public Producer() {
+	public ProducerV2() {
 		super();
 	}
 
-	public Producer(BlockingQueue<String> queue) {
+	public ProducerV2(BlockingQueue<HoopChina> queue) {
 		this.queue = queue;
 	}
 
-	public Producer(BlockingQueue<String> queue,
+	public ProducerV2(BlockingQueue<HoopChina> queue,
 			ExecutorService executorService) {
 		super();
 		this.queue = queue;
 		this.executorService = executorService;
 	}
 
-	public Producer(BlockingQueue<String> queue,
+	public ProducerV2(BlockingQueue<HoopChina> queue,
 			ExecutorService executorService, String homeURL) {
 		super();
 		this.queue = queue;
@@ -41,7 +40,7 @@ public class Producer implements Runnable {
 		this.homeURL = homeURL;
 	}
 
-	public Producer(BlockingQueue<String> queue,
+	public ProducerV2(BlockingQueue<HoopChina> queue,
 			ExecutorService executorService, String homeURL,
 			AtomicInteger atomic) {
 		super();
@@ -51,22 +50,22 @@ public class Producer implements Runnable {
 		this.atomic = atomic;
 	}
 	
-	public Producer(BlockingQueue<String> queue,
+	public ProducerV2(BlockingQueue<HoopChina> queue,
 			ExecutorService executorService, String homeURL,
-			AtomicInteger atomic, int total) {
+			AtomicInteger atomic, HoopChina hoopChina) {
 		super();
 		this.queue = queue;
 		this.executorService = executorService;
 		this.homeURL = homeURL;
 		this.atomic = atomic;
-		this.total = total;
+		this.hoopChina = hoopChina;
 	}
 
-	public BlockingQueue<String> getQueue() {
+	public BlockingQueue<HoopChina> getQueue() {
 		return queue;
 	}
 
-	public void setQueue(BlockingQueue<String> queue) {
+	public void setQueue(BlockingQueue<HoopChina> queue) {
 		this.queue = queue;
 	}
 
@@ -94,18 +93,18 @@ public class Producer implements Runnable {
 		this.atomic = atomic;
 	}
 
-	public int getTotal() {
-		return total;
+	public HoopChina getHoopChina() {
+		return hoopChina;
 	}
 
-	public void setTotal(int total) {
-		this.total = total;
+	public void setHoopChina(HoopChina hoopChina) {
+		this.hoopChina = hoopChina;
 	}
 
 	@Override
 	public void run() {
 		try {
-			while(this.atomic.intValue() < this.total){
+			while(this.atomic.intValue() < this.hoopChina.getTotal()){
 				int index = this.homeURL.lastIndexOf(".");
 				int count = atomic.incrementAndGet();
 				String pageURL = this.homeURL.substring(0, index) + "-" + count
@@ -113,7 +112,9 @@ public class Producer implements Runnable {
 				String pictureURL = HtmlUtil.getPictureUrl(pageURL, "id",
 						"bigpicpic");
 
-				queue.put(pictureURL);
+				this.hoopChina.setPirctureUrl(pictureURL);
+				
+				queue.put(this.hoopChina);
 				logger.info(Thread.currentThread() + " ==[count = " + count
 						+ "]获取URL:" + pictureURL);
 			}

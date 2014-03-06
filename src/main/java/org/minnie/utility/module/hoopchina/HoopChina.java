@@ -8,6 +8,7 @@ public class HoopChina {
 	
 	private String title;//标题
 	private int total;//总数
+	private String pirctureUrl;//图片URL
 	
 	public String getTitle() {
 		return title;
@@ -24,11 +25,19 @@ public class HoopChina {
 	public void setTotal(int total) {
 		this.total = total;
 	}
+	
+	public String getPirctureUrl() {
+		return pirctureUrl;
+	}
+
+	public void setPirctureUrl(String pirctureUrl) {
+		this.pirctureUrl = pirctureUrl;
+	}
 
 	@Override
 	public String toString() {
-		return "HoopChina [title=" + title + ", total=" + total + "]";
+		return "HoopChina [title=" + title + ", total=" + total
+				+ ", pirctureUrl=" + pirctureUrl + "]";
 	}
-	
-	
+
 }

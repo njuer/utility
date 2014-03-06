@@ -14,9 +14,6 @@ public class Consumer implements Runnable {
     private ExecutorService defaultExecutorService;
     private String directory;
     private String folder;
-    private int size;
-    private int total;
-	private Object lock;
 
 	public Consumer() {
 		super();
@@ -63,30 +60,6 @@ public class Consumer implements Runnable {
 		this.directory = directory;
 	}
 	
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-	
-	public Object getLock() {
-		return lock;
-	}
-
-	public void setLock(Object lock) {
-		this.lock = lock;
-	}
-	
-	public int getTotal() {
-		return total;
-	}
-
-	public void setTotal(int total) {
-		this.total = total;
-	}
-	
 	public String getFolder() {
 		return folder;
 	}
@@ -104,20 +77,9 @@ public class Consumer implements Runnable {
 			while(!this.queue.isEmpty()){
 				String imageSource = this.queue.take();
 				ImageUtil.save2File(this.directory, this.folder, imageSource);
-//				if(ImageUtil.save2File(directory, imageSource)){
-//					synchronized (lock) {
-//						size++;
-//					}
-//				}
 				logger.info(Thread.currentThread() + " :" + imageSource);
 			}
-//			if(null != defaultExecutorService){
-//				defaultExecutorService.shutdownNow();
-//				logger.info(Thread.currentThread() + " :shutdown ExecutorService");
-//				if(size == total){
-//					logger.info(Thread.currentThread() + " 文件终于下载好了！");
-//				}
-//			}
+
 
 		} catch (InterruptedException e) {
 			logger.error("InterruptedException[Consumer->run]: "+ e.getMessage());

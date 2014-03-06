@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -16,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.DateUtil;
+import org.minnie.utility.util.FileUtil;
 import org.minnie.utility.util.HtmlUtil;
 
 /**
@@ -28,10 +30,9 @@ public class App {
 
 	private static ResourceBundle rb;
 	private static BufferedInputStream inputStream;
-	
+
 	private static final int THREAD_POOL_SIZE = 20;
 
-	
 	/**
 	 * @param args
 	 */
@@ -47,9 +48,12 @@ public class App {
 				+ Constant.LOG_LOG4J_PARAM_FILE);
 
 		logger.info("程序开始执行时间：" + DateUtil.getTime(configurationStartTime));
-		
-		//HoopChina根目录
+
+		// HoopChina根目录
 		String hoopChinaDirectory = null;
+		
+		// HoopChina URL 文件目录
+		String hoopchinaUrlPath = null;
 
 		/**
 		 * 加载系统参数
@@ -64,10 +68,18 @@ public class App {
 			logger.info("加载系统参数......");
 
 			hoopChinaDirectory = rb.getString("hoopchina.directory");
-			 logger.info("\t hoopchina.directory = " + hoopChinaDirectory);
-				if(null == hoopChinaDirectory || StringUtils.isBlank(hoopChinaDirectory)){
-					hoopChinaDirectory = "C:/Entertainment/HoopChina";
-				}
+			logger.info("\t hoopchina.directory = " + hoopChinaDirectory);
+			if (null == hoopChinaDirectory
+					|| StringUtils.isBlank(hoopChinaDirectory)) {
+				hoopChinaDirectory = "C:/Entertainment/HoopChina";
+			}
+			
+			hoopchinaUrlPath = rb.getString("hoopchina.url.path");
+			logger.info("\t hoopchina.url.path = " + hoopchinaUrlPath);
+			if (null == hoopchinaUrlPath
+					|| StringUtils.isBlank(hoopchinaUrlPath)) {
+				hoopchinaUrlPath = "C:/hoopchina.txt";
+			}
 
 			// 关闭inputStream
 			if (null != inputStream) {
@@ -85,54 +97,62 @@ public class App {
 		logger.info("加载系统配置耗时 "
 				+ (configurationEndTime - configurationStartTime) + "ms");
 
-		getSingleAlbum("http://photo.hupu.com/ent/p11634.html", hoopChinaDirectory);
+		// getSingleAlbum("http://photo.hupu.com/ent/p11634.html",
+		// hoopChinaDirectory);
+
+		Set<String> set = FileUtil.getHoopChinaUrlList(hoopchinaUrlPath);
 
 	}
-	
-	public static void getSingleAlbum(String urlAddress, String hoopChinaDirectory){
-//		String urlAddress = "http://photo.hupu.com/ent/p11634.html";
+
+	public static void getSingleAlbum(String urlAddress,
+			String hoopChinaDirectory) {
+		// String urlAddress = "http://photo.hupu.com/ent/p11634.html";
 		HoopChina hoopChina = HtmlUtil.getHoopChina(urlAddress);
 		AtomicInteger atomic = new AtomicInteger(0);
 		int size = hoopChina.getTotal();
-//		logger.info("size = " + size);
-		
+		// logger.info("size = " + size);
+
 		// 队列
-		LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>(size);
-		
-		
+		LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>(
+				size);
+
 		long produceStartTime = System.currentTimeMillis();
 
-        ExecutorService produceExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE); 
+		ExecutorService produceExecutor = Executors
+				.newFixedThreadPool(THREAD_POOL_SIZE);
 		// 生产者
-		Producer producer = new Producer(queue, produceExecutor, urlAddress, atomic, size);
-		
-		for(int i = 0; i < THREAD_POOL_SIZE; i++){
+		Producer producer = new Producer(queue, produceExecutor, urlAddress,
+				atomic, size);
+
+		for (int i = 0; i < THREAD_POOL_SIZE; i++) {
 			produceExecutor.execute(producer);
 		}
-		
-		produceExecutor.shutdown(); 
-        while (!produceExecutor.isTerminated()) {
-        	// do nothing
-        } 
+
+		produceExecutor.shutdown();
+		while (!produceExecutor.isTerminated()) {
+			// do nothing
+		}
 		long produceEndTime = System.currentTimeMillis();
-		logger.info("Finished all producer threads : " + (produceEndTime - produceStartTime) + "ms");
-        
+		logger.info("Finished all producer threads : "
+				+ (produceEndTime - produceStartTime) + "ms");
+
 		long consumerStartTime = System.currentTimeMillis();
-        ExecutorService consumerExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE); 
+		ExecutorService consumerExecutor = Executors
+				.newFixedThreadPool(THREAD_POOL_SIZE);
 		// 消费者
-		Consumer consumer = new Consumer(queue, consumerExecutor, hoopChinaDirectory, hoopChina.getTitle());
-        
-		for(int j = 0; j < THREAD_POOL_SIZE; j++){
+		Consumer consumer = new Consumer(queue, consumerExecutor,
+				hoopChinaDirectory, hoopChina.getTitle());
+
+		for (int j = 0; j < THREAD_POOL_SIZE; j++) {
 			consumerExecutor.execute(consumer);
 		}
-		consumerExecutor.shutdown(); 
-        while (!consumerExecutor.isTerminated()) {
-        	// do nothing
-        } 
+		consumerExecutor.shutdown();
+		while (!consumerExecutor.isTerminated()) {
+			// do nothing
+		}
 		long consumerEndTime = System.currentTimeMillis();
-		logger.info("Finished all consumer threads : " + (consumerEndTime - consumerStartTime) + "ms");
+		logger.info("Finished all consumer threads : "
+				+ (consumerEndTime - consumerStartTime) + "ms");
 	}
-		
-
 
 }

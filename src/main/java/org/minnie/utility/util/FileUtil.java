@@ -2,11 +2,14 @@ package org.minnie.utility.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +18,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.minnie.utility.xinyingba.Video;
 
 /**
  * 将文件打包成ZIP压缩文件
@@ -137,12 +139,12 @@ public class FileUtil {
 
 	public static Set<Integer> getOmittedNumber(String sourceFileDirectory,
 			Set<Integer> videoSet) {
-		
+
 		Set<Integer> fileSet = new HashSet<Integer>();
 		Set<Integer> resultSet = new HashSet<Integer>();
 
 		File sourceDir = new File(sourceFileDirectory);
-		
+
 		if (sourceDir.exists()) {
 			File[] sourceFiles = sourceDir.listFiles();
 			int sourceFileLength = sourceFiles.length;
@@ -154,12 +156,35 @@ public class FileUtil {
 				}
 			}
 		}
-		
+
 		resultSet.addAll(videoSet);
 		resultSet.removeAll(fileSet);
 
 		return resultSet;
 
+	}
+
+	public static Set<String> getHoopChinaUrlList(String filePath) {
+		
+		Set<String> set = new HashSet<String>();
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new InputStreamReader(
+					new FileInputStream(filePath)));
+			
+			for (String line = br.readLine(); line != null; line = br.readLine()) {
+				set.add(line);
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			logger.error("FileNotFoundException[FileUtil->getHoopChinaUrlList]: "
+					+ e.getMessage());
+		} catch (IOException e) {
+			logger.error("IOException[FileUtil->getHoopChinaUrlList]: "
+					+ e.getMessage());
+		}
+		
+		return set;
 	}
 
 }

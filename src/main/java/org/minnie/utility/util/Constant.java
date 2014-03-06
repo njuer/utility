@@ -66,6 +66,9 @@ public class Constant {
 	public static final String BLANK = "";
 	public static final String IMG_NO_PIC = "/img/nopic.gif";
 	
+	public static final int CONNECTION_TIMEOUT = 15000;
+	public static final int READ_TIMEOUT = 15000;
+	
 	
 	
 
