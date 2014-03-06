@@ -85,11 +85,16 @@ public class App {
 		logger.info("加载系统配置耗时 "
 				+ (configurationEndTime - configurationStartTime) + "ms");
 
-		String urlAddress = "http://photo.hupu.com/ent/p11634.html";
+		getSingleAlbum("http://photo.hupu.com/ent/p11634.html", hoopChinaDirectory);
+
+	}
+	
+	public static void getSingleAlbum(String urlAddress, String hoopChinaDirectory){
+//		String urlAddress = "http://photo.hupu.com/ent/p11634.html";
 		HoopChina hoopChina = HtmlUtil.getHoopChina(urlAddress);
 		AtomicInteger atomic = new AtomicInteger(0);
 		int size = hoopChina.getTotal();
-		logger.info("size = " + size);
+//		logger.info("size = " + size);
 		
 		// 队列
 		LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>(size);
@@ -126,7 +131,6 @@ public class App {
         } 
 		long consumerEndTime = System.currentTimeMillis();
 		logger.info("Finished all consumer threads : " + (consumerEndTime - consumerStartTime) + "ms");
-
 	}
 		
 

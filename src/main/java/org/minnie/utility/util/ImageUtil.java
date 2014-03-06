@@ -205,6 +205,11 @@ public class ImageUtil {
 				
 				// 图片命名方式
 				final File cacheFile = new File(path);
+				
+				if(cacheFile.exists()){
+					logger.info(path + "已存在！");
+					return true;
+				}
 
 				final InputStream is = new BufferedInputStream(
 						httpUrlConnection.getInputStream(), IO_BUFFER_SIZE);
