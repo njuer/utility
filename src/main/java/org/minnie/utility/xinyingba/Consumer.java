@@ -12,15 +12,62 @@ public class Consumer implements Runnable {
 
 	private BlockingQueue<Video> queue;
     private ExecutorService defaultExecutorService;
+    private String directory;
+    private int size;
+	private Object lock;
 
-
+	public Consumer() {
+		super();
+	}
+	
 	public Consumer(BlockingQueue<Video> queue) {
 		this.queue = queue;
 	}
 	
-	public Consumer(BlockingQueue<Video> queue, ExecutorService defaultExecutorService) {
+	public Consumer(BlockingQueue<Video> queue, ExecutorService defaultExecutorService, String directory) {
 		this.queue = queue;
 		this.defaultExecutorService = defaultExecutorService;
+		this.directory = directory;
+	}
+	
+	public BlockingQueue<Video> getQueue() {
+		return queue;
+	}
+
+	public void setQueue(BlockingQueue<Video> queue) {
+		this.queue = queue;
+	}
+
+	public ExecutorService getDefaultExecutorService() {
+		return defaultExecutorService;
+	}
+
+	public void setDefaultExecutorService(ExecutorService defaultExecutorService) {
+		this.defaultExecutorService = defaultExecutorService;
+	}
+
+	public String getDirectory() {
+		return directory;
+	}
+
+	public void setDirectory(String directory) {
+		this.directory = directory;
+	}
+	
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+	
+	public Object getLock() {
+		return lock;
+	}
+
+	public void setLock(Object lock) {
+		this.lock = lock;
 	}
 
 	@Override
@@ -31,12 +78,17 @@ public class Consumer implements Runnable {
 			 */
 			while(!queue.isEmpty()){
 				Video video = queue.take();
-				ImageUtil.save2File(video);
+				if(ImageUtil.save2File(directory, video)){
+					synchronized (lock) {
+						size++;
+					}
+				}
 				logger.info(Thread.currentThread() + " :" + video.toString());
 			}
 			if(null != defaultExecutorService){
 				defaultExecutorService.shutdownNow();
 				logger.info(Thread.currentThread() + " :shutdown ExecutorService");
+				logger.info(Thread.currentThread() + " : size = " + size);
 			}
 
 		} catch (InterruptedException e) {

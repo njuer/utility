@@ -12,3 +12,6 @@
 .mymetadata
 .project
 .classpath
+*.log
+*.1
+*.1

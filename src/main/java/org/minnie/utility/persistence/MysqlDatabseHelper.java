@@ -1,5 +1,7 @@
 package org.minnie.utility.persistence;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.ImageUtil;
@@ -167,7 +170,7 @@ public class MysqlDatabseHelper {
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (null == sql || Constant.BLANK.equals(sql)) {
-					sql = "SELECT uuid,number,imageSource FROM ent_movie";
+					sql = "SELECT uuid,number,imageSource FROM ent_movie WHERE number != 1";
 				}
 				rs = stmt.executeQuery(sql);
 				while (rs.next()) {
@@ -316,6 +319,80 @@ public class MysqlDatabseHelper {
 		} catch (SQLException e) {
 			logger.error("SQLException[MysqlDatabseHelper->batchUpdateImage]: "
 					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pst);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
+
+	public static void batchUpdateImageWithFlag(String sql, String sourceFileDirectory) {
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+			
+			if (conn != null) {
+				
+				if (null == sql || Constant.BLANK.equals(sql)) {
+					sql = "UPDATE ent_movie SET image = ?, image_flag = ? WHERE number = ?";
+				}
+				pst = (PreparedStatement) conn.prepareStatement(sql);
+				
+				int batchSize = MysqlConnectionManager.batchSize;
+				logger.info("batchSize = " + batchSize);
+				
+				File sourceDir = new File(sourceFileDirectory);
+				if (sourceDir.exists()) {
+					File[] sourceFiles = sourceDir.listFiles();
+					int sourceFileLength = sourceFiles.length;
+					for (int i = 0; i < sourceFileLength; i++) {
+						String picturePath = sourceFiles[i].getAbsolutePath();
+						File picture = new File(picturePath);
+						InputStream fis = new FileInputStream(picturePath);
+						if (null != fis) {
+							pst.setBinaryStream(1, fis, picture.length());
+							pst.setInt(2, 1);
+							String name = sourceFiles[i].getName();
+							String number = name.substring(0, name.indexOf("."));
+//							if (StringUtils.isNumeric(number)) {
+//								fileSet.add(Integer.valueOf(number));
+//							}
+							pst.setInt(3, Integer.valueOf(number));
+							// 把一个SQL命令加入命令列表
+							pst.addBatch();
+//							is.close();
+//							fis.close();
+							logger.info(picturePath);
+						}
+						if ((i + 1) % batchSize == 0) {
+
+							// 执行批量更新
+							pst.executeBatch();
+							// 语句执行完毕，提交本事务
+							conn.commit();
+							logger.info("i=" + i + "->提交");
+							pst.clearBatch();
+						}
+					}
+					pst.executeBatch();
+					// 语句执行完毕，提交本事务
+					conn.commit();
+					logger.info("批量更新影片海报信息成功！");
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchUpdateImage]: "
+					+ e.getMessage());
+		} catch (FileNotFoundException e) {
+			logger.error("FileNotFoundException[MysqlDatabseHelper->batchUpdateImage]: "
+					+ e.getMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} finally {
 			MysqlConnectionManager.closePreparedStatement(pst);
 			MysqlConnectionManager.closeConnection(conn);

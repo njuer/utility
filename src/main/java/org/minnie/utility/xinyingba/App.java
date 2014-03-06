@@ -47,12 +47,16 @@ public class App {
 	public static List<Video> movieList = new ArrayList<Video>();
 	
 	private static final ExecutorService DEFAULT_TASK_EXECUTOR;
-
+	
 	static {
 		DEFAULT_TASK_EXECUTOR = (ExecutorService) Executors
-				.newFixedThreadPool(10);
+				.newFixedThreadPool(50);
 	};
 
+	private static Object lock = new Object();
+	private static int size = 0;
+
+	
 	/**
 	 * @param args
 	 */
@@ -82,6 +86,10 @@ public class App {
 		String sqlVideoList = null;
 		//批量更新图片SQL
 		String sqlBatchUpdateImage = null;
+		//批量更新图片SQL[带标记]
+		String sqlBatchUpdateImageWithFLag = null;
+		//图片保存路径
+		String pictureStoreDirectory = null;
 
 		/**
 		 * 加载系统参数
@@ -115,6 +123,16 @@ public class App {
 			
 			sqlBatchUpdateImage = rb.getString("sql.batchUpdateImage");
 			logger.info("\t sql.batchUpdateImage = " + sqlBatchUpdateImage);
+			
+			sqlBatchUpdateImageWithFLag = rb.getString("sql.batchUpdateImage.withFlag");
+			logger.info("\t sql.batchUpdateImage.withFlag = " + sqlBatchUpdateImageWithFLag);
+			
+			pictureStoreDirectory = rb.getString("picture.store.directory");
+			logger.info("\t picture.store.directory = " + pictureStoreDirectory);
+			
+			if(null == pictureStoreDirectory || Constant.BLANK.equals(pictureStoreDirectory)){
+				pictureStoreDirectory = "C:/xinyingba";
+			}
 
 			// 关闭inputStream
 			if (null != inputStream) {
@@ -131,6 +149,8 @@ public class App {
 
 		logger.info("加载系统配置耗时 "
 				+ (configurationEndTime - configurationStartTime) + "ms");
+		
+		MysqlDatabseHelper.batchUpdateImageWithFlag(sqlBatchUpdateImageWithFLag, pictureStoreDirectory);
 
 //		long countStartTime = System.currentTimeMillis();
 //		// 获取电影数目
@@ -157,33 +177,65 @@ public class App {
 //		logger.info("程序结束执行时间：" + DateUtil.getTime(dbEndTime));
 //		logger.info("程序耗时 " + (dbEndTime - configurationStartTime) + "ms");
 		
-		long dbStartTime = System.currentTimeMillis();
-		List<Video> list = MysqlDatabseHelper.getVideoList(sqlVideoList);
-		long dbEndTime = System.currentTimeMillis();
-		logger.info("信息从数据库加载耗时 " + (dbEndTime - dbStartTime) + "ms");
+//		long dbStartTime = System.currentTimeMillis();
+//		List<Video> list = MysqlDatabseHelper.getVideoList(sqlVideoList);
+//		long dbEndTime = System.currentTimeMillis();
+//		logger.info("信息从数据库加载耗时 " + (dbEndTime - dbStartTime) + "ms");
+		
+//		new DownloadService("C:/xinyingba", list,
+//				new DownloadStateListener() {
+//
+//					@Override
+//					public void onFinish() {
+//						// 图片下载成功后，实现您的代码
+//						System.out.println("图片下载完成！");
+//					}
+//
+//					@Override
+//					public void onFailed() {
+//						// 图片下载成功后，实现您的代码
+//						System.out.println("图片下载失败！");
+//					}
+//				}).startDownload();
 
-		long queueStartTime = System.currentTimeMillis();
-		// 队列
-		LinkedBlockingQueue<Video> queue = new LinkedBlockingQueue<Video>(
-				list.size());
-		for (Video video : list) {
-			try {
-				queue.put(video);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		long queueEndTime = System.currentTimeMillis();
-		logger.info("载入LinkedBlockingQueue耗时 "
-				+ (queueEndTime - queueStartTime) + "ms");
+//		long queueStartTime = System.currentTimeMillis();
+//		// 队列
+//		LinkedBlockingQueue<Video> queue = new LinkedBlockingQueue<Video>(
+//				list.size());
+////		Set<Integer> videoSet = new HashSet<Integer>();
+//		for (Video video : list) {
+////			videoSet.add(video.getNumber());
+//			try {
+//				queue.put(video);
+//			} catch (InterruptedException e) {
+//				logger.info("InterruptedException[App->main]: " + e.getMessage());
+//			}
+//		}
+//		long queueEndTime = System.currentTimeMillis();
+//		logger.info("载入LinkedBlockingQueue耗时 "
+//				+ (queueEndTime - queueStartTime) + "ms");
+//		logger.info("list.size() =  " + list.size());
+//		logger.info("queue.size() =  " + queue.size());
+//		logger.info("videoSet.size() =  " + videoSet.size());
 
-		// 消费者
-		Consumer consumer = new Consumer(queue, DEFAULT_TASK_EXECUTOR);
-		for (int i = 0; i < 10; i++) {
-			// new Thread(consumer).start();
-			DEFAULT_TASK_EXECUTOR.execute(consumer);
-		}
+//		Set<Integer> resultSet = FileUtil.getOmittedNumber(pictureStoreDirectory, videoSet);
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("select * from ent_movie where number in (");
+//		for(Integer integer : resultSet){
+//			sb.append(integer);
+//			sb.append(",");
+//		}
+//		sb.append(")");
+//		logger.info(sb.toString());
+//		   
+//		// 消费者
+//		Consumer consumer = new Consumer(queue, DEFAULT_TASK_EXECUTOR, pictureStoreDirectory);
+//		consumer.setSize(size);
+//		consumer.setLock(lock);
+//		for (int i = 0; i < 50; i++) {
+//			// new Thread(consumer).start();
+//			DEFAULT_TASK_EXECUTOR.execute(consumer);
+//		}
 
 	}
 
@@ -365,7 +417,7 @@ public class App {
 		factory.registerTag(new DdTag());
 		factory.registerTag(new EmTag());
 
-		Pattern pattern = Pattern.compile(Constant.REG_DL_ID);
+		Pattern pattern = Pattern.compile(Constant.REG_NUMBER);
 
 		Parser parser;
 		try {
