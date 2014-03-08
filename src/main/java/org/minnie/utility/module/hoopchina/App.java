@@ -51,7 +51,7 @@ public class App {
 
 		// HoopChina根目录
 		String hoopChinaDirectory = null;
-		
+
 		// HoopChina URL 文件目录
 		String hoopchinaUrlPath = null;
 
@@ -73,7 +73,7 @@ public class App {
 					|| StringUtils.isBlank(hoopChinaDirectory)) {
 				hoopChinaDirectory = "C:/Entertainment/HoopChina";
 			}
-			
+
 			hoopchinaUrlPath = rb.getString("hoopchina.url.path");
 			logger.info("\t hoopchina.url.path = " + hoopchinaUrlPath);
 			if (null == hoopchinaUrlPath
@@ -102,6 +102,79 @@ public class App {
 
 		Set<String> set = FileUtil.getHoopChinaUrlList(hoopchinaUrlPath);
 
+		// 队列
+		LinkedBlockingQueue<HoopChina> pageUrlQueue = new LinkedBlockingQueue<HoopChina>();
+		LinkedBlockingQueue<HoopChina> pictureUrlQueue = new LinkedBlockingQueue<HoopChina>();
+
+		int total = 0;
+		// set集合遍历方法2，使用增强for循环。
+		for (String urlAddress : set) {
+			HoopChina hoopChina = HtmlUtil.getHoopChina(urlAddress);
+			int size = hoopChina.getTotal();
+			total += size;
+			for (int i = 1; i <= size; i++) {
+				try {
+					HoopChina hc = (HoopChina) hoopChina.clone();
+					
+					int index = urlAddress.lastIndexOf(".");
+					String pageURL = urlAddress.substring(0, index) + "-" + i
+							+ ".html";
+					// logger.info(pageURL);
+					hc.setPageUrl(pageURL);
+//					 logger.info("=="+hc.toString());
+					
+					pageUrlQueue.put(hc);
+				} catch (CloneNotSupportedException e1) {
+					logger.error("CloneNotSupportedException[App->main]: "+ e1.getMessage());
+				} catch (InterruptedException e) {
+					logger.error("InterruptedException[App->main]: "+ e.getMessage());
+				}
+			}
+		}
+
+//		try {
+//			while (!pageUrlQueue.isEmpty()) {
+//				logger.info("==" + pageUrlQueue.take().toString());
+//			}
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
+		logger.info("total = " + total);
+
+		ExecutorService pictureURLExecutor = Executors
+				.newFixedThreadPool(THREAD_POOL_SIZE);
+		// 生产者
+		PictureUrlGenerator pug = new PictureUrlGenerator(pictureURLExecutor, pageUrlQueue, pictureUrlQueue);
+		// pug.setExecutorService(pictureURLExecutor);
+		// pug.setPageUrlQueue(pageUrlQueue);
+
+		for (int i = 0; i < THREAD_POOL_SIZE; i++) {
+			pictureURLExecutor.execute(pug);
+		}
+
+		pictureURLExecutor.shutdown();
+		while (!pictureURLExecutor.isTerminated()) {
+			// do nothing
+		}
+		logger.info("获取图片地址完成！");
+		
+		AtomicInteger atomic = new AtomicInteger(0);
+		ExecutorService pictureExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+		PictureGenerator pg = new PictureGenerator(pictureExecutor, pictureUrlQueue, atomic, hoopChinaDirectory, total);
+
+		for (int i = 0; i < THREAD_POOL_SIZE; i++) {
+			pictureExecutor.execute(pg);
+		}
+
+		pictureExecutor.shutdown();
+		while (!pictureExecutor.isTerminated()) {
+			// do nothing
+		}
+		logger.info("获取图片下载完成！");
+
+
 	}
 
 	public static void getSingleAlbum(String urlAddress,
@@ -109,6 +182,7 @@ public class App {
 		// String urlAddress = "http://photo.hupu.com/ent/p11634.html";
 		HoopChina hoopChina = HtmlUtil.getHoopChina(urlAddress);
 		AtomicInteger atomic = new AtomicInteger(0);
+
 		int size = hoopChina.getTotal();
 		// logger.info("size = " + size);
 

@@ -302,7 +302,7 @@ public class ImageUtil {
 //			int length = httpUrlConnection.getContentLength();
 			
 			if (HttpURLConnection.HTTP_OK == status) {
-				directory += File.separator + hoopChina.getTitle();
+				directory += File.separator + hoopChina.getTitle()+ "_" + hoopChina.getTotal();
 				File dir = new File(directory);
 				// 如果目录不存在
 				if (!dir.exists()) {
@@ -334,7 +334,7 @@ public class ImageUtil {
 					bos.write(read);
 				}
 				
-				logger.info("下载图片:" + imageSource);
+//				logger.info("下载图片:" + imageSource);
 				
 				if (null != bos) {
 					bos.close();
