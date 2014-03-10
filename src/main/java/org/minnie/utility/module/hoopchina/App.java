@@ -97,9 +97,6 @@ public class App {
 		logger.info("加载系统配置耗时 "
 				+ (configurationEndTime - configurationStartTime) + "ms");
 
-		// getSingleAlbum("http://photo.hupu.com/ent/p11634.html",
-		// hoopChinaDirectory);
-
 		Set<String> set = FileUtil.getHoopChinaUrlList(hoopchinaUrlPath);
 
 		// 队列
@@ -121,7 +118,6 @@ public class App {
 							+ ".html";
 					// logger.info(pageURL);
 					hc.setPageUrl(pageURL);
-//					 logger.info("=="+hc.toString());
 					
 					pageUrlQueue.put(hc);
 				} catch (CloneNotSupportedException e1) {
@@ -132,49 +128,27 @@ public class App {
 			}
 		}
 
-//		try {
-//			while (!pageUrlQueue.isEmpty()) {
-//				logger.info("==" + pageUrlQueue.take().toString());
-//			}
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
 		logger.info("total = " + total);
 
 		ExecutorService pictureURLExecutor = Executors
 				.newFixedThreadPool(THREAD_POOL_SIZE);
 		// 生产者
 		PictureUrlGenerator pug = new PictureUrlGenerator(pictureURLExecutor, pageUrlQueue, pictureUrlQueue);
-		// pug.setExecutorService(pictureURLExecutor);
-		// pug.setPageUrlQueue(pageUrlQueue);
+
+		ExecutorService pictureExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+		PictureGenerator pg = new PictureGenerator(pictureExecutor, pictureUrlQueue, hoopChinaDirectory);
 
 		for (int i = 0; i < THREAD_POOL_SIZE; i++) {
 			pictureURLExecutor.execute(pug);
+			i++;
+			pictureURLExecutor.execute(pg);
 		}
 
 		pictureURLExecutor.shutdown();
 		while (!pictureURLExecutor.isTerminated()) {
 			// do nothing
 		}
-		logger.info("获取图片地址完成！");
-		
-		AtomicInteger atomic = new AtomicInteger(0);
-		ExecutorService pictureExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-		PictureGenerator pg = new PictureGenerator(pictureExecutor, pictureUrlQueue, atomic, hoopChinaDirectory, total);
-
-		for (int i = 0; i < THREAD_POOL_SIZE; i++) {
-			pictureExecutor.execute(pg);
-		}
-
-		pictureExecutor.shutdown();
-		while (!pictureExecutor.isTerminated()) {
-			// do nothing
-		}
-		logger.info("获取图片下载完成！");
-
-
+		logger.info("图片下载完成！");
 	}
 
 	public static void getSingleAlbum(String urlAddress,

@@ -101,7 +101,7 @@ public class PictureUrlGenerator implements Runnable {
 				String pictureURL = HtmlUtil.getPictureUrl(hoopChina.getPageUrl(), "id","bigpicpic");
 				hoopChina.setPirctureUrl(pictureURL);
 				pictureUrlQueue.put(hoopChina);
-//				logger.info(Thread.currentThread() + " pictureURL: " + pictureURL);
+				logger.info(Thread.currentThread() + " pictureURL: " + pictureURL);
 			} catch (InterruptedException e) {
 				logger.error(Thread.currentThread() + "----InterruptedException[PictureUrlGenerator->run]: "
 						+ e.getMessage());

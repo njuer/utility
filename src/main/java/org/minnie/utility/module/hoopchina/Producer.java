@@ -1,6 +1,5 @@
 package org.minnie.utility.module.hoopchina;
 
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;

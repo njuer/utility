@@ -5,7 +5,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
-import org.minnie.utility.util.HtmlUtil;
 import org.minnie.utility.util.ImageUtil;
 
 /**
@@ -36,14 +35,11 @@ public class PictureGenerator implements Runnable {
 	}
 
 	public PictureGenerator(ExecutorService executorService,
-			BlockingQueue<HoopChina> pictureUrlQueue, AtomicInteger atomic,
-			String directory, int total) {
+			BlockingQueue<HoopChina> pictureUrlQueue, String directory) {
 		super();
 		this.executorService = executorService;
 		this.pictureUrlQueue = pictureUrlQueue;
-		this.atomic = atomic;
 		this.directory = directory;
-		this.total = total;
 	}
 
 	public ExecutorService getExecutorService() {
@@ -97,7 +93,6 @@ public class PictureGenerator implements Runnable {
 			try {
 				HoopChina hoopChina = pictureUrlQueue.take();
 				if (null != hoopChina) {
-
 					boolean flag = ImageUtil.save2File(directory, hoopChina);
 					if (flag) {
 						logger.info(Thread.currentThread() + ": "
@@ -109,28 +104,10 @@ public class PictureGenerator implements Runnable {
 
 				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(Thread.currentThread() + "----InterruptedException[PictureGenerator->run]: "
+						+ e.getMessage());
 			}
 		}
-		// try {
-		// while(this.atomic.intValue() < this.total){
-		// int index = this.homeURL.lastIndexOf(".");
-		// int count = atomic.incrementAndGet();
-		// String pageURL = this.homeURL.substring(0, index) + "-" + count
-		// + ".html";
-		// String pictureURL = HtmlUtil.getPictureUrl(pageURL, "id",
-		// "bigpicpic");
-		//
-		// queue.put(pictureURL);
-		// logger.info(Thread.currentThread() + " ==[count = " + count
-		// + "]获取URL:" + pictureURL);
-		// }
-		// } catch (InterruptedException e) {
-		// logger.error(Thread.currentThread() +
-		// "----InterruptedException[Producer->run]: "
-		// + e.getMessage());
-		// }
 	}
 
 }

@@ -22,9 +22,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.minnie.utility.module.xinyingba.Video;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.ImageUtil;
-import org.minnie.utility.xinyingba.Video;
 
 public class MysqlDatabseHelper {
 

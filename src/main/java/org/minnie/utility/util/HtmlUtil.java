@@ -139,5 +139,36 @@ public class HtmlUtil {
 		
 		return null;
 	}
+	
+	public static int getTotal39YangShengsuo(String pageUrl){
+
+		int total = -1;
+
+		Parser parser;
+		try {
+			parser = new Parser((HttpURLConnection) (new URL(pageUrl)).openConnection());
+			parser.setEncoding(parser.getEncoding().equals("ISO-8859-1")?"gb2312":parser.getEncoding());   
+			// 找到class="blue"的em
+			NodeFilter filter = new HasAttributeFilter("class", "cptotal");
+			NodeList nodes = parser.extractAllNodesThatMatch(filter);
+
+			if (nodes != null && nodes.size() > 0) {
+				Node textnode = (Node) nodes.elementAt(0);
+				System.out.println(textnode.getFirstChild().getText());
+				String totalString = textnode.getNextSibling().getText();
+//				totalString.replace("共", "").replace("页", "");
+				total = Integer.valueOf(totalString.replace("共", "").replace("页", "")).intValue();
+			}
+		} catch (ParserException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return total;
+		
+	}
 
 }

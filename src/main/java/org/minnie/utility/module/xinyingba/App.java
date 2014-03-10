@@ -1,4 +1,4 @@
-package org.minnie.utility.xinyingba;
+package org.minnie.utility.module.xinyingba;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
