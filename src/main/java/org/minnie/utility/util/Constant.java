@@ -4,6 +4,7 @@ public class Constant {
 	
 //	public static final String URL_XINYINGBA_MOVIE_2014_FILE = "C:\\dianying2014.html";
 	public static final String URL_XINYINGBA = "http://www.xinyingba.com";
+	public static final String URL_TIANTIANYULE = "http://www.ttyl5.com";
 	public static final String URL_XINYINGBA_MOVIE_2014 = "http://www.xinyingba.com/dianying/2014-nian.htm";
 	
 	public static final String CATEGORY_XINYINGBA_MOVIE = "dianying";
@@ -39,6 +40,7 @@ public class Constant {
 	public static final String REG_NUMBER = "\\d+";
 	public static final String REG_URL = "(http|ftp|https)://([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?";
 	public static final String REG_HOOPCHINA_COUNT_STRING = "/&nbsp;\\d+\\)&nbsp;&nbsp;";
+	public static final String REG_ILLEGAL_CHARACTERS = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）\"\"《》\\\\——+|{}【】‘；：”“’。，、？]";
 	
 	public static final String TAG_DD_ATTRIBUTE_CLASS_VIDEO_COVER = "video-cover";
 	public static final String TAG_DD_ATTRIBUTE_CLASS_VIDEO_INTRO = "video-intro";
