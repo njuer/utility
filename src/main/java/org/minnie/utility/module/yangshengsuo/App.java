@@ -23,7 +23,7 @@ import org.minnie.utility.util.StringUtil;
 /**
  * @author neiplzer@gmail.com
  * @version 2014-3-8
- * 39养生所
+ * 39养生所、天天娱乐网
  */
 public class App {
 
