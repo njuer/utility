@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 public class StringUtil {
 
 	public static Pattern urlPattern = Pattern.compile(Constant.REG_URL);
+	public static Pattern domainPattern = Pattern.compile(Constant.REG_DOMAIN,
+			Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * @param args
@@ -31,6 +33,14 @@ public class StringUtil {
 		Pattern p = Pattern.compile(Constant.REG_ILLEGAL_CHARACTERS);
 		Matcher m = p.matcher(str);
 		return m.replaceAll("").trim();
+	}
+
+	public static String getDomainName(String url) {
+		Matcher matcher = domainPattern.matcher(url);
+		if (matcher.find()) {
+			return matcher.group();
+		}
+		return null;
 	}
 
 }

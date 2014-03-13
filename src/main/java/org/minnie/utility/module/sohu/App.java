@@ -68,6 +68,8 @@ public class App {
 
 		 // 批量添加双色球sql
 		 String sqlBatchAddLotteryDoubleColor = null;
+		 // 双色球表名
+		 String tableDoubleColor = null;
 
 		/**
 		 * 加载系统参数
@@ -83,6 +85,9 @@ public class App {
 
 			sqlBatchAddLotteryDoubleColor = rb.getString("sql.batchAddLottery.doubleColor");
 			 logger.info("\t sql.batchAddLottery.doubleColor = " + sqlBatchAddLotteryDoubleColor);
+			 
+			 tableDoubleColor = rb.getString("sql.table.doubleColor");
+			 logger.info("\t sql.table.doubleColor = " + tableDoubleColor);
 
 			// 关闭inputStream
 			if (null != inputStream) {
@@ -123,6 +128,8 @@ public class App {
 		}
 		
 		Collections.sort(list);
+		
+		MysqlDatabseHelper.truncate(tableDoubleColor);
 		MysqlDatabseHelper.batchAddLotteryDoubleColor(list);
 		
 	}

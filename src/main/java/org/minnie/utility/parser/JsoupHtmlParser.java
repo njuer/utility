@@ -271,7 +271,7 @@ public class JsoupHtmlParser {
 									red.add(td.html());
 								}
 								ssq.setRed(red);
-								Element blue = tr.select("td.red_ball").first();
+								Element blue = tr.select("td.blue_ball").first();
 								ssq.setBlue(blue.html());
 								ssq.setYear(year);
 								
@@ -366,7 +366,7 @@ public class JsoupHtmlParser {
 								red.add(td.html());
 							}
 							ssq.setRed(red);
-							Element blue = tr.select("td.red_ball").first();
+							Element blue = tr.select("td.blue_ball").first();
 							ssq.setBlue(blue.html());
 							ssq.setYear(year);
 

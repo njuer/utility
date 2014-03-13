@@ -40,6 +40,7 @@ public class Constant {
 	public static final String REG_DL = "[a-zA-z]+-\\d+";
 	public static final String REG_NUMBER = "\\d+";
 	public static final String REG_URL = "(http|ftp|https)://([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?";
+	public static final String REG_DOMAIN = "(?<=http://|\\.)[^.]*?\\.(com|cn|net|org|biz|info|cc|tv)";
 	public static final String REG_HOOPCHINA_COUNT_STRING = "/&nbsp;\\d+\\)&nbsp;&nbsp;";
 	public static final String REG_ILLEGAL_CHARACTERS = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）\"\"《》\\\\——+|{}【】‘；：”“’。，、？]";
 	

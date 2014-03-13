@@ -446,4 +446,38 @@ public class MysqlDatabseHelper {
 		}
 	}
 	
+	public static int truncate(String tableName) {
+
+		Connection conn = null;
+		Statement stmt = null;
+		String sql = "TRUNCATE TABLE ";
+		int result = -1;
+		
+		if(null == tableName || StringUtils.isBlank(tableName)){
+			logger.error("清空表失败，参数tableName为空!");
+			return result;
+		}
+		
+		sql += tableName;
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				result = stmt.executeUpdate(sql);
+				if(result > 0){
+					logger.info("清空表["+tableName+"]成功！");
+				}
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->truncate]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return result;
+	}
+	
 }
