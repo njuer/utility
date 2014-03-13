@@ -1,7 +1,9 @@
 package org.minnie.utility.parser;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -15,7 +17,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
+import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.yangshengsuo.Regimen;
+import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.StringUtil;
 
 /**
@@ -213,11 +217,172 @@ public class JsoupHtmlParser {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("IOException[JsoupHtmlParser->getRegimenPictureUrl(Regimen regimen)]: "
+					+ e.getMessage());
 		}
 
 		return null;
 
+	}
+
+	public static List<DoubleColor> getSohuSSQ(String action,
+			Map<String, String> params, Integer year) {
+		return getSohuSSQ(action, params, year, "#chartTable");
+	}
+
+	public static List<DoubleColor> getSohuSSQ(String action,
+			Map<String, String> params, Integer year, String cssQuery) {
+
+		List<DoubleColor> list = new ArrayList<DoubleColor>();
+
+		try {
+			Document doc = Jsoup
+					.connect(action)
+					.data(params)
+					.userAgent(
+							"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2; Trident/4.0;.NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30;.NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)")
+					.timeout(30000) // 设置连接超时时间
+					.post(); // 使用POST方法访问URL
+
+			// logger.info(doc.html());
+			Elements chartTable = doc.select(cssQuery);
+
+			// startPhase
+			Elements startPhase = doc.select("#startPhase");
+			Elements endPhase = doc.select("#endPhase");
+
+			if (startPhase.val().equals(params.get("startPhase"))
+					&& endPhase.val().equals(params.get("endPhase"))) {
+
+				if (null != chartTable) {
+					Element tbody = chartTable.select("tbody").first();
+					if (null != tbody) {
+						Elements trs = tbody.select("tr");
+						for (Element tr : trs) {
+							if (!tr.hasAttr("class")) {
+								DoubleColor ssq = new DoubleColor();
+								Element phase = tr.select("td.chart_table_td")
+										.first();
+								// logger.info("phase = " + phase.html());
+								ssq.setPhase(Integer.valueOf(phase.html()));
+								Elements tds = tr.select("td.red_ball");
+								List<String> red = new ArrayList<String>(6);
+								for (Element td : tds) {
+									red.add(td.html());
+								}
+								ssq.setRed(red);
+								Element blue = tr.select("td.red_ball").first();
+								ssq.setBlue(blue.html());
+								ssq.setYear(year);
+								
+								list.add(ssq);
+							}
+						}
+					}
+				}
+			} else {
+//				logger.info("startPhase = " + startPhase.val());
+//				logger.info("endPhase = " + endPhase.val());
+				logger.info(params.get("startPhase") + "期 -> " + params.get("endPhase") + "期 下载失败！");
+			}
+		} catch (IOException e) {
+			logger.error("IOException[JsoupHtmlParser->getSohuSSQ(String action, Map<String, String> params, String cssQuery)]: "
+					+ e.getMessage());
+		}
+		return list;
+	}
+
+	public static List<DoubleColor> getSohuSSQ(String url, Integer year) {
+		return getSohuSSQ(url, year, "#chartTable");
+	}
+
+	public static List<DoubleColor> getSohuSSQ(Integer startPhase, Integer endPhase, Integer year) {
+		return  getSohuSSQ(Constant.URL_SOHU_LOTTERY_DOUBLE_COLOR, startPhase, endPhase, "up", "number", true, year);
+	}
+
+	/**
+	 * 
+	 * @param url			action地址
+	 * @param startPhase	开始期号
+	 * @param endPhase		结束期号
+	 * @param phaseOrder	期号排序: up or down?
+	 * @param coldHotOrder	冷热号顺序？number,还有其他值吗？
+	 * @param onlyBody		只显示表格主体(不显示其他菜单)：true or false
+	 * @param year			年份
+	 * @return
+	 */
+	public static List<DoubleColor> getSohuSSQ(String url, Integer startPhase, Integer endPhase, String phaseOrder, String coldHotOrder, boolean onlyBody, Integer year) {
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append(url);
+		sb.append("?");
+		sb.append("startPhase=");
+		sb.append(startPhase);
+		sb.append("&");
+		sb.append("endPhase=");
+		sb.append(endPhase);
+		sb.append("&");
+		sb.append("phaseOrder=");
+		sb.append(phaseOrder);
+		sb.append("&");
+		sb.append("coldHotOrder=");
+		sb.append(coldHotOrder);
+		sb.append("&");
+		sb.append("onlyBody=");
+		sb.append(onlyBody);
+		
+		return getSohuSSQ(sb.toString(), year, "#chartTable");
+	}
+
+	public static List<DoubleColor> getSohuSSQ(String url, Integer year,
+			String cssQuery) {
+
+		List<DoubleColor> list = new ArrayList<DoubleColor>();
+
+		try {
+			Document doc = Jsoup
+					.connect(url)
+					.userAgent(
+							"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2; Trident/4.0;.NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30;.NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)")
+					.timeout(30000) // 设置连接超时时间
+					.post(); // 使用POST方法访问URL
+
+			// logger.info(doc.html());
+			Elements chartTable = doc.select(cssQuery);
+
+			if (null != chartTable) {
+				Element tbody = chartTable.select("tbody").first();
+				if (null != tbody) {
+					Elements trs = tbody.select("tr");
+					for (Element tr : trs) {
+						if (!tr.hasAttr("class")) {
+							DoubleColor ssq = new DoubleColor();
+							Element phase = tr.select("td.chart_table_td")
+									.first();
+							ssq.setPhase(Integer.valueOf(phase.html()));
+							Elements tds = tr.select("td.red_ball");
+							List<String> red = new ArrayList<String>(6);
+							for (Element td : tds) {
+								red.add(td.html());
+							}
+							ssq.setRed(red);
+							Element blue = tr.select("td.red_ball").first();
+							ssq.setBlue(blue.html());
+							ssq.setYear(year);
+
+							list.add(ssq);
+							// logger.info(ssq.toString());
+						}
+					}
+				}
+
+			}
+
+		} catch (IOException e) {
+			logger.error("IOException[JsoupHtmlParser->getSohuSSQ(String action, Map<String, String> params, String cssQuery)]: "
+					+ e.getMessage());
+		}
+		return list;
 	}
 
 }

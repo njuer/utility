@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,9 +21,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.xinyingba.Video;
 import org.minnie.utility.util.Constant;
-import org.minnie.utility.util.ImageUtil;
 
 public class MysqlDatabseHelper {
 
@@ -50,7 +49,7 @@ public class MysqlDatabseHelper {
 			conn.setAutoCommit(false);
 
 			if (conn != null) {
-				if (null == sql || Constant.BLANK.equals(sql)) {
+				if (null == sql || StringUtils.isBlank(sql)) {
 					sql = "insert into ent_movie (uuid, number, title, url, imageSource, category, year, starring, rate, introduction) VALUES (?,?,?,?,?,?,?,?,?,?)";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
@@ -102,7 +101,7 @@ public class MysqlDatabseHelper {
 
 			if (conn != null) {
 
-				if (null == sql || Constant.BLANK.equals(sql)) {
+				if (null == sql || StringUtils.isBlank(sql)) {
 					sql = "insert into ent_movie (uuid, number, title, url, imageSource, image, category, year, starring, rate, introduction) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 				}
 
@@ -169,7 +168,7 @@ public class MysqlDatabseHelper {
 			conn = MysqlConnectionManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
-				if (null == sql || Constant.BLANK.equals(sql)) {
+				if (null == sql || StringUtils.isBlank(sql)) {
 					sql = "SELECT uuid,number,imageSource FROM ent_movie WHERE number != 1";
 				}
 				rs = stmt.executeQuery(sql);
@@ -216,7 +215,7 @@ public class MysqlDatabseHelper {
 
 			if (conn != null) {
 
-				if (null == sql || Constant.BLANK.equals(sql)) {
+				if (null == sql || StringUtils.isBlank(sql)) {
 					sql = "UPDATE ent_movie SET image = ? WHERE uuid = ?";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
@@ -337,7 +336,7 @@ public class MysqlDatabseHelper {
 			
 			if (conn != null) {
 				
-				if (null == sql || Constant.BLANK.equals(sql)) {
+				if (null == sql || StringUtils.isBlank(sql)) {
 					sql = "UPDATE ent_movie SET image = ?, image_flag = ? WHERE number = ?";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
@@ -399,4 +398,52 @@ public class MysqlDatabseHelper {
 		}
 	}
 
+	public static void batchAddLotteryDoubleColor(List<DoubleColor> list){
+		batchAddLotteryDoubleColor(list, null); 
+	}
+	
+	public static void batchAddLotteryDoubleColor(List<DoubleColor> list, String sql) {
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+			if (conn != null) {
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "insert into lottery_double_color (phase, red_1, red_2, red_3, red_4, red_5, red_6, blue, year) VALUES (?,?,?,?,?,?,?,?,?)";
+				}
+				pst = (PreparedStatement) conn.prepareStatement(sql);
+				for (DoubleColor ssq : list) {
+					pst.setInt(1, ssq.getPhase());
+					List<String> red = ssq.getRed();
+					for(int i = 0; i < 6; i++){
+						pst.setString(i + 2, red.get(i));
+					}
+					pst.setString(8, ssq.getBlue());
+					pst.setInt(9, ssq.getYear());
+					
+					logger.info(ssq.toString());
+					
+					// 把一个SQL命令加入命令列表
+					pst.addBatch();
+				}
+
+				// 执行批量更新
+				pst.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入双色球信息成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddLotteryDoubleColor]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pst);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
+	
 }

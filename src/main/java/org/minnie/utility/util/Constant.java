@@ -6,6 +6,7 @@ public class Constant {
 	public static final String URL_XINYINGBA = "http://www.xinyingba.com";
 	public static final String URL_TIANTIANYULE = "http://www.ttyl5.com";
 	public static final String URL_XINYINGBA_MOVIE_2014 = "http://www.xinyingba.com/dianying/2014-nian.htm";
+	public static final String URL_SOHU_LOTTERY_DOUBLE_COLOR = "http://trend.sohu.lecai.com/ssq/redBaseTrend.action";
 	
 	public static final String CATEGORY_XINYINGBA_MOVIE = "dianying";
 	public static final String CATEGORY_XINYINGBA_TV = "dianshi";
