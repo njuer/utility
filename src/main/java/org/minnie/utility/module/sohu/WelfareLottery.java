@@ -1,5 +1,6 @@
 package org.minnie.utility.module.sohu;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,7 +47,10 @@ public class WelfareLottery {
 		// blueAnalyseByLastRedKillBlue(list);
 		// blueAnalyseByAddSubtractionKillBlue(list);
 		// blueAnalyseByPhaseillBlue(list);
-		redAnalyseBySameTail(list);
+//		redAnalyseBySameTail(list);
+		List<Integer> cutRegion = new ArrayList<Integer>();
+		cutRegion.add(3);
+		getCandidate(2014027, cutRegion);
 	}
 
 	/**
@@ -471,7 +475,7 @@ public class WelfareLottery {
 	 * 
 	 * @param list
 	 */
-	public static void blueAnalyseByPhaseillBlue(List<DoubleColor> list) {
+	public static void blueAnalyseByPhaseKillBlue(List<DoubleColor> list) {
 		int size = list.size();
 		int correct = 0;
 		for (int i = 0; i < size; i++) {
@@ -508,61 +512,122 @@ public class WelfareLottery {
 
 	public static void getCandidate(Integer phase, List<Integer> cutRegion) {
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * FROM lottery_double_color ");
-		if (null != phase) {
-			sb.append(" WHERE phase < ").append(phase);
-		}
-		sb.append("ORDER BY phase DESC");
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("SELECT * FROM lottery_double_color ");
+//		if (null != phase) {
+//			sb.append(" WHERE phase < ").append(phase);
+//		}
+//		sb.append("ORDER BY phase DESC");
 
 		List<DoubleColor> list = MysqlDatabseHelper.getLastPhase(phase, 5);
 		Set<String> redCandidate = new HashSet<String>();
-		for(DoubleColor ssq : list){
+		Set<String> blueCandidate = new HashSet<String>();
+		for (DoubleColor ssq : list) {
 			List<String> red = ssq.getRed();
-			for(String cred : red){
-				//五期内选红
+			for (String cred : red) {
+				// 五期内选红
 				redCandidate.add(cred);
 			}
 		}
-		
+
+		// 初始化蓝球：01~16
+		for (int i = 1; i <= 16; i++) {
+			blueCandidate.add(StringUtil.getBallValue(i));
+		}
+
 		DoubleColor lastPhase = list.get(0);
-		//篮球杀红
+		// 篮球杀红
 		redCandidate.remove(lastPhase.getBlue());
-		
+
 		List<String> lastRed = lastPhase.getRed();
 		int result = Integer.valueOf(lastRed.get(5))
 				- Integer.valueOf(lastRed.get(0));
-		
-		//最大号码减去最小号码
+
+		// 最大号码减去最小号码
 		redCandidate.remove(StringUtil.getBallValue(result));
-		
-		Set<String> regionSet = new HashSet<String>();
-		for(Integer region: cutRegion){
-			switch(region){
-				case 1:
-					for(int i = 1; i <= 8; i++){
-						regionSet.add(StringUtil.getBallValue(i));
-					}
-					break;
-				case 2:
-					for(int i = 9; i <= 16; i++){
-						regionSet.add(StringUtil.getBallValue(i));
-					}
-					break;
-				case 3:
-					for(int i = 18; i <= 25; i++){
-						regionSet.add(StringUtil.getBallValue(i));
-					}
-					break;
-				case 4:
-					for(int i = 26; i <= 33; i++){
-						regionSet.add(StringUtil.getBallValue(i));
-					}
-					break;
+
+		// 红球断区
+		int init = 0;
+		int boundary = 0;
+		for (Integer region : cutRegion) {
+			switch (region) {
+			case 1:
+				init = 1;
+				boundary = 8;
+				break;
+			case 2:
+				init = 9;
+				boundary = 16;
+				break;
+			case 3:
+				init = 18;
+				boundary = 25;
+				break;
+			case 4:
+				init = 26;
+				boundary = 33;
+				break;
+			}
+			for (int i = init; i <= boundary; i++) {
+				redCandidate.remove(StringUtil.getBallValue(i));
 			}
 		}
-		//红球断区
-		redCandidate.removeAll(regionSet);
+
+		// 上期红球杀蓝
+		for (String lr : lastRed) {
+			blueCandidate.remove(lr);
+		}
+
+		// 期号杀蓝
+		String strPhase = String.valueOf(phase);
+		int pTail = Integer.valueOf(strPhase.substring(6));
+		blueCandidate.remove("1" + pTail);
+		blueCandidate.remove("0" + pTail);
+
+		// 加减法杀蓝
+		int lastBlueOne = Integer.valueOf(lastPhase.getBlue());
+
+		DoubleColor lastPhaseTwo = list.get(1);
+		int lastBlueTwo = Integer.valueOf(lastPhaseTwo.getBlue());
+
+		int sum = (lastBlueOne + lastBlueTwo) % 10;
+		blueCandidate.remove("1" + sum);
+		blueCandidate.remove("0" + sum);
+
+		int diff = Math.abs(lastBlueOne - lastBlueTwo) % 10;
+		blueCandidate.remove("1" + diff);
+		blueCandidate.remove("0" + diff);
+
+		lastBlueOne %= 10;
+		lastBlueTwo %= 10;
+
+		sum = (lastBlueOne + lastBlueTwo) % 10;
+		blueCandidate.remove("1" + sum);
+		blueCandidate.remove("0" + sum);
+
+		diff = Math.abs(lastBlueOne - lastBlueTwo) % 10;
+		blueCandidate.remove("1" + diff);
+		blueCandidate.remove("0" + diff);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(phase);
+		sb.append("\t");
+		for(String red:redCandidate){
+			sb.append(red);
+			sb.append(" ");
+		}
+		sb.append(":");
+		sb.append("\t");
+		for(String blue:blueCandidate){
+			sb.append(blue);
+			sb.append(" ");
+		}
+		
+		logger.info(sb.toString());
+	}
+	
+	public static void doubleColorAnalyse(List<DoubleColor> list){
+		
 	}
 
 }
