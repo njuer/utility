@@ -97,7 +97,14 @@ public class App {
 		logger.info("加载系统配置耗时 "
 				+ (configurationEndTime - configurationStartTime) + "ms");
 
-		Set<String> set = FileUtil.getNeteaseUrlList(neteaseUrlPath);
+		Set<String> set = FileUtil.getNeteaseUrlSet(neteaseUrlPath);
+		
+		
+		// 主程序执行
+		runNeteaseApp(set, neteaseDirectory);
+	}
+	
+	public static void runNeteaseApp(Set<String> set, String directory){
 		LinkedBlockingQueue<Netease> pictureUrlQueue = new LinkedBlockingQueue<Netease>();
 
 		for (String galleryUrl : set) {
@@ -137,7 +144,7 @@ public class App {
 				.newFixedThreadPool(THREAD_POOL_SIZE);
 		// 消费者
 		PictureGenerator pg = new PictureGenerator(pictureUrlQueue,
-				neteaseDirectory);
+				directory);
 
 		for (int i = 0; i < THREAD_POOL_SIZE; i++) {
 			pictureURLExecutor.execute(pg);
@@ -151,73 +158,6 @@ public class App {
 
 		logger.info("Finished all consumer threads : "
 				+ (consumerEndTime - consumerStartTime) + "ms");
-
-		// // String json = "\"info\": {";
-		// String json = "{";
-		// json += "\"setname\": \"NBA常规赛：湖人114-110雷霆\",";
-		// json += "\"imgsum\": 20,";
-		// json += "\"lmodify\": \"2014-03-10 07:46:31\",";
-		// json +=
-		// "\"prevue\": \"洛杉矶湖人队（22胜42负）成功在主场止血。尽管杜兰特得到27分、12次助攻和10个篮板的三双表现，维斯布鲁克也有20分、8次助攻和7个篮板，但米克斯得到生涯新高42分，加索尔也有20分和11个篮板，他们率队在第三节打出反扑高潮逆转最多18分落后，湖人队第四节成功保住优势，他们在主场以114-110战胜俄克拉荷马城雷霆队（46胜17负）。湖人队结束三连败，雷霆队遭遇两连败。\",";
-		// json += "\"channelid\": \"0005\",";
-		// json += "\"prev\": {";
-		// json += "\"setname\": \"NBA常规赛：公牛95-88热火\",";
-		// json +=
-		// "\"simg\": \"http://img4.cache.netease.com/photo/0005/2014-03-10/s_9MUSSCFH4TM10005.jpg\",";
-		// json +=
-		// "\"seturl\": \"http://sports.163.com/photoview/4TM10005/111570.html\"";
-		// json += "},";
-		// json += "\"next\": {";
-		// json += "\"setname\": \"NBA常规赛：快船 - 老鹰\",";
-		// json +=
-		// "\"simg\": \"http://img2.cache.netease.com/photo/0005/2014-03-09/s_9MT8BI0U4TM10005.jpg\",";
-		// json +=
-		// "\"seturl\": \"http://sports.163.com/photoview/4TM10005/111543.html\"";
-		// json += "}";
-		//
-		// json += "}";
-		//
-		// // 接收{}对象，此处接收数组对象会有异常
-		// if (json.indexOf("[") != -1) {
-		// json = json.replace("[", "");
-		// }
-		// if (json.indexOf("]") != -1) {
-		// json = json.replace("]", "");
-		// }
-		// JSONObject obj = new JSONObject().fromObject(json);
-		// Gallery gallery = (Gallery) JSONObject.toBean(obj, Gallery.class);
-		// System.out.println("obj: " + gallery.toString());
-
-		// =====================================================================================
-
-		// String json = "{";
-		// json += "\"id\": \"9MV87AUB4TM10005\",";
-		// json +=
-		// "\"img\": \"http://img3.cache.netease.com/photo/0005/2014-03-10/9MV87AUB4TM10005.jpg\",";
-		// json +=
-		// "\"timg\": \"http://img3.cache.netease.com/photo/0005/2014-03-10/t_9MV87AUB4TM10005.jpg\",";
-		// json +=
-		// "\"simg\": \"http://img3.cache.netease.com/photo/0005/2014-03-10/s_9MV87AUB4TM10005.jpg\",";
-		// json +=
-		// "\"oimg\": \"http://img3.cache.netease.com/photo/0005/2014-03-10/9MV87AUB4TM10005.jpg\",";
-		// json += "\"osize\": {\"w\":1280,\"h\":846},";
-		// json += "\"title\": \"杜兰特很无奈\",";
-		// json += "\"note\": \"\",";
-		// json += "\"newsurl\": \"#\"";
-		// json += "}";
-		//
-		// // 接收{}对象，此处接收数组对象会有异常
-		// if (json.indexOf("[") != -1) {
-		// json = json.replace("[", "");
-		// }
-		// if (json.indexOf("]") != -1) {
-		// json = json.replace("]", "");
-		// }
-		// JSONObject obj = new JSONObject().fromObject(json);
-		// Picture picture = (Picture) JSONObject.toBean(obj,
-		// Picture.class);
-		// System.out.println("obj: " + picture.toString());
-
 	}
 
 }

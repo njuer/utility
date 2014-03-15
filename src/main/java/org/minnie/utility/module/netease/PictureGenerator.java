@@ -47,7 +47,7 @@ public class PictureGenerator implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (!pictureUrlQueue.isEmpty()) {
 			try {
 				Netease netease = pictureUrlQueue.take();
 				if (null != netease) {

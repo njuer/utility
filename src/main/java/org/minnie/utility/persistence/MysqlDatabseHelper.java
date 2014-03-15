@@ -324,26 +324,27 @@ public class MysqlDatabseHelper {
 		}
 	}
 
-	public static void batchUpdateImageWithFlag(String sql, String sourceFileDirectory) {
-		
+	public static void batchUpdateImageWithFlag(String sql,
+			String sourceFileDirectory) {
+
 		Connection conn = null;
 		PreparedStatement pst = null;
-		
+
 		try {
 			conn = MysqlConnectionManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
-			
+
 			if (conn != null) {
-				
+
 				if (null == sql || StringUtils.isBlank(sql)) {
 					sql = "UPDATE ent_movie SET image = ?, image_flag = ? WHERE number = ?";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
-				
+
 				int batchSize = MysqlConnectionManager.batchSize;
 				logger.info("batchSize = " + batchSize);
-				
+
 				File sourceDir = new File(sourceFileDirectory);
 				if (sourceDir.exists()) {
 					File[] sourceFiles = sourceDir.listFiles();
@@ -356,15 +357,16 @@ public class MysqlDatabseHelper {
 							pst.setBinaryStream(1, fis, picture.length());
 							pst.setInt(2, 1);
 							String name = sourceFiles[i].getName();
-							String number = name.substring(0, name.indexOf("."));
-//							if (StringUtils.isNumeric(number)) {
-//								fileSet.add(Integer.valueOf(number));
-//							}
+							String number = name
+									.substring(0, name.indexOf("."));
+							// if (StringUtils.isNumeric(number)) {
+							// fileSet.add(Integer.valueOf(number));
+							// }
 							pst.setInt(3, Integer.valueOf(number));
 							// 把一个SQL命令加入命令列表
 							pst.addBatch();
-//							is.close();
-//							fis.close();
+							// is.close();
+							// fis.close();
 							logger.info(picturePath);
 						}
 						if ((i + 1) % batchSize == 0) {
@@ -398,11 +400,12 @@ public class MysqlDatabseHelper {
 		}
 	}
 
-	public static void batchAddLotteryDoubleColor(List<DoubleColor> list){
-		batchAddLotteryDoubleColor(list, null); 
+	public static void batchAddLotteryDoubleColor(List<DoubleColor> list) {
+		batchAddLotteryDoubleColor(list, null);
 	}
-	
-	public static void batchAddLotteryDoubleColor(List<DoubleColor> list, String sql) {
+
+	public static void batchAddLotteryDoubleColor(List<DoubleColor> list,
+			String sql) {
 
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -419,14 +422,14 @@ public class MysqlDatabseHelper {
 				for (DoubleColor ssq : list) {
 					pst.setInt(1, ssq.getPhase());
 					List<String> red = ssq.getRed();
-					for(int i = 0; i < 6; i++){
+					for (int i = 0; i < 6; i++) {
 						pst.setString(i + 2, red.get(i));
 					}
 					pst.setString(8, ssq.getBlue());
 					pst.setInt(9, ssq.getYear());
-					
+
 					logger.info(ssq.toString());
-					
+
 					// 把一个SQL命令加入命令列表
 					pst.addBatch();
 				}
@@ -445,19 +448,19 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closeConnection(conn);
 		}
 	}
-	
+
 	public static int truncate(String tableName) {
 
 		Connection conn = null;
 		Statement stmt = null;
 		String sql = "TRUNCATE TABLE ";
 		int result = -1;
-		
-		if(null == tableName || StringUtils.isBlank(tableName)){
+
+		if (null == tableName || StringUtils.isBlank(tableName)) {
 			logger.error("清空表失败，参数tableName为空!");
 			return result;
 		}
-		
+
 		sql += tableName;
 
 		try {
@@ -465,8 +468,8 @@ public class MysqlDatabseHelper {
 			if (conn != null) {
 				stmt = conn.createStatement();
 				result = stmt.executeUpdate(sql);
-				if(result > 0){
-					logger.info("清空表["+tableName+"]成功！");
+				if (result > 0) {
+					logger.info("清空表[" + tableName + "]成功！");
 				}
 			}
 
@@ -479,5 +482,67 @@ public class MysqlDatabseHelper {
 		}
 		return result;
 	}
-	
+
+	public static List<DoubleColor> getLastPhase(Integer phase, Integer top) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("SELECT");
+		sb.append(" * ");
+		// sb.append(" phase,red_1,red_2,red_3,red_4,red_5,red_6,blue ");
+		sb.append("FROM ");
+		sb.append("	lottery_double_color ");
+		sb.append("WHERE");
+		sb.append("	1 = 1");
+		if (null != phase) {
+			sb.append(" AND phase < ").append(phase);
+		}
+		sb.append(" ORDER BY ");
+		sb.append("  phase DESC ");
+		if (null != top) {
+			sb.append(" LIMIT ").append(top);
+		}
+
+		return getDoubleColorLotteryList(sb.toString());
+	}
+
+	public static List<DoubleColor> getDoubleColorLotteryList(String sql) {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<DoubleColor> list = new ArrayList<DoubleColor>();
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					DoubleColor ssq = new DoubleColor();
+					ssq.setPhase(rs.getInt("phase"));
+					List<String> red = new ArrayList<String>(6);
+					red.add(rs.getString("red_1"));
+					red.add(rs.getString("red_2"));
+					red.add(rs.getString("red_3"));
+					red.add(rs.getString("red_4"));
+					red.add(rs.getString("red_5"));
+					red.add(rs.getString("red_6"));
+					ssq.setRed(red);
+					ssq.setBlue(rs.getString("blue"));
+					list.add(ssq);
+				}
+//				logger.info("已获取双色球结果列表！");
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getDoubleColorLotteryList(String sql)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return list;
+	}
+
 }

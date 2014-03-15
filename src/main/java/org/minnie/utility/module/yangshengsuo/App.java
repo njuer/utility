@@ -100,8 +100,13 @@ public class App {
 				+ (configurationEndTime - configurationStartTime) + "ms");
 		
 		//获取39养生所页面地址
-		Set<String> set = FileUtil.getYangShengSuoUrlList(yssUrlPath);
+		Set<String> set = FileUtil.getYangShengSuoUrlSet(yssUrlPath);
 		
+		run39YangShengSuoApp(set, yssDirectory);
+		
+	}
+	
+	public static void run39YangShengSuoApp(Set<String> set, String directory){
 		//页面队列
 		LinkedBlockingQueue<Regimen> pageUrlQueue = new LinkedBlockingQueue<Regimen>();
 		
@@ -117,7 +122,7 @@ public class App {
 		LinkedBlockingQueue<Regimen> pictureUrlQueue = new LinkedBlockingQueue<Regimen>();
 
 		PictureUrlGenerator pug = new PictureUrlGenerator(pageUrlQueue, pictureUrlQueue);
-		PictureGenerator pg = new PictureGenerator(pictureUrlQueue, yssDirectory);
+		PictureGenerator pg = new PictureGenerator(pictureUrlQueue, directory);
 
 		ExecutorService pictureExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 		
@@ -134,10 +139,6 @@ public class App {
 			// do nothing
 		}
 		logger.info("图片下载完成！");
-
-
-		
-//		logger.info(HtmlUtil.getTotal39YangShengsuo("http://www.ttyl5.com/yingshi/new/3773_3.html"));
 	}
 
 }

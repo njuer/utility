@@ -164,7 +164,7 @@ public class FileUtil {
 
 	}
 
-	public static Set<String> getHoopChinaUrlList(String filePath) {
+	public static Set<String> getHoopChinaUrlSet(String filePath) {
 		
 		Set<String> set = new HashSet<String>();
 		BufferedReader br;
@@ -187,7 +187,7 @@ public class FileUtil {
 		return set;
 	}
 	
-	public static Set<String> getNeteaseUrlList(String filePath) {
+	public static Set<String> getNeteaseUrlSet(String filePath) {
 		
 		Set<String> set = new HashSet<String>();
 		BufferedReader br;
@@ -210,7 +210,7 @@ public class FileUtil {
 		return set;
 	}
 	
-	public static Set<String> getYangShengSuoUrlList(String filePath) {
+	public static Set<String> getYangShengSuoUrlSet(String filePath) {
 		
 		Set<String> set = new HashSet<String>();
 		BufferedReader br;
@@ -227,6 +227,30 @@ public class FileUtil {
 					+ e.getMessage());
 		} catch (IOException e) {
 			logger.error("IOException[FileUtil->getYangShengSuoUrlList]: "
+					+ e.getMessage());
+		}
+		
+		return set;
+	}
+	
+	
+	public static Set<String> getUrlSet(String filePath) {
+		
+		Set<String> set = new HashSet<String>();
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new InputStreamReader(
+					new FileInputStream(filePath)));
+			
+			for (String line = br.readLine(); line != null; line = br.readLine()) {
+				set.add(line);
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+			logger.error("FileNotFoundException[FileUtil->getNeteaseUrlList]: "
+					+ e.getMessage());
+		} catch (IOException e) {
+			logger.error("IOException[FileUtil->getNeteaseUrlList]: "
 					+ e.getMessage());
 		}
 		

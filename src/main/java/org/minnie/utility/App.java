@@ -1,72 +1,112 @@
 package org.minnie.utility;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+import java.util.Set;
 
-import org.htmlparser.Node;
-import org.htmlparser.NodeFilter;
-import org.htmlparser.Parser;
-import org.htmlparser.Tag;
-import org.htmlparser.filters.HasAttributeFilter;
-import org.htmlparser.util.NodeList;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.minnie.utility.util.Constant;
+import org.minnie.utility.util.DateUtil;
+import org.minnie.utility.util.FileUtil;
 
 /**
- * Hello world!
+ * 照片下载
  * 
  */
 public class App {
 	
+	private static Logger logger = Logger.getLogger(App.class.getName());
+
+	private static ResourceBundle rb;
+	private static BufferedInputStream inputStream;
+
+	private static final int DOMAIN_THREAD_POOL_SIZE = 3;
+	private static final int THREAD_POOL_SIZE = 20;
+	
 	public static void main(String[] args) {
+		// 获取加载系统配置时间
+		long configurationStartTime = System.currentTimeMillis();
+
+		/**
+		 * 读取log4j配置
+		 */
+		// BasicConfigurator.configure();// 默认配置
+		PropertyConfigurator.configure(System.getProperty("user.dir")
+				+ Constant.LOG_LOG4J_PARAM_FILE);
+
+		logger.info("程序开始执行时间：" + DateUtil.getTime(configurationStartTime));
+
+		// 网易目录
+		String neteaseDirectory = null;
+
+		// 网易图集 URL文件目录
+		String neteaseUrlPath = null;
+
+		/**
+		 * 加载系统参数
+		 */
+		String confFilePath = System.getProperty("user.dir")
+				+ Constant.SYS_PARAM_FILE;
 		try {
-			Parser parser = new Parser(
-					(HttpURLConnection) (new URL(
-							"http://www.xinyingba.com/dianying/2014-nian.htm"))
-							.openConnection());
+			inputStream = new BufferedInputStream(new FileInputStream(
+					confFilePath));
+			rb = new PropertyResourceBundle(inputStream);
 
-			// 找到class=video-list gclearfix的div
-			NodeFilter filter = new HasAttributeFilter( "class", "video-list gclearfix" );
-			NodeList nodes = parser.extractAllNodesThatMatch(filter);
+			logger.info("加载系统参数......");
 
-
-			if (nodes != null) {
-				for (int i = 0; i < nodes.size(); i++) {
-					Node textnode = (Node) nodes.elementAt(i);
-
-					// 找到<div class="video-list gclearfix">下的子节点<dl></dl>
-//					System.out.println("getText["+i+"]:" + textnode.getText());
-					NodeList mvList = textnode.getChildren();
-					int size = mvList.size();
-					for(int j = 0; j < size; j++){
-						Node nd = mvList.elementAt(j);
-						//去空
-						if(nd.getText().trim().equals("")){
-							continue;
-						}
-						System.out.println("getText"+j+":" + nd.getText());
-					}
-
-					System.out.println("=================================================");
-				}
+			neteaseDirectory = rb.getString("netease.directory");
+			logger.info("\t netease.directory = " + neteaseDirectory);
+			if (null == neteaseDirectory
+					|| StringUtils.isBlank(neteaseDirectory)) {
+				neteaseDirectory = "C:/Entertainment/Netease";
 			}
-//			NodeFilter filter = new HasAttributeFilter( "class", "blue" );
-//			NodeList nodes = parser.extractAllNodesThatMatch(filter);
-//
-//
-//			if (nodes != null) {
-//				for (int i = 0; i < nodes.size(); i++) {
-//					Node textnode = (Node) nodes.elementAt(i);
-//
-//					System.out.println("getText:" + textnode.getText());
-//					Node textnode0 = textnode.getNextSibling();
-//					if(null != textnode0){
-//						System.out.println("tesxt:" + textnode0.getText());
-//					}
-//
-//					System.out.println("=================================================");
-//				}
-//			}
-		} catch (Exception e) {
-			e.printStackTrace();
+
+			neteaseUrlPath = rb.getString("netease.url.path");
+			logger.info("\t netease.url.path = " + neteaseUrlPath);
+			if (null == neteaseUrlPath || StringUtils.isBlank(neteaseUrlPath)) {
+				neteaseUrlPath = "C:/netease.txt";
+			}
+
+			// 关闭inputStream
+			if (null != inputStream) {
+				inputStream.close();
+			}
+		} catch (FileNotFoundException fnfe) {
+			logger.error(fnfe.getMessage());
+		} catch (IOException ioe) {
+			logger.error(ioe.getMessage());
 		}
+
+		// 获取加载系统配置结束时间
+		long configurationEndTime = System.currentTimeMillis();
+
+		logger.info("加载系统配置耗时 "
+				+ (configurationEndTime - configurationStartTime) + "ms");
+
+		Set<String> set = FileUtil.getNeteaseUrlSet(neteaseUrlPath);
+		
+		Set<String> neteaseSet = new HashSet<String>();
+		Set<String> hoopChinaSet = new HashSet<String>();
+		Set<String> yangShengSuoSet = new HashSet<String>();
+		
+		for(String galleryUrl : set){
+			if(Constant.DOMAIN_163.equals(galleryUrl)){
+				neteaseSet.add(galleryUrl);
+			} else if(Constant.DOMAIN_HUPU.equals(galleryUrl) || Constant.DOMAIN_HOOPCHINA.equals(galleryUrl)){
+				hoopChinaSet.add(galleryUrl);
+			} else if(Constant.DOMAIN_39YANGSHENGSUO.equals(galleryUrl) || Constant.DOMAIN_TIANTIANYULE.equals(galleryUrl)){
+				yangShengSuoSet.add(galleryUrl);
+			}
+		}
+		
+		
+		
 	}
 }

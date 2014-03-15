@@ -44,6 +44,14 @@ public class Constant {
 	public static final String REG_HOOPCHINA_COUNT_STRING = "/&nbsp;\\d+\\)&nbsp;&nbsp;";
 	public static final String REG_ILLEGAL_CHARACTERS = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）\"\"《》\\\\——+|{}【】‘；：”“’。，、？]";
 	
+	public static final String DOMAIN_163 = "163.com";
+	public static final String DOMAIN_HUPU = "hupu.com";
+	public static final String DOMAIN_HOOPCHINA = "hoopchina.com";
+	public static final String DOMAIN_39YANGSHENGSUO = "39yss.com";
+	public static final String DOMAIN_TIANTIANYULE = "www.ttyl5.com";
+
+	
+	
 	public static final String TAG_DD_ATTRIBUTE_CLASS_VIDEO_COVER = "video-cover";
 	public static final String TAG_DD_ATTRIBUTE_CLASS_VIDEO_INTRO = "video-intro";
 	public static final String TAG_DD_ATTRIBUTE_CLASS_VIDEO_GRADE = "video-grade";
@@ -72,6 +80,11 @@ public class Constant {
 	
 	public static final int CONNECTION_TIMEOUT = 15000;
 	public static final int READ_TIMEOUT = 15000;
+
+	
+	
+	public static final String PATTERN_PERCENTAGE = "##.00%";
+	public static final String FORMAT_BALL_VALUE = "%02d";
 	
 	
 	

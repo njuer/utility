@@ -230,6 +230,14 @@ public class JsoupHtmlParser {
 		return getSohuSSQ(action, params, year, "#chartTable");
 	}
 
+	/**
+	 * 
+	 * @param url			action地址
+	 * @param params		参数Map，用此法提交有时候参数带不过去，难道是Jsoup的BUG？
+	 * @param year			年份
+	 * @param cssQuery		
+	 * @return
+	 */
 	public static List<DoubleColor> getSohuSSQ(String action,
 			Map<String, String> params, Integer year, String cssQuery) {
 

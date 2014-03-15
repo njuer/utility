@@ -97,8 +97,13 @@ public class App {
 		logger.info("加载系统配置耗时 "
 				+ (configurationEndTime - configurationStartTime) + "ms");
 
-		Set<String> set = FileUtil.getHoopChinaUrlList(hoopchinaUrlPath);
+		Set<String> set = FileUtil.getHoopChinaUrlSet(hoopchinaUrlPath);
 
+		runHoopChinaApp(set, hoopChinaDirectory);
+	
+	}
+
+	public static void runHoopChinaApp(Set<String> set, String directory){
 		// 队列
 		LinkedBlockingQueue<HoopChina> pageUrlQueue = new LinkedBlockingQueue<HoopChina>();
 		LinkedBlockingQueue<HoopChina> pictureUrlQueue = new LinkedBlockingQueue<HoopChina>();
@@ -136,7 +141,7 @@ public class App {
 		PictureUrlGenerator pug = new PictureUrlGenerator(pictureURLExecutor, pageUrlQueue, pictureUrlQueue);
 
 		ExecutorService pictureExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-		PictureGenerator pg = new PictureGenerator(pictureExecutor, pictureUrlQueue, hoopChinaDirectory);
+		PictureGenerator pg = new PictureGenerator(pictureExecutor, pictureUrlQueue, directory);
 
 		for (int i = 0; i < THREAD_POOL_SIZE; i++) {
 			pictureURLExecutor.execute(pug);
@@ -150,7 +155,8 @@ public class App {
 		}
 		logger.info("图片下载完成！");
 	}
-
+	
+	
 	public static void getSingleAlbum(String urlAddress,
 			String hoopChinaDirectory) {
 		// String urlAddress = "http://photo.hupu.com/ent/p11634.html";
