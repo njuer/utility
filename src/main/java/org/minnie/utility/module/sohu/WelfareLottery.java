@@ -1,6 +1,7 @@
 package org.minnie.utility.module.sohu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,8 +37,10 @@ public class WelfareLottery {
 		PropertyConfigurator.configure(System.getProperty("user.dir")
 				+ Constant.LOG_LOG4J_PARAM_FILE);
 
-		List<DoubleColor> list = MysqlDatabseHelper
-				.getDoubleColorLotteryList("SELECT * FROM lottery_double_color ORDER BY phase DESC");
+		// List<DoubleColor> list = MysqlDatabseHelper
+		// .getDoubleColorLotteryList("SELECT * FROM lottery_double_color ORDER BY phase DESC");
+		Map<Integer, DoubleColor> map = MysqlDatabseHelper
+				.getDoubleColorLotteryMap("SELECT * FROM lottery_double_color ORDER BY phase DESC");
 
 		// redAnalyseByLastFive(list);
 		// redAnalyseByAllOddAllEven(list);
@@ -47,10 +50,12 @@ public class WelfareLottery {
 		// blueAnalyseByLastRedKillBlue(list);
 		// blueAnalyseByAddSubtractionKillBlue(list);
 		// blueAnalyseByPhaseillBlue(list);
-//		redAnalyseBySameTail(list);
-		List<Integer> cutRegion = new ArrayList<Integer>();
-		cutRegion.add(3);
-		getCandidate(2014027, cutRegion);
+		// redAnalyseBySameTail(list);
+//		List<Integer> cutRegion = new ArrayList<Integer>();
+		// cutRegion.add(3);
+//		getCandidate(2014029, cutRegion);
+		// doubleColorAnalyse(list);
+		doubleColorAnalyse(map);
 	}
 
 	/**
@@ -279,7 +284,7 @@ public class WelfareLottery {
 	 * 
 	 * @param list
 	 */
-	public static void redAnalyseByKillMaxMinusMin(List<DoubleColor> list) {
+	public static void edAnalyseByKillMaxMinusMin(List<DoubleColor> list) {
 		int size = list.size();
 		int correct = 0;
 		for (int i = 0; i < size; i++) {
@@ -471,7 +476,7 @@ public class WelfareLottery {
 	}
 
 	/**
-	 * 加减法杀蓝
+	 * 期号杀蓝
 	 * 
 	 * @param list
 	 */
@@ -512,12 +517,12 @@ public class WelfareLottery {
 
 	public static void getCandidate(Integer phase, List<Integer> cutRegion) {
 
-//		StringBuilder sb = new StringBuilder();
-//		sb.append("SELECT * FROM lottery_double_color ");
-//		if (null != phase) {
-//			sb.append(" WHERE phase < ").append(phase);
-//		}
-//		sb.append("ORDER BY phase DESC");
+		// StringBuilder sb = new StringBuilder();
+		// sb.append("SELECT * FROM lottery_double_color ");
+		// if (null != phase) {
+		// sb.append(" WHERE phase < ").append(phase);
+		// }
+		// sb.append("ORDER BY phase DESC");
 
 		List<DoubleColor> list = MysqlDatabseHelper.getLastPhase(phase, 5);
 		Set<String> redCandidate = new HashSet<String>();
@@ -608,26 +613,611 @@ public class WelfareLottery {
 		diff = Math.abs(lastBlueOne - lastBlueTwo) % 10;
 		blueCandidate.remove("1" + diff);
 		blueCandidate.remove("0" + diff);
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(phase);
 		sb.append("\t");
-		for(String red:redCandidate){
+		List<String> redCandidateList = new ArrayList<String>();
+		for (String red : redCandidate) {
+			redCandidateList.add(red);
+		}
+		Collections.sort(redCandidateList);
+		for (String red : redCandidateList) {
 			sb.append(red);
 			sb.append(" ");
 		}
+		sb.append("(").append(redCandidateList.size()).append(")");
 		sb.append(":");
 		sb.append("\t");
-		for(String blue:blueCandidate){
+		List<String> blueCandidateList = new ArrayList<String>();
+		for (String blue : blueCandidate) {
+			blueCandidateList.add(blue);
+		}
+		Collections.sort(blueCandidateList);
+		for (String blue : blueCandidateList) {
 			sb.append(blue);
 			sb.append(" ");
 		}
-		
+		sb.append("(").append(blueCandidateList.size()).append(")");
+
 		logger.info(sb.toString());
 	}
-	
-	public static void doubleColorAnalyse(List<DoubleColor> list){
-		
+
+	/**
+	 * 双色球分析
+	 * @param map
+	 */
+	public static void doubleColorAnalyse(Map<Integer, DoubleColor> map) {
+		List<Integer> list = new ArrayList<Integer>();
+
+		Iterator<Entry<Integer, DoubleColor>> it = map.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Integer, DoubleColor> entry = it.next();
+			list.add(entry.getKey());
+		}
+
+		// list排序
+		Collections.sort(list);
+
+		int size = list.size();
+//		int correct = 0;
+		for (int i = 0; i < size; i++) {
+			// 获取期号
+			Integer phase = list.get(i);
+			// 获取本期数据
+			DoubleColor current = map.get(phase);
+			if (null != current) {
+				StringBuilder sb = new StringBuilder();
+				sb.append(phase);
+				sb.append("\t");
+				Set<String> redCurrent = new HashSet<String>();
+				String blueCurrent = current.getBlue();
+
+				// 获取当前红球列表
+				List<String> redList = current.getRed();
+				for (String red : redList) {
+					redCurrent.add(red);
+					sb.append(red);
+					sb.append(" ");
+				}
+
+				sb.append(": ");
+				sb.append(blueCurrent);
+				
+				//五期内选红命中
+				int hit = lastFivePhaseForRed(i, list, map);
+				sb.append("\t五期内选红命中: ").append(hit);
+
+				//下移号命中
+				hit = downForRed(i, list, map);
+				sb.append("\t下移号命中: ").append(hit);
+				
+				//上期篮球杀红命中
+				hit = lastBlueKillRed(i, list, map);
+				sb.append("\t上期篮球杀红命中: ").append(hit);
+				
+				//上期红球最大号码减去最小号码杀红球命中
+				hit = lastMaxMinusMinKillRed(i, list, map);
+				sb.append("\t上期红球最大号码减去最小号码杀红球命中: ").append(hit);
+				
+				//期号杀蓝 命中
+				hit = phaseNumberKillBlue(i, list, map);
+				sb.append("\t期号杀蓝命中: ").append(hit);
+				
+				//加减法杀蓝 命中
+				hit = addSubtractionKillBlue(i, list, map);
+				sb.append("\t加减法杀蓝命中: ").append(hit);
+				
+				logger.info(sb.toString());
+			} // end of if(null != current)
+		} // end of for (int i = 0; i < size; i++)
+		// Correct rate
+//		logger.info("正确率：" + StringUtil.correctRate(correct, size));
 	}
 
+	public static void doubleColorAnalyse(List<DoubleColor> list) {
+		int size = list.size();
+		int correct = 0;
+		for (int i = 0; i < size; i++) {
+			StringBuilder sb = new StringBuilder();
+			DoubleColor current = list.get(i);
+			Set<String> redCurrent = new HashSet<String>();
+			String blueCurrent = current.getBlue();
+
+			Integer phase = current.getPhase();
+
+			sb.append(phase);
+			sb.append("\t");
+
+			List<String> redList = current.getRed();
+			for (String red : redList) {
+				redCurrent.add(red);
+				sb.append(red);
+				sb.append(" ");
+			}
+			sb.append(": ");
+			sb.append(blueCurrent);
+
+			Set<String> redCandidate = new HashSet<String>();
+			Set<String> blueCandidate = new HashSet<String>();
+			// 初始化蓝球：01~16
+			for (int k = 1; k <= 16; k++) {
+				blueCandidate.add(StringUtil.getBallValue(k));
+			}
+
+			// 五期内选红
+			for (int j = 1; (i + j) < size && j <= 5; j++) {
+				DoubleColor ssq = list.get(i + j);
+				List<String> ssqList = ssq.getRed();
+				for (String red : ssqList) {
+					redCandidate.add(red);
+				}
+			}
+
+			if (i + 2 > size) {
+				continue;
+			}
+
+			DoubleColor lastPhase = list.get(i + 1);
+			// 篮球杀红
+			redCandidate.remove(lastPhase.getBlue());
+
+			// 最大号码减去最小号码
+			List<String> lastRed = lastPhase.getRed();
+			int result = Integer.valueOf(lastRed.get(5))
+					- Integer.valueOf(lastRed.get(0));
+			redCandidate.remove(StringUtil.getBallValue(result));
+
+			// 上期红球杀蓝
+			for (String lr : lastRed) {
+				blueCandidate.remove(lr);
+			}
+
+			// 期号杀蓝
+			String strPhase = String.valueOf(phase);
+			int pTail = Integer.valueOf(strPhase.substring(6));
+			blueCandidate.remove("1" + pTail);
+			blueCandidate.remove("0" + pTail);
+
+			// 加减法杀蓝
+			int lastBlueOne = Integer.valueOf(lastPhase.getBlue());
+
+			if (i + 3 > size) {
+				continue;
+			}
+			DoubleColor lastPhaseTwo = list.get(i + 2);
+			int lastBlueTwo = Integer.valueOf(lastPhaseTwo.getBlue());
+
+			int sum = (lastBlueOne + lastBlueTwo) % 10;
+			blueCandidate.remove("1" + sum);
+			blueCandidate.remove("0" + sum);
+
+			int diff = Math.abs(lastBlueOne - lastBlueTwo) % 10;
+			blueCandidate.remove("1" + diff);
+			blueCandidate.remove("0" + diff);
+
+			lastBlueOne %= 10;
+			lastBlueTwo %= 10;
+
+			sum = (lastBlueOne + lastBlueTwo) % 10;
+			blueCandidate.remove("1" + sum);
+			blueCandidate.remove("0" + sum);
+
+			diff = Math.abs(lastBlueOne - lastBlueTwo) % 10;
+			blueCandidate.remove("1" + diff);
+			blueCandidate.remove("0" + diff);
+
+			int redHit = 0;
+			sb.append("\t候选号\t");
+			List<String> redCandidateList = new ArrayList<String>();
+			for (String red : redCandidate) {
+				redCandidateList.add(red);
+			}
+			Collections.sort(redCandidateList);
+			for (String red : redCandidateList) {
+				if (redCurrent.contains(red)) {
+					sb.append("(").append(red).append(")");
+					redHit++;
+				} else {
+					sb.append(red);
+				}
+				sb.append(",");
+			}
+			sb.append("\t红球命中： ").append(redHit);
+			sb.append("\t:\t");
+			boolean blueHit = false;
+			List<String> blueCandidateList = new ArrayList<String>();
+			for (String blue : blueCandidate) {
+				blueCandidateList.add(blue);
+			}
+			Collections.sort(blueCandidateList);
+			for (String blue : blueCandidateList) {
+				if (blueCurrent.equals(blue)) {
+					sb.append("(").append(blue).append(")");
+					blueHit = true;
+				} else {
+					sb.append(blue);
+				}
+				sb.append(",");
+			}
+			sb.append("\t蓝球球命中： ");
+			if (blueHit) {
+				sb.append(1);
+			} else {
+				sb.append(0);
+			}
+
+			sb.append("\t结果：\t");
+			if (blueHit) {
+				switch (redHit) {
+				case 0:
+				case 1:
+				case 2:
+					sb.append("六等奖(5元)");
+					correct++;
+					break;
+				case 3:
+					sb.append("五等奖(10元)");
+					correct++;
+					break;
+				case 4:
+					sb.append("四等奖(200元)");
+					correct++;
+					break;
+				case 5:
+					sb.append("三等奖(3000元)");
+					correct++;
+					break;
+				case 6:
+					sb.append("一等奖(5000000元)");
+					correct++;
+					break;
+				}
+			} else {
+				switch (redHit) {
+				case 4:
+					sb.append("五等奖(10元)");
+					correct++;
+					break;
+				case 5:
+					sb.append("四等奖(200元)");
+					correct++;
+					break;
+				case 6:
+					sb.append("二等奖(当期高等奖奖金的30%)");
+					correct++;
+					break;
+				}
+			}
+			logger.info(sb.toString());
+		}
+		// Correct rate
+		logger.info("正确率：" + StringUtil.correctRate(correct, size));
+	}
+
+	/**
+	 * 
+	 * 五期内选红 命中个数
+	 * 
+	 * @param index	期号列表的索引号
+	 * @param list	期号列表
+	 * @param map	期号，内容键值对
+	 * @return
+	 */
+	public static int lastFivePhaseForRed(int index, List<Integer> list,
+			Map<Integer, DoubleColor> map) {
+		int hit = 0;
+
+		if (index < 5) {
+			return hit;
+		}
+
+		// 获取期号
+		Integer currentPhase = list.get(index);
+		// 获取本期数据
+		DoubleColor current = map.get(currentPhase);
+		if (null != current) {
+			Set<String> redCandidate = new HashSet<String>();
+			// 近五期内列表
+			for (int j = 1; j <= 5; j++) {
+				Integer phase = list.get(index - j);
+				DoubleColor ssq = map.get(phase);
+				if (null != ssq) {
+					List<String> ssqList = ssq.getRed();
+					for (String red : ssqList) {
+						redCandidate.add(red);
+					}
+				} // end of if(null != ssq)
+			} // end of for
+
+			// 获取当前红球列表
+			List<String> redList = current.getRed();
+			for (String red : redList) {
+				if (redCandidate.contains(red)) {
+					hit++;
+				}
+			} // end of for (String red : redList)
+		} // end of if(null != current)
+
+		return hit;
+	}
+
+	/**
+	 * 
+	 * 下移号  命中个数
+	 * 
+	 * @param index	期号列表的索引号
+	 * @param list	期号列表
+	 * @param map	期号，内容键值对
+	 * @return
+	 */
+	public static int downForRed(int index, List<Integer> list,
+			Map<Integer, DoubleColor> map){
+		int hit = 0;
+
+		if (index < 1) {
+			return hit;
+		}
+
+		// 获取期号
+		Integer currentPhase = list.get(index);
+		// 获取本期数据
+		DoubleColor current = map.get(currentPhase);
+		if (null != current) {
+			Set<String> currentRedSet = new HashSet<String>();
+			// 获取当前红球列表
+			List<String> redList = current.getRed();
+			for (String red : redList) {
+				currentRedSet.add(red);
+			} // end of for (String red : redList)
+			Integer lastPhase = list.get(index - 1);
+			// 获取上期数据
+			DoubleColor last = map.get(lastPhase);
+			if(null != last){
+				Set<String> lastRedSet = new HashSet<String>();
+				// 获取上期红球列表
+				List<String> lastRedList = last.getRed();
+				for (String red : lastRedList) {
+					lastRedSet.add(red);
+				} // end of for (String red : lastRedList) 
+				
+				if(currentRedSet.retainAll(lastRedSet)){
+					hit = currentRedSet.size();
+				}
+			}
+			
+			
+		} // end of if(null != current)
+
+		return hit;
+	}
+
+	/**
+	 * 
+	 * 篮球杀红  命中个数
+	 * 
+	 * @param index	期号列表的索引号
+	 * @param list	期号列表
+	 * @param map	期号，内容键值对
+	 * @return
+	 */
+	public static int lastBlueKillRed(int index, List<Integer> list,
+			Map<Integer, DoubleColor> map){
+		int hit = 0;
+		
+		if (index < 1) {
+			return hit;
+		}
+		
+		// 获取期号
+		Integer currentPhase = list.get(index);
+		// 获取本期数据
+		DoubleColor current = map.get(currentPhase);
+		if (null != current) {
+			Set<String> currentRedSet = new HashSet<String>();
+			// 获取当前红球列表
+			List<String> redList = current.getRed();
+			for (String red : redList) {
+				currentRedSet.add(red);
+			} // end of for (String red : redList)
+			Integer lastPhase = list.get(index - 1);
+			// 获取上期数据
+			DoubleColor last = map.get(lastPhase);
+			if(null != last && !currentRedSet.contains(last.getBlue())){
+				hit++;
+			}
+		} // end of if(null != current)
+		
+		return hit;
+	}
+	
+	/**
+	 * 
+	 * 上期红球最大号码减去最小号码杀红球命中
+	 * 
+	 * @param index	期号列表的索引号
+	 * @param list	期号列表
+	 * @param map	期号，内容键值对
+	 * @return
+	 */
+	public static int lastMaxMinusMinKillRed(int index, List<Integer> list,
+			Map<Integer, DoubleColor> map){
+		int hit = 0;
+		
+		if (index < 1) {
+			return hit;
+		}
+		
+		// 获取期号
+		Integer currentPhase = list.get(index);
+		// 获取本期数据
+		DoubleColor current = map.get(currentPhase);
+		if (null != current) {
+			Set<String> currentRedSet = new HashSet<String>();
+			// 获取当前红球列表
+			List<String> redList = current.getRed();
+			for (String red : redList) {
+				currentRedSet.add(red);
+			} // end of for (String red : redList)
+			Integer lastPhase = list.get(index - 1);
+			// 获取上期数据
+			DoubleColor last = map.get(lastPhase);
+			if(null != last){
+				List<String> lastRed = last.getRed();
+				int result = Integer.valueOf(lastRed.get(5))
+						- Integer.valueOf(lastRed.get(0));
+				if(!currentRedSet.contains(StringUtil.getBallValue(result))){
+					hit++;
+				}
+			}
+		} // end of if(null != current)
+		
+		return hit;
+	}
+	
+	/**
+	 * 
+	 * 上期红球杀蓝命中数
+	 * 
+	 * @param index	期号列表的索引号
+	 * @param list	期号列表
+	 * @param map	期号，内容键值对
+	 * @return
+	 */
+	public static int lastRedKillBlue(int index, List<Integer> list,
+			Map<Integer, DoubleColor> map){
+		int hit = 0;
+		
+		if (index < 1) {
+			return hit;
+		}
+		
+		// 获取期号
+		Integer currentPhase = list.get(index);
+		// 获取本期数据
+		DoubleColor current = map.get(currentPhase);
+		if (null != current) {
+			String currentBlue = current.getBlue();
+			
+			Integer lastPhase = list.get(index - 1);
+			// 获取上期数据
+			DoubleColor last = map.get(lastPhase);
+			if(null != last){
+				List<String> lastRed = last.getRed();
+				Set<String> set = new HashSet<String>();
+				for (String lred : lastRed) {
+					if (Integer.valueOf(lred) <= 16) {
+						set.add(lred);
+					}
+				}
+
+				if (!set.contains(currentBlue)) {
+					hit++;
+				}
+			}
+		} // end of if(null != current)
+		
+		return hit;
+	}
+
+	/**
+	 * 
+	 * 期号杀蓝 命中数
+	 * 
+	 * @param index	期号列表的索引号
+	 * @param list	期号列表
+	 * @param map	期号，内容键值对
+	 * @return
+	 */
+	public static int phaseNumberKillBlue(int index, List<Integer> list,
+			Map<Integer, DoubleColor> map){
+		int hit = 0;
+		
+		// 获取期号
+		Integer currentPhase = list.get(index);
+		// 获取本期数据
+		DoubleColor current = map.get(currentPhase);
+		if (null != current) {
+			String currentBlue = current.getBlue();
+			
+			String phase = String.valueOf(current.getPhase());
+			if(!phase.substring(6).equals(currentBlue.substring(1))){
+				hit++;
+			}
+		} // end of if(null != current)
+		
+		return hit;
+	}
+
+	/**
+	 * 
+	 * 加减法杀蓝 命中
+	 * 
+	 * @param index	期号列表的索引号
+	 * @param list	期号列表
+	 * @param map	期号，内容键值对
+	 * @return
+	 */
+	public static int addSubtractionKillBlue(int index, List<Integer> list,
+			Map<Integer, DoubleColor> map){
+		int hit = 0;
+		
+		if (index < 2) {
+			return hit;
+		}
+		
+		// 获取期号
+		Integer currentPhase = list.get(index);
+		// 获取本期数据
+		DoubleColor current = map.get(currentPhase);
+		if (null != current) {
+			String currentBlue = current.getBlue();
+			
+			Set<String> set = new HashSet<String>();
+			
+			Integer lastPhaseOne = list.get(index - 1);
+			DoubleColor lastOne = map.get(lastPhaseOne);
+			int lastBlueOne = Integer.valueOf(lastOne.getBlue());
+
+			Integer lastPhaseTwo = list.get(index - 2);
+			DoubleColor lastTwo = map.get(lastPhaseTwo);
+			int lastBlueTwo = Integer.valueOf(lastTwo.getBlue());
+
+			int sum = (lastBlueOne + lastBlueTwo) % 10;
+			if (sum <= 6) {
+				set.add("1" + sum);
+			}
+			set.add("0" + sum);
+
+			int diff = Math.abs(lastBlueOne - lastBlueTwo) % 10;
+			if (diff <= 6) {
+				set.add("1" + diff);
+			}
+			set.add("0" + diff);
+
+			lastBlueOne %= 10;
+			lastBlueTwo %= 10;
+
+			sum = (lastBlueOne + lastBlueTwo) % 10;
+			if (sum <= 6) {
+				set.add("1" + sum);
+			}
+			set.add("0" + sum);
+
+			diff = Math.abs(lastBlueOne - lastBlueTwo) % 10;
+			if (diff <= 6) {
+				set.add("1" + diff);
+			}
+			set.add("0" + diff);
+
+			if (!set.contains(currentBlue)) {
+				hit++;
+			}
+		} // end of if(null != current)
+		
+		return hit;
+	}
+	
+	
+	
 }

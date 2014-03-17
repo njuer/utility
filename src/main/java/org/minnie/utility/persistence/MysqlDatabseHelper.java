@@ -14,7 +14,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -543,6 +545,96 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closeConnection(conn);
 		}
 		return list;
+	}
+
+	public static Map<Integer, DoubleColor> getDoubleColorLotteryMap(String sql) {
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		Map<Integer, DoubleColor> map = new HashMap<Integer, DoubleColor>();
+		
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					DoubleColor ssq = new DoubleColor();
+					Integer phase = rs.getInt("phase");
+					ssq.setPhase(phase);
+					List<String> red = new ArrayList<String>(6);
+					red.add(rs.getString("red_1"));
+					red.add(rs.getString("red_2"));
+					red.add(rs.getString("red_3"));
+					red.add(rs.getString("red_4"));
+					red.add(rs.getString("red_5"));
+					red.add(rs.getString("red_6"));
+					ssq.setRed(red);
+					ssq.setBlue(rs.getString("blue"));
+					map.put(phase, ssq);
+				}
+//				logger.info("已获取双色球结果列表！");
+			}
+			
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getDoubleColorLotteryList(String sql)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return map;
+	}
+	
+	/**
+	 * 获取某期双色球信息
+	 * @param phase	期号
+	 * @return
+	 */
+	public static DoubleColor getDoubleColorByPhase(Integer phase) {
+
+		if(null == phase){
+			return null;
+		}
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT * FROM lottery_double_color WHERE phase  = ?";
+		DoubleColor ssq = new DoubleColor();
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				
+				rs = stmt.executeQuery(sql);
+				if (rs.next()) {
+					ssq.setPhase(rs.getInt("phase"));
+					List<String> red = new ArrayList<String>(6);
+					red.add(rs.getString("red_1"));
+					red.add(rs.getString("red_2"));
+					red.add(rs.getString("red_3"));
+					red.add(rs.getString("red_4"));
+					red.add(rs.getString("red_5"));
+					red.add(rs.getString("red_6"));
+					ssq.setRed(red);
+					ssq.setBlue(rs.getString("blue"));
+				}
+				logger.info("已获取" + phase + "期双色球信息！");
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getVideoList]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return ssq;
 	}
 
 }
