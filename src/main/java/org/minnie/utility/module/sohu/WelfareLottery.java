@@ -15,6 +15,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.minnie.utility.persistence.MysqlDatabseHelper;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.StringUtil;
+import org.minnie.utility.util.ExcelUtil;
 
 /**
  * @author neiplzer@gmail.com
@@ -61,7 +62,7 @@ public class WelfareLottery {
 //				"C:/create.xlsx");
 		// SummaryHSSF.generateAnalysis(null, "C:/Analyse.xlsx");
 //		SummaryHSSF.generateFullAnalysis(null, "C:/temp/Analyse.xlsx");
-		SummaryHSSF.generateFullAnalysis(doubleColorAnalyse(2003001, null), "C:/temp/Analyse.xlsx");
+		ExcelUtil.generateFullAnalysis(doubleColorAnalyse(2003001, null), "C:/temp/Analyse.xlsx");
 	}
 
 	/**
