@@ -247,8 +247,7 @@ public class JsoupHtmlParser {
 			Document doc = Jsoup
 					.connect(action)
 					.data(params)
-					.userAgent(
-							"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2; Trident/4.0;.NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30;.NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)")
+					.userAgent(Constant.USER_AGENT)
 					.timeout(30000) // 设置连接超时时间
 					.post(); // 使用POST方法访问URL
 
@@ -350,8 +349,7 @@ public class JsoupHtmlParser {
 		try {
 			Document doc = Jsoup
 					.connect(url)
-					.userAgent(
-							"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2; Trident/4.0;.NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30;.NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)")
+					.userAgent(Constant.USER_AGENT)
 					.timeout(30000) // 设置连接超时时间
 					.post(); // 使用POST方法访问URL
 
@@ -392,5 +390,87 @@ public class JsoupHtmlParser {
 		}
 		return list;
 	}
+	
+	public static void getLeCaiDoubleColor(String url, String cssQuery) {
+		
+		List<DoubleColor> list = new ArrayList<DoubleColor>();
+		
+		try {
+			Document doc = Jsoup
+					.connect(url)
+					.referrer("http://www.17500.cn/ssq/hottool.php")
+					.userAgent(Constant.USER_AGENT)
+					.timeout(30000) // 设置连接超时时间
+					.get(); // 使用POST方法访问URL
+			
+			// logger.info(doc.html());
+			System.out.println(doc.html());
+//			Elements chartTable = doc.select(cssQuery);
+			
+//			if (null != chartTable) {
+//				Element tbody = chartTable.select("tbody").first();
+//				if (null != tbody) {
+//					Elements trs = tbody.select("tr");
+//					for (Element tr : trs) {
+//						if (!tr.hasAttr("class")) {
+//							DoubleColor ssq = new DoubleColor();
+//							Element phase = tr.select("td.chart_table_td")
+//									.first();
+//							ssq.setPhase(Integer.valueOf(phase.html()));
+//							Elements tds = tr.select("td.red_ball");
+//							List<String> red = new ArrayList<String>(6);
+//							for (Element td : tds) {
+//								red.add(td.html());
+//							}
+//							ssq.setRed(red);
+//							Element blue = tr.select("td.blue_ball").first();
+//							ssq.setBlue(blue.html());
+//							ssq.setYear(year);
+//							
+//							list.add(ssq);
+//							// logger.info(ssq.toString());
+//						}
+//					}
+//				}
+//				
+//			}
+			
+		} catch (IOException e) {
+			logger.error("IOException[JsoupHtmlParser->getSohuSSQ(String action, Map<String, String> params, String cssQuery)]: "
+					+ e.getMessage());
+		}
+//		return list;
+	}
+	
+	
+	public static void getLCW(String action, Map<String, String> params) {
+
+		try {
+			Document doc = Jsoup
+					.connect(action)
+					.data(params)
+					.userAgent(Constant.USER_AGENT)
+					.timeout(30000) // 设置连接超时时间
+					.post(); // 使用POST方法访问URL
+
+			// logger.info(doc.html());
+			System.out.println(doc.html());
+		} catch (IOException e) {
+			logger.error("IOException[JsoupHtmlParser->getSohuSSQ(String action, Map<String, String> params, String cssQuery)]: "
+					+ e.getMessage());
+		}
+//		return list;
+	}
+	
+	public static void getLCW2(String html, String cssQuery) {
+		
+		Document doc = Jsoup.parse(html);
+		
+		Elements redBalls = doc.select(cssQuery);
+		
+		// logger.info(doc.html());
+		System.out.println(redBalls.html());
+	}
+
 
 }

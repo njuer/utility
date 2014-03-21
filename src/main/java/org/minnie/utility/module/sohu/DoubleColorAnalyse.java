@@ -1,7 +1,6 @@
 package org.minnie.utility.module.sohu;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author neiplzer@gmail.com
@@ -17,6 +16,9 @@ public class DoubleColorAnalyse {
 	private int lastMaxMinusMinKillRed;
 	private int phaseNumberKillBlue;
 	private int addSubtractionKillBlue;
+	private int awards;
+	private Set<String> redCandidate;
+	private Set<String> blueCandidate;
 	
 	public DoubleColor getDoubleColor() {
 		return doubleColor;
@@ -73,7 +75,29 @@ public class DoubleColorAnalyse {
 	public void setAddSubtractionKillBlue(int addSubtractionKillBlue) {
 		this.addSubtractionKillBlue = addSubtractionKillBlue;
 	}
-	
-	
 
+	public int getAwards() {
+		return awards;
+	}
+
+	public void setAwards(int awards) {
+		this.awards = awards;
+	}
+
+	public Set<String> getRedCandidate() {
+		return redCandidate;
+	}
+
+	public void setRedCandidate(Set<String> redCandidate) {
+		this.redCandidate = redCandidate;
+	}
+
+	public Set<String> getBlueCandidate() {
+		return blueCandidate;
+	}
+
+	public void setBlueCandidate(Set<String> blueCandidate) {
+		this.blueCandidate = blueCandidate;
+	}
+	
 }
