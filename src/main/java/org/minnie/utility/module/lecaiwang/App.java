@@ -74,8 +74,9 @@ public class App {
 		paramPair.add(new BasicNameValuePair("th[]", "2"));
 		paramPair.add(new BasicNameValuePair("zhushu", "100"));
 		
-		JsoupHtmlParser.getLCW2(hs.getResponseBodyByPost(action, paramPair, "gbk"), "font[size='4']");
 		
+		JsoupHtmlParser.getLeCaiDoubleColor(hs.getResponseBodyByPost(action, paramPair, "gbk"), "font[size=4]");
+//		JsoupHtmlParser.getLCW2(hs.getResponseBodyByPost(action, paramPair, "gbk"), "font");
 //		getLCW2(hs.getResponseBodyByPost(action, paramPair, charset));
 		
 		

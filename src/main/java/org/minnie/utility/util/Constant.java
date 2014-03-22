@@ -43,6 +43,8 @@ public class Constant {
 	public static final String REG_DOMAIN = "(?<=http://|\\.)[^.]*?\\.(com|cn|net|org|biz|info|cc|tv)";
 	public static final String REG_HOOPCHINA_COUNT_STRING = "/&nbsp;\\d+\\)&nbsp;&nbsp;";
 	public static final String REG_ILLEGAL_CHARACTERS = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）\"\"《》\\\\——+|{}【】‘；：”“’。，、？]";
+	public static final String REG_DOUBLE_COLOR_RED_BALL = "\\d{2}\\,\\d{2}\\,\\d{2}\\,\\d{2}\\,\\d{2}\\,\\d{2}";
+//	public static final String REG_DOUBLE_COLOR_RED_BALL = "(\\d{2}\\,){5}\\d{2}";
 	
 	public static final String DOMAIN_163 = "163.com";
 	public static final String DOMAIN_HUPU = "hupu.com";
