@@ -754,7 +754,7 @@ public class ExcelUtil {
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyleRed);
 			// 给单元格设值
-			cell.setCellValue(StringUtil.getBallValue(i));
+			cell.setCellValue(StringUtil.getTwoBitValue(i));
 		}
 		// 创建标题样式--BLUE
 		CellStyle cellStyleBlue = getCellStyleForBlue(wb);
@@ -773,7 +773,7 @@ public class ExcelUtil {
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyleBlue);
 			// 给单元格设值
-			cell.setCellValue(StringUtil.getBallValue(count));
+			cell.setCellValue(StringUtil.getTwoBitValue(count));
 			count++;
 		}
 
@@ -859,7 +859,7 @@ public class ExcelUtil {
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyleRed);
 			// 给单元格设值
-			cell.setCellValue(StringUtil.getBallValue(i));
+			cell.setCellValue(StringUtil.getTwoBitValue(i));
 		}
 
 		/**
@@ -872,7 +872,7 @@ public class ExcelUtil {
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyleBlue);
 			// 给单元格设值
-			cell.setCellValue(StringUtil.getBallValue(count));
+			cell.setCellValue(StringUtil.getTwoBitValue(count));
 			count++;
 		}
 	}

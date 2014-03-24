@@ -322,7 +322,7 @@ public class WelfareLottery {
 				List<String> lastRed = last.getRed();
 				int result = Integer.valueOf(lastRed.get(5))
 						- Integer.valueOf(lastRed.get(0));
-				if (!set.contains(StringUtil.getBallValue(result))) {
+				if (!set.contains(StringUtil.getTwoBitValue(result))) {
 					sb.append("\tOK");
 					correct++;
 				}
@@ -550,7 +550,7 @@ public class WelfareLottery {
 
 		// 初始化蓝球：01~16
 		for (int i = 1; i <= 16; i++) {
-			blueCandidate.add(StringUtil.getBallValue(i));
+			blueCandidate.add(StringUtil.getTwoBitValue(i));
 		}
 
 		DoubleColor lastPhase = list.get(0);
@@ -562,7 +562,7 @@ public class WelfareLottery {
 				- Integer.valueOf(lastRed.get(0));
 
 		// 最大号码减去最小号码
-		redCandidate.remove(StringUtil.getBallValue(result));
+		redCandidate.remove(StringUtil.getTwoBitValue(result));
 
 		// 红球断区
 		int init = 0;
@@ -587,7 +587,7 @@ public class WelfareLottery {
 				break;
 			}
 			for (int i = init; i <= boundary; i++) {
-				redCandidate.remove(StringUtil.getBallValue(i));
+				redCandidate.remove(StringUtil.getTwoBitValue(i));
 			}
 		}
 
@@ -673,7 +673,7 @@ public class WelfareLottery {
 		
 		// 初始化蓝球：01~16
 		for (int i = 1; i <= 16; i++) {
-			blueCandidate.add(StringUtil.getBallValue(i));
+			blueCandidate.add(StringUtil.getTwoBitValue(i));
 		}
 		
 		DoubleColor lastPhase = list.get(0);
@@ -685,7 +685,7 @@ public class WelfareLottery {
 				- Integer.valueOf(lastRed.get(0));
 		
 		// 最大号码减去最小号码
-		redCandidate.remove(StringUtil.getBallValue(result));
+		redCandidate.remove(StringUtil.getTwoBitValue(result));
 		
 		// 红球断区
 		int init = 0;
@@ -710,7 +710,7 @@ public class WelfareLottery {
 				break;
 			}
 			for (int i = init; i <= boundary; i++) {
-				redCandidate.remove(StringUtil.getBallValue(i));
+				redCandidate.remove(StringUtil.getTwoBitValue(i));
 			}
 		}
 		
@@ -778,7 +778,7 @@ public class WelfareLottery {
 		
 		// 初始化蓝球：01~16
 		for (int i = 1; i <= 16; i++) {
-			blueCandidate.add(StringUtil.getBallValue(i));
+			blueCandidate.add(StringUtil.getTwoBitValue(i));
 		}
 		
 		DoubleColor lastPhase = list.get(0);
@@ -790,7 +790,7 @@ public class WelfareLottery {
 				- Integer.valueOf(lastRed.get(0));
 		
 		// 最大号码减去最小号码
-		redCandidate.remove(StringUtil.getBallValue(result));
+		redCandidate.remove(StringUtil.getTwoBitValue(result));
 		
 		// 红球断区
 		int init = 0;
@@ -815,7 +815,7 @@ public class WelfareLottery {
 				break;
 			}
 			for (int i = init; i <= boundary; i++) {
-				redCandidate.remove(StringUtil.getBallValue(i));
+				redCandidate.remove(StringUtil.getTwoBitValue(i));
 			}
 		}
 		
@@ -996,7 +996,7 @@ public class WelfareLottery {
 				Set<String> blueCandidate = new HashSet<String>();
 				// 初始化蓝球：01~16
 				for (int k = 1; k <= 16; k++) {
-					blueCandidate.add(StringUtil.getBallValue(k));
+					blueCandidate.add(StringUtil.getTwoBitValue(k));
 				}
 
 				if (i >= 1) {
@@ -1028,7 +1028,7 @@ public class WelfareLottery {
 						// 上期红球最大号码减去最小号码杀红球
 						int result = Integer.valueOf(lastRedList.get(5))
 								- Integer.valueOf(lastRedList.get(0));
-						String killRed = StringUtil.getBallValue(result);
+						String killRed = StringUtil.getTwoBitValue(result);
 						if (!currentRedSet.contains(killRed)) {
 							ssqAnalyse.setLastMaxMinusMinKillRed(1);
 						}
@@ -1284,7 +1284,7 @@ public class WelfareLottery {
 			Set<String> blueCandidate = new HashSet<String>();
 			// 初始化蓝球：01~16
 			for (int k = 1; k <= 16; k++) {
-				blueCandidate.add(StringUtil.getBallValue(k));
+				blueCandidate.add(StringUtil.getTwoBitValue(k));
 			}
 
 			// 五期内选红
@@ -1308,7 +1308,7 @@ public class WelfareLottery {
 			List<String> lastRed = lastPhase.getRed();
 			int result = Integer.valueOf(lastRed.get(5))
 					- Integer.valueOf(lastRed.get(0));
-			redCandidate.remove(StringUtil.getBallValue(result));
+			redCandidate.remove(StringUtil.getTwoBitValue(result));
 
 			// 上期红球杀蓝
 			for (String lr : lastRed) {
@@ -1611,7 +1611,7 @@ public class WelfareLottery {
 				List<String> lastRed = last.getRed();
 				int result = Integer.valueOf(lastRed.get(5))
 						- Integer.valueOf(lastRed.get(0));
-				if (!currentRedSet.contains(StringUtil.getBallValue(result))) {
+				if (!currentRedSet.contains(StringUtil.getTwoBitValue(result))) {
 					hit++;
 				}
 			}

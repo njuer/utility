@@ -60,7 +60,7 @@ public class StringUtil {
 	 * @param value
 	 * @return
 	 */
-	public static String getBallValue(int value){
+	public static String getTwoBitValue(int value){
 		return String.format(Constant.FORMAT_BALL_VALUE, value);
 	}
 }

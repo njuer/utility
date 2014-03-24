@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.xinyingba.Video;
 import org.minnie.utility.util.Constant;
@@ -636,5 +637,58 @@ public class MysqlDatabseHelper {
 		}
 		return ssq;
 	}
+	
+	public static void batchAddLotterySuperLotto(List<SuperLotto> list) {
+		batchAddLotterySuperLotto(list, null);
+	}
+	
+	public static void batchAddLotterySuperLotto(List<SuperLotto> list,
+			String sql) {
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+			if (conn != null) {
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "insert into lottery_super_lotto (phase, red_1, red_2, red_3, red_4, red_5, blue_1, blue_2, year) VALUES (?,?,?,?,?,?,?,?,?)";
+				}
+				pst = (PreparedStatement) conn.prepareStatement(sql);
+				for (SuperLotto sl : list) {
+					pst.setInt(1, sl.getPhase());
+					List<String> red = sl.getRed();
+					for (int i = 0; i < 5; i++) {
+						pst.setString(i + 2, red.get(i));
+					}
+					List<String> blue = sl.getBlue();
+					for (int j = 0; j < 2; j++) {
+						pst.setString(j + 7, blue.get(j));
+					}
+					pst.setInt(9, sl.getYear());
+
+					logger.info(sl.toString());
+
+					// 把一个SQL命令加入命令列表
+					pst.addBatch();
+				}
+
+				// 执行批量更新
+				pst.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入大乐透信息成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddLotterySuperLotto]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pst);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
+
 
 }

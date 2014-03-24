@@ -15,6 +15,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
 import org.minnie.utility.module.sohu.DoubleColor;
@@ -232,10 +233,13 @@ public class JsoupHtmlParser {
 
 	/**
 	 * 
-	 * @param url			action地址
-	 * @param params		参数Map，用此法提交有时候参数带不过去，难道是Jsoup的BUG？
-	 * @param year			年份
-	 * @param cssQuery		
+	 * @param url
+	 *            action地址
+	 * @param params
+	 *            参数Map，用此法提交有时候参数带不过去，难道是Jsoup的BUG？
+	 * @param year
+	 *            年份
+	 * @param cssQuery
 	 * @return
 	 */
 	public static List<DoubleColor> getSohuSSQ(String action,
@@ -244,11 +248,8 @@ public class JsoupHtmlParser {
 		List<DoubleColor> list = new ArrayList<DoubleColor>();
 
 		try {
-			Document doc = Jsoup
-					.connect(action)
-					.data(params)
-					.userAgent(Constant.USER_AGENT)
-					.timeout(30000) // 设置连接超时时间
+			Document doc = Jsoup.connect(action).data(params)
+					.userAgent(Constant.USER_AGENT).timeout(30000) // 设置连接超时时间
 					.post(); // 使用POST方法访问URL
 
 			// logger.info(doc.html());
@@ -278,19 +279,21 @@ public class JsoupHtmlParser {
 									red.add(td.html());
 								}
 								ssq.setRed(red);
-								Element blue = tr.select("td.blue_ball").first();
+								Element blue = tr.select("td.blue_ball")
+										.first();
 								ssq.setBlue(blue.html());
 								ssq.setYear(year);
-								
+
 								list.add(ssq);
 							}
 						}
 					}
 				}
 			} else {
-//				logger.info("startPhase = " + startPhase.val());
-//				logger.info("endPhase = " + endPhase.val());
-				logger.info(params.get("startPhase") + "期 -> " + params.get("endPhase") + "期 下载失败！");
+				// logger.info("startPhase = " + startPhase.val());
+				// logger.info("endPhase = " + endPhase.val());
+				logger.info(params.get("startPhase") + "期 -> "
+						+ params.get("endPhase") + "期 下载失败！");
 			}
 		} catch (IOException e) {
 			logger.error("IOException[JsoupHtmlParser->getSohuSSQ(String action, Map<String, String> params, String cssQuery)]: "
@@ -303,23 +306,34 @@ public class JsoupHtmlParser {
 		return getSohuSSQ(url, year, "#chartTable");
 	}
 
-	public static List<DoubleColor> getSohuSSQ(Integer startPhase, Integer endPhase, Integer year) {
-		return  getSohuSSQ(Constant.URL_SOHU_LOTTERY_DOUBLE_COLOR, startPhase, endPhase, "up", "number", true, year);
+	public static List<DoubleColor> getSohuSSQ(Integer startPhase,
+			Integer endPhase, Integer year) {
+		return getSohuSSQ(Constant.URL_SOHU_LOTTERY_DOUBLE_COLOR, startPhase,
+				endPhase, "up", "number", true, year);
 	}
 
 	/**
 	 * 
-	 * @param url			action地址
-	 * @param startPhase	开始期号
-	 * @param endPhase		结束期号
-	 * @param phaseOrder	期号排序: up or down?
-	 * @param coldHotOrder	冷热号顺序？number,还有其他值吗？
-	 * @param onlyBody		只显示表格主体(不显示其他菜单)：true or false
-	 * @param year			年份
+	 * @param url
+	 *            action地址
+	 * @param startPhase
+	 *            开始期号
+	 * @param endPhase
+	 *            结束期号
+	 * @param phaseOrder
+	 *            期号排序: up or down?
+	 * @param coldHotOrder
+	 *            冷热号顺序？number,还有其他值吗？
+	 * @param onlyBody
+	 *            只显示表格主体(不显示其他菜单)：true or false
+	 * @param year
+	 *            年份
 	 * @return
 	 */
-	public static List<DoubleColor> getSohuSSQ(String url, Integer startPhase, Integer endPhase, String phaseOrder, String coldHotOrder, boolean onlyBody, Integer year) {
-		
+	public static List<DoubleColor> getSohuSSQ(String url, Integer startPhase,
+			Integer endPhase, String phaseOrder, String coldHotOrder,
+			boolean onlyBody, Integer year) {
+
 		StringBuffer sb = new StringBuffer();
 		sb.append(url);
 		sb.append("?");
@@ -337,7 +351,7 @@ public class JsoupHtmlParser {
 		sb.append("&");
 		sb.append("onlyBody=");
 		sb.append(onlyBody);
-		
+
 		return getSohuSSQ(sb.toString(), year, "#chartTable");
 	}
 
@@ -347,9 +361,7 @@ public class JsoupHtmlParser {
 		List<DoubleColor> list = new ArrayList<DoubleColor>();
 
 		try {
-			Document doc = Jsoup
-					.connect(url)
-					.userAgent(Constant.USER_AGENT)
+			Document doc = Jsoup.connect(url).userAgent(Constant.USER_AGENT)
 					.timeout(30000) // 设置连接超时时间
 					.post(); // 使用POST方法访问URL
 
@@ -390,22 +402,66 @@ public class JsoupHtmlParser {
 		}
 		return list;
 	}
-		
 
 	/**
 	 * 获取乐彩网双色球红球结果
-	 * @param html	乐彩网双色球随机选号结果html字符串
-	 * @param cssQuery	Jquery CSS
+	 * 
+	 * @param html
+	 *            乐彩网双色球随机选号结果html字符串
+	 * @param cssQuery
+	 *            Jquery CSS
 	 * @return
 	 */
 	public static String getLeCaiDoubleColor(String html, String cssQuery) {
-		
+
 		Document doc = Jsoup.parse(html);
-		
+
 		Elements redBalls = doc.select(cssQuery);
-		
+
 		return redBalls.html();
 	}
 
+	public static List<SuperLotto> getSohuLotto(String html, String cssQuery,
+			Integer year) {
+
+		List<SuperLotto> list = new ArrayList<SuperLotto>();
+
+		Document doc = Jsoup.parse(html);
+
+		Elements chartTable = doc.select(cssQuery);
+
+		if (null != chartTable) {
+			Element tbody = chartTable.select("tbody").first();
+			if (null != tbody) {
+				Elements trs = tbody.select("tr");
+				for (Element tr : trs) {
+					if (!tr.hasAttr("class")) {
+						SuperLotto sl = new SuperLotto();
+						Element phase = tr.select("td.chart_table_td").first();
+						sl.setPhase(Integer.valueOf(phase.html()));
+						Elements rtds = tr.select("td.red_ball");
+						List<String> red = new ArrayList<String>(5);
+						for (Element td : rtds) {
+							red.add(td.html());
+						}
+						sl.setRed(red);
+						Elements btds = tr.select("td.blue_ball");
+						List<String> blue = new ArrayList<String>(2);
+						for (Element td : btds) {
+							blue.add(td.html());
+						}
+						sl.setBlue(blue);
+						sl.setYear(year);
+						
+						logger.info(sl.toString());
+						list.add(sl);
+					}
+				}
+			}
+
+		}
+
+		return list;
+	}
 
 }
