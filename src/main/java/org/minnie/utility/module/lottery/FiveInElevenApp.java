@@ -4,10 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -451,14 +453,17 @@ public class FiveInElevenApp {
 	public static void fiveInElevenAnaylse(List<FiveInEleven> list) {
 
 		//连号分析
-		Map<String, List<Integer>> consecutive = new HashMap<String, List<Integer>>();
+		Map<String, List<FiveInEleven>> consecutive = new HashMap<String, List<FiveInEleven>>();
 		List<FiveInEleven> adjacentList = new ArrayList<FiveInEleven>();
-		Map<String, List<Integer>> same = new HashMap<String, List<Integer>>();
+		Map<String, Set<Integer>> same = new HashMap<String, Set<Integer>>();
 
 		FiveInEleven last = null;
 		List<String> result = new ArrayList<String>(5); 
 		List<String> temp = new ArrayList<String>(5); 
-		for(FiveInEleven fie : list){
+		int size = list.size();
+		for(int p = 0; p < size; p++){
+			FiveInEleven fie = list.get(p);
+			
 			result.clear();
 			List<String> balls = fie.getRed();
 			
@@ -498,31 +503,47 @@ public class FiveInElevenApp {
 			 * 处理连号
 			 */
 			if(result.size() > 2){
-				List<Integer> periodList = consecutive.get(result);
-				if(null == periodList){
-					periodList = new ArrayList<Integer>();
+				List<FiveInEleven> consecutiveList = consecutive.get(result);
+				if(null == consecutiveList){
+					consecutiveList = new ArrayList<FiveInEleven>();
 				}
-				periodList.add(fie.getPeriod());
+				consecutiveList.add(fie);
 			}
 			
 			/**
 			 * 处理同号
 			 */
-			for(int i = 1; i < 12; i++){
-				if(red[i] == 1){
-					temp.add(StringUtil.getTwoBitValue(i));
+			for(int q = 0; q < p; q++){
+				FiveInEleven prev = list.get(q);
+				List<String> prevRed = prev.getRed();
+				int [] prevRedArray = new int[12];
+				for(String ball : prevRed){
+					prevRedArray[Integer.valueOf(ball)] = 1;
 				}
-			} // end of for(int i = 1; i < 12; i++)
-			
-			List<Integer> tpList = same.get(temp.toString());
-			if(null == tpList){
-				tpList = new ArrayList<Integer>();
+				
+				if(isTheSame(prevRedArray,red)){
+					for (int j = 1; j < 12; j++) {
+						if (red[j] == 1) {
+							temp.add(StringUtil.getTwoBitValue(j));
+						}
+					} // end of for(int j = 1; j < 12; j++)
+				}
+				Set<Integer> set = same.get(temp.toString());
+				if(null == set){
+					set = new HashSet<Integer>();
+				}
+				set.add(prev.getPeriod());
+				set.add(fie.getPeriod());
 			}
-			tpList.add(fie.getPeriod());
-			
-			
+			temp.clear();
 			last = fie;
 		}
+		Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
+		while (it.hasNext()) { 
+		    Entry<String, List<FiveInEleven>> entry = it.next(); 
+		    String key = entry.getKey(); 
+		    List<FiveInEleven> val = entry.getValue(); 
+		}  
 		
 	}
 	
@@ -541,6 +562,10 @@ public class FiveInElevenApp {
 			}
 		}
 		return result;
+	}
+	
+	public static void analyseSame(List<FiveInEleven> list, int index){
+		
 	}
 
 }

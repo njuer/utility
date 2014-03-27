@@ -846,5 +846,50 @@ public class MysqlDatabseHelper {
 		}
 		return list;
 	}
+	
+	public static void batchAddAnalysisFiveInEleven(List<FiveInEleven> list,
+			String sql) {
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+			if (conn != null) {
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "insert into lottery_five_in_eleven (period, red_1, red_2, red_3, red_4, red_5, category, period_date) VALUES (?,?,?,?,?,?,?,?)";
+				}
+				pst = (PreparedStatement) conn.prepareStatement(sql);
+				for (FiveInEleven fie : list) {
+					pst.setInt(1, fie.getPeriod());
+					List<String> red = fie.getRed();
+					for (int i = 0; i < 5; i++) {
+						pst.setString(i + 2, red.get(i));
+					}
+					pst.setString(7, fie.getCategory());
+					pst.setString(8, fie.getDate());
+
+					logger.info(fie.toString());
+
+					// 把一个SQL命令加入命令列表
+					pst.addBatch();
+				}
+
+				// 执行批量更新
+				pst.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入11选5信息成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddLotteryFiveInEleven]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pst);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
 
 }
