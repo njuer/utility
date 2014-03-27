@@ -1,17 +1,72 @@
 package org.minnie.utility.entity.lottery;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author neiplzer@gmail.com
  * @version 2014-3-23
  * 类说明
  */
-public class FiveInEleven {
+public class FiveInEleven implements Comparable<Object>  {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	
+	private Integer period;
+	private List<String> red = new ArrayList<String>(5);
+	private String date;
+	private String category;
+	private String consecutive;//连号
+	
+	public Integer getPeriod() {
+		return period;
+	}
+	
+	public void setPeriod(Integer period) {
+		this.period = period;
+	}
+	
+	public List<String> getRed() {
+		return red;
+	}
+	
+	public void setRed(List<String> red) {
+		this.red = red;
+	}
+	
+	public String getDate() {
+		return date;
+	}
 
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	
+	public String getConsecutive() {
+		return consecutive;
+	}
+
+	public void setConsecutive(String consecutive) {
+		this.consecutive = consecutive;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		 return this.period - ((FiveInEleven) o).getPeriod();
+	}
+
+	@Override
+	public String toString() {
+		return "FiveInEleven [period=" + period + ", red=" + red + ", date="
+				+ date + ", category=" + category + ", consecutive="
+				+ consecutive + "]";
 	}
 
 }

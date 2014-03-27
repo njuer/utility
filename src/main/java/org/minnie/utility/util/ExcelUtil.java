@@ -1,27 +1,34 @@
 package org.minnie.utility.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.minnie.utility.entity.lottery.FiveInEleven;
 import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.sohu.DoubleColorAnalyse;
 
@@ -34,18 +41,19 @@ public class ExcelUtil {
 
 	private static Logger logger = Logger.getLogger(ExcelUtil.class.getName());
 
-	public static void generateNewCandidate(Integer phase, Map<String, Set<String>> map,
-			Sheet sheet, Row row, Cell cell, CellStyle cellStylePhase,CellStyle cellStyleRed,
+	public static void generateNewCandidate(Integer phase,
+			Map<String, Set<String>> map, Sheet sheet, Row row, Cell cell,
+			CellStyle cellStylePhase, CellStyle cellStyleRed,
 			CellStyle cellStyleBlue, int rowIndex) {
 		if (null != map) {
-			
+
 			// 获得这个sheet的第i行
 			row = sheet.createRow(rowIndex);
 			// 设置行长度自动
 			// row.setHeight((short)500);
 			row.setHeightInPoints(20);
 			// row.setZeroHeight(true);
-			
+
 			// 设置每个sheet每一行的宽度,自动,根据需求自行确定
 			sheet.autoSizeColumn(0, true);
 			// 获得这一行的每1列
@@ -54,7 +62,7 @@ public class ExcelUtil {
 			cell.setCellStyle(cellStylePhase);
 			// 给单元格设值
 			cell.setCellValue(phase);
-			
+
 			Set<String> redCandidate = map.get("RED");
 			for (String cRed : redCandidate) {
 				Integer redBallVal = Integer.valueOf(cRed);
@@ -67,7 +75,7 @@ public class ExcelUtil {
 				// 给单元格设值
 				cell.setCellValue(cRed);
 			}
-			
+
 			Set<String> blueCandidate = map.get("BLUE");
 			for (String cBlue : blueCandidate) {
 				Integer blueBallVal = Integer.valueOf(cBlue);
@@ -77,17 +85,18 @@ public class ExcelUtil {
 				cell = row.createCell(blueBallVal + 89);
 				// 把这个样式加到单元格里面
 				cell.setCellStyle(cellStyleBlue);
-				
+
 				// 给单元格设值
 				cell.setCellValue(cBlue);
 			}
 			logger.info(phase + "[candidate]:" + blueCandidate);
 		}
-		
+
 	}
 
 	public static void generateFullAnalysis(
-			List<DoubleColorAnalyse> analyseList, String destPath,Map<String, Set<String>> map) {
+			List<DoubleColorAnalyse> analyseList, String destPath,
+			Map<String, Set<String>> map) {
 
 		// 创建Workbook对象（这一个对象代表着对应的一个Excel文件）
 		// XSSFWorkbook表示以xlsx为后缀名的文件
@@ -96,10 +105,10 @@ public class ExcelUtil {
 		CreationHelper helper = wb.getCreationHelper();
 		// 创建Sheet并给名字(表示Excel的一个Sheet)
 		Sheet sheet = wb.createSheet("双色球分析");
-		
-        // 冻结窗格:冻结首行首列
+
+		// 冻结窗格:冻结首行首列
 		sheet.createFreezePane(1, 1);
-		
+
 		// Row表示一行Cell表示一列
 		Row row = null;
 		Cell cell = null;
@@ -394,13 +403,14 @@ public class ExcelUtil {
 			logger.info(phase + "[Excel]:生成完毕！");
 
 		}// end of for (int i = 0; i < size; i++)
-		
+
 		/**
 		 * 预测后备红球、蓝球
 		 */
-		generateNewCandidate(Integer.valueOf(phase+1), map,sheet,row,cell,cellStyleBlackBorder, cellStyleRed,cellStyleBlue, ++size);
+		generateNewCandidate(Integer.valueOf(phase + 1), map, sheet, row, cell,
+				cellStyleBlackBorder, cellStyleRed, cellStyleBlue, ++size);
 		logger.info(phase + "[Excel]:预测完毕！");
-		
+
 		// 输出
 		File file = new File(destPath);
 		// 如果目录不存在，则创建目录
@@ -433,7 +443,7 @@ public class ExcelUtil {
 		CreationHelper helper = wb.getCreationHelper();
 		// 创建Sheet并给名字(表示Excel的一个Sheet)
 		Sheet sheet = wb.createSheet("双色球分析");
-        // 冻结窗格:冻结首行首列
+		// 冻结窗格:冻结首行首列
 		sheet.createFreezePane(1, 1);
 		// Row表示一行Cell表示一列
 		Row row = null;
@@ -820,9 +830,9 @@ public class ExcelUtil {
 		cellStyleRoyalBlue.setFillPattern(CellStyle.SOLID_FOREGROUND);
 
 		// 创建标题样式--PLUM
-		CellStyle cellStylePlum = getCellStyle(wb,
-				HSSFColor.PLUM.index, CellStyle.ALIGN_CENTER,
-				CellStyle.VERTICAL_CENTER, (short) 250, (short) 250);
+		CellStyle cellStylePlum = getCellStyle(wb, HSSFColor.PLUM.index,
+				CellStyle.ALIGN_CENTER, CellStyle.VERTICAL_CENTER, (short) 250,
+				(short) 250);
 		cellStylePlum.setFillForegroundColor(HSSFColor.YELLOW.index);
 		cellStylePlum.setFillPattern(CellStyle.SOLID_FOREGROUND);
 
@@ -1252,6 +1262,61 @@ public class ExcelUtil {
 		return getCellStyle(wb, HSSFColor.ROYAL_BLUE.index,
 				CellStyle.ALIGN_CENTER, CellStyle.VERTICAL_CENTER, (short) 250,
 				(short) 250);
+	}
+
+	public static List<FiveInEleven> readDataFrom(String path, int sheetIndex, String category) {
+
+		List<FiveInEleven> list = new ArrayList<FiveInEleven>();
+
+		try {
+
+			FileInputStream fis = new FileInputStream(new File(path));
+
+			// Get the workbook instance for XLS file
+			HSSFWorkbook workbook = new HSSFWorkbook(fis);
+
+			// Get first sheet from the workbook
+			HSSFSheet sheet = workbook.getSheetAt(sheetIndex);
+
+			// Iterate through each rows from first sheet
+			Iterator<Row> rowIterator = sheet.iterator();
+			// 跳过第一行
+			rowIterator.next();
+			while (rowIterator.hasNext()) {
+				Row row = rowIterator.next();
+
+				FiveInEleven fie = new FiveInEleven();
+
+				int lastCellNum = row.getLastCellNum();
+				Cell cell = null;
+				
+				cell = row.getCell(0);
+				String period = cell.getStringCellValue();
+				fie.setPeriod(Integer.valueOf(period));
+				List<String> red = new ArrayList<String>(5);
+
+				for (int j = 1; j < lastCellNum; j++) {
+					cell = row.getCell(j);
+					// if(Cell.CELL_TYPE_STRING == cell.getCellType()){
+					red.add(cell.getStringCellValue());
+					// }
+				}
+				fie.setRed(red);
+				fie.setCategory(category);
+				fie.setDate(org.minnie.utility.util.DateUtil.dateCovert(period.substring(0, 6)));
+				logger.info(fie.toString());
+				list.add(fie);
+//				System.out.println(fie.toString());
+			}
+			fis.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return list;
 	}
 
 }

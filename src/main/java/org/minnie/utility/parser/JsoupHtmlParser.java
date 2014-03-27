@@ -15,6 +15,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.minnie.utility.entity.lottery.FiveInEleven;
 import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
@@ -461,6 +462,94 @@ public class JsoupHtmlParser {
 
 		}
 
+		return list;
+	}
+	
+	/**
+	 * 获取某日广东11选5数据清单
+	 * @param html
+	 * @param cssQuery
+	 * @param date
+	 * @return
+	 */
+	public static List<FiveInEleven> getGDLotteryFiveInEleven(String html, String cssQuery, String date) {
+		
+		List<FiveInEleven> list = new ArrayList<FiveInEleven>();
+		
+		Document doc = Jsoup.parse(html);
+		Elements chartTables = doc.select(cssQuery);
+		
+		if (null != chartTables && !chartTables.isEmpty()) {
+			for (Element table : chartTables){
+				if ("1".equals(table.attr("cellspacing"))) {
+					Element tbody = table.select("tbody").first();
+					if (null != tbody) {
+						Elements trs = tbody.select("tr");
+						for (Element tr : trs) {
+							if (!tr.hasAttr("bgcolor")) {
+								Elements tds = tr.select("td");
+								if(null != tds && !tds.isEmpty()){
+									FiveInEleven fie = new FiveInEleven();
+									for (Element td : tds) {
+										if(!td.hasAttr("width")){
+											String period = td.html();
+											if(StringUtil.isLegalPeriod(period)){
+												fie.setPeriod(Integer.valueOf(period));
+											} else {
+												break;
+											}
+										} else if("154".equals(td.attr("width"))){
+											Element strong = td.select("strong").first();
+											if(null != strong){
+												fie.setRed(StringUtil.getBalls(strong.html()));
+											} else {
+												break;
+											}
+										} else {
+											break;
+										}
+									}// end of for (Element td : tds)
+									fie.setCategory("gdd11");
+									fie.setDate(date);
+									if(null != fie.getPeriod()){
+										logger.info(fie.toString());
+										list.add(fie);
+									}
+								} // end of if(null != tds && !tds.isEmpty())
+							} // end of if (!tr.hasAttr("bgcolor"))
+						} // end of for (Element tr : trs)
+					} // end of if (null != tbody)
+				} // end of if ("1".equals(table.attr("cellspacing")))
+			} // end of for (Element table : chartTables)
+		} // end of if (null != chartTables && !chartTables.isEmpty())
+		
+		return list;
+	}
+	
+	/**
+	 * 获取广东体彩网11选5日期清单
+	 * @param html
+	 * @param cssQuery
+	 * @param date
+	 * @return
+	 */
+	public static List<String> getGDLotteryFiveInElevenDateList(String html, String cssQuery, String date) {
+		
+		List<String> list = new ArrayList<String>();
+		
+		Document doc = Jsoup.parse(html);
+		Elements dateSelects = doc.select(cssQuery);
+		
+		if (null != dateSelects) {
+			Element dateSelect = dateSelects.first();
+			if (null != dateSelect) {
+				Elements options = dateSelect.select("option");
+				for (Element option : options) {
+					list.add(option.html());
+				} // end of for (Element option : options)
+			} // end of if (null != dateSelect)
+		} // end of if (null != dateSelects)
+		
 		return list;
 	}
 

@@ -56,6 +56,39 @@ public class FileUtil {
 		}
 
 	}
+	
+	/**
+	 * 删除此路径名表示的文件或目录。
+	 * 如果此路径名表示一个目录，则会先删除目录下的内容再将目录删除，所以该操作不是原子性的。
+	 * 如果目录中还有目录，则会引发递归动作。
+	 * @param filePath
+	 *            要删除文件或目录的路径。
+	 * @return 当且仅当成功删除文件或目录时，返回 true；否则返回 false。
+	 */
+	public static boolean deleteFile(String filePath) {
+		File file = new File(filePath);
+		return deleteFile(file);
+	}
+	
+	private static boolean deleteFile(File file){
+		File[] files = file.listFiles();
+		for(File deleteFile : files){
+			if(deleteFile.isDirectory()){
+				//如果是文件夹，则递归删除下面的文件后再删除该文件夹
+				if(!deleteFile(deleteFile)){
+					//如果失败则返回
+					return false;
+				}
+			} else {
+				if(!deleteFile.delete()){
+					//如果失败则返回
+					return false;
+				}
+			}
+		}
+		return file.delete();
+	}
+
 
 	/**
 	 * 将存放在sourceFilePath目录下的源文件,打包成fileName名称的ZIP文件,并存放到zipFilePath。
@@ -165,14 +198,15 @@ public class FileUtil {
 	}
 
 	public static Set<String> getHoopChinaUrlSet(String filePath) {
-		
+
 		Set<String> set = new HashSet<String>();
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new InputStreamReader(
-					new FileInputStream(filePath)));
-			
-			for (String line = br.readLine(); line != null; line = br.readLine()) {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(
+					filePath)));
+
+			for (String line = br.readLine(); line != null; line = br
+					.readLine()) {
 				set.add(line);
 			}
 			br.close();
@@ -183,19 +217,20 @@ public class FileUtil {
 			logger.error("IOException[FileUtil->getHoopChinaUrlList]: "
 					+ e.getMessage());
 		}
-		
+
 		return set;
 	}
-	
+
 	public static Set<String> getNeteaseUrlSet(String filePath) {
-		
+
 		Set<String> set = new HashSet<String>();
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new InputStreamReader(
-					new FileInputStream(filePath)));
-			
-			for (String line = br.readLine(); line != null; line = br.readLine()) {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(
+					filePath)));
+
+			for (String line = br.readLine(); line != null; line = br
+					.readLine()) {
 				set.add(line);
 			}
 			br.close();
@@ -206,19 +241,20 @@ public class FileUtil {
 			logger.error("IOException[FileUtil->getNeteaseUrlList]: "
 					+ e.getMessage());
 		}
-		
+
 		return set;
 	}
-	
+
 	public static Set<String> getYangShengSuoUrlSet(String filePath) {
-		
+
 		Set<String> set = new HashSet<String>();
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new InputStreamReader(
-					new FileInputStream(filePath)));
-			
-			for (String line = br.readLine(); line != null; line = br.readLine()) {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(
+					filePath)));
+
+			for (String line = br.readLine(); line != null; line = br
+					.readLine()) {
 				set.add(line);
 			}
 			br.close();
@@ -229,20 +265,20 @@ public class FileUtil {
 			logger.error("IOException[FileUtil->getYangShengSuoUrlList]: "
 					+ e.getMessage());
 		}
-		
+
 		return set;
 	}
-	
-	
+
 	public static Set<String> getUrlSet(String filePath) {
-		
+
 		Set<String> set = new HashSet<String>();
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new InputStreamReader(
-					new FileInputStream(filePath)));
-			
-			for (String line = br.readLine(); line != null; line = br.readLine()) {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(
+					filePath)));
+
+			for (String line = br.readLine(); line != null; line = br
+					.readLine()) {
 				set.add(line);
 			}
 			br.close();
@@ -253,8 +289,51 @@ public class FileUtil {
 			logger.error("IOException[FileUtil->getNeteaseUrlList]: "
 					+ e.getMessage());
 		}
-		
+
 		return set;
+	}
+
+	/**
+	 * 获取directory目录下一级子文件的清单
+	 * @param directory
+	 * @return
+	 */
+	public static List<String> getDirectory(File directory) {
+		List<String> list = new ArrayList<String>();
+		File files[] = directory.listFiles();
+		if (files == null || files.length == 0) {
+			return list;
+		}
+
+		for (File file : files) {
+			if (!file.isDirectory()) {
+				// 这里将列出所有的文件
+//				System.out.println("file==>" + file.getAbsolutePath());
+				list.add(file.getAbsolutePath());
+			}
+		}
+
+		return list;
+	}
+
+	public void getSubFile(String FileName) {
+		String dirName = "D:/lottery/gdd11";
+
+		ArrayList nameList = new ArrayList();
+		File parentF = new File(FileName);
+		if (!parentF.exists()) {
+			System.out.println("文件或目录不存在");
+			return;
+		}
+		if (parentF.isFile()) {
+			nameList.add(parentF.getAbsoluteFile());
+			return;
+		}
+		String[] subFiles = parentF.list();
+		for (int i = 0; i < subFiles.length; i++) {
+			getSubFile(dirName + "/" + subFiles[i]);
+		}
+
 	}
 
 }

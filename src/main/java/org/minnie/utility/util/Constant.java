@@ -44,7 +44,8 @@ public class Constant {
 	public static final String REG_HOOPCHINA_COUNT_STRING = "/&nbsp;\\d+\\)&nbsp;&nbsp;";
 	public static final String REG_ILLEGAL_CHARACTERS = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）\"\"《》\\\\——+|{}【】‘；：”“’。，、？]";
 	public static final String REG_DOUBLE_COLOR_RED_BALL = "\\d{2}\\,\\d{2}\\,\\d{2}\\,\\d{2}\\,\\d{2}\\,\\d{2}";
-//	public static final String REG_DOUBLE_COLOR_RED_BALL = "(\\d{2}\\,){5}\\d{2}";
+	public static final String REG_GD_FIVE_IN_ELEVEN = "\\d{8}";
+	public static final String REG_BALL = "\\d{2}";
 	
 	public static final String DOMAIN_163 = "163.com";
 	public static final String DOMAIN_HUPU = "hupu.com";
@@ -97,6 +98,14 @@ public class Constant {
 	
 	public static final String DATE_FORMAT_STANDARD = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_FORMAT_NETEASE_LOTTERY_FIVE_IN_ELEVEN = "yyMMdd";
+	public static final String DATE_FORMAT_WITHOUT_HH_MM_SS = "yyyy-MM-dd";
 	
+	/**
+	 * 彩票
+	 */
+	public static final String LOTTERY_FIVE_IN_ELEVEN_GUANGDONG = "gdd11";//广东11选5
+	public static final String LOTTERY_FIVE_IN_ELEVEN_OLD = "jxd11";//老11选5
+	public static final String LOTTERY_FIVE_IN_ELEVEN_LUCKY = "hljd11";//好运11选5
+
 
 }

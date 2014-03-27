@@ -35,22 +35,8 @@ public class SuperLottoApp {
 				+ Constant.LOG_LOG4J_PARAM_FILE);
 		
 		HttpSimulation hs = new HttpSimulation();
-//		
-//		
-//		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-//		
-//
-//		
-//		nvps.add(new BasicNameValuePair("startPhase", "14001"));
-//		nvps.add(new BasicNameValuePair("endPhase", "14201"));
-//		nvps.add(new BasicNameValuePair("phaseOrder", "up"));
-//		nvps.add(new BasicNameValuePair("onlyBody", "true"));
-//		
-//		String responseBody = hs.getResponseBodyByGet("trend.sohu.lecai.com", "/dlt/redBaseTrend.action", nvps);
-//		JsoupHtmlParser.getSohuLotto(responseBody, "#chartTable");
 		
-		
-		List<SuperLotto> list = getSuperLotto(hs, 2003);
+		List<SuperLotto> list = getSuperLotto(hs, 2007);
 		MysqlDatabseHelper.batchAddLotterySuperLotto(list);
 		
 	}

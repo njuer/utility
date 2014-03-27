@@ -258,8 +258,6 @@ public class HttpSimulation {
 
             };
             responseBody = httpClient.execute(httpGet, responseHandler);
-//            System.out.println("----------------------------------------");
-//            System.out.println(responseBody);
         } catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -280,50 +278,5 @@ public class HttpSimulation {
 			}
         }
 		return responseBody;
-		
-//		CloseableHttpClient httpclient = HttpClients.createDefault();
-//		String responseBody = null;
-//
-//		try {
-//			HttpPost post = new HttpPost(action);
-//
-//			// System.out.println("Executing request " + post.getRequestLine());
-//
-//			UrlEncodedFormEntity params = new UrlEncodedFormEntity(paramPair,
-//					charset);
-//			post.setEntity(params);
-//
-//			// Create a custom response handler
-//			ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-//
-//				public String handleResponse(final HttpResponse response)
-//						throws ClientProtocolException, IOException {
-//					int status = response.getStatusLine().getStatusCode();
-//					if (status >= 200 && status < 300) {
-//						HttpEntity entity = response.getEntity();
-//						return entity != null ? EntityUtils.toString(entity)
-//								: null;
-//					} else {
-//						throw new ClientProtocolException(
-//								"Unexpected response status: " + status);
-//					}
-//				}
-//
-//			};
-//
-//			// Execute the request And Get Response Body
-//			responseBody = httpclient.execute(post, responseHandler);
-//		} catch (ClientProtocolException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				httpclient.close();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//		return responseBody;
 	}
 }

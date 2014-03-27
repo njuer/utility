@@ -1,5 +1,6 @@
 package org.minnie.utility.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,6 +16,8 @@ public class DateUtil {
 			Constant.DATE_FORMAT_STANDARD);
 	public static SimpleDateFormat neteaselotteryDateFormat = new SimpleDateFormat(
 			Constant.DATE_FORMAT_NETEASE_LOTTERY_FIVE_IN_ELEVEN);
+	public static SimpleDateFormat dateFormat = new SimpleDateFormat(
+			Constant.DATE_FORMAT_WITHOUT_HH_MM_SS);
 
 	/**
 	 * 获取当前年份
@@ -131,5 +134,22 @@ public class DateUtil {
 			}// end of j
 		}// end of i
 		return list;
+	}
+	
+	public static String dateCovert(String sourceDateString){
+		
+		return dateCovert(sourceDateString, neteaselotteryDateFormat, dateFormat);
+	}
+	
+	public static String dateCovert(String sourceDateString, SimpleDateFormat sourDateFormat, SimpleDateFormat targetDateFormat){
+		
+		String sourceDateStringDateString = null;
+		try {
+			Date date = sourDateFormat.parse(sourceDateString);
+			sourceDateStringDateString = targetDateFormat.format(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}  
+		return sourceDateStringDateString;
 	}
 }

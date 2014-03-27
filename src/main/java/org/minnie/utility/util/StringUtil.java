@@ -1,6 +1,8 @@
 package org.minnie.utility.util;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +14,10 @@ public class StringUtil {
 
 	public static Pattern urlPattern = Pattern.compile(Constant.REG_URL);
 	public static Pattern domainPattern = Pattern.compile(Constant.REG_DOMAIN,
+			Pattern.CASE_INSENSITIVE);
+	public static Pattern periodPattern = Pattern.compile(Constant.REG_GD_FIVE_IN_ELEVEN,
+			Pattern.CASE_INSENSITIVE);
+	public static Pattern ballPattern = Pattern.compile(Constant.REG_BALL,
 			Pattern.CASE_INSENSITIVE);
 
 	/**
@@ -62,5 +68,32 @@ public class StringUtil {
 	 */
 	public static String getTwoBitValue(int value){
 		return String.format(Constant.FORMAT_BALL_VALUE, value);
+	}
+	
+	/**
+	 * 判断是否为合法的11选5期号
+	 * @param period
+	 * @return
+	 */
+	public static boolean isLegalPeriod(String period) {
+		Matcher matcher = periodPattern.matcher(period);
+		if (matcher.find()) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 获取广东11选5红球清单
+	 * @param balls
+	 * @return
+	 */
+	public static List<String> getBalls(String balls) {
+		List<String> list = new ArrayList<String>(5);
+		Matcher matcher = ballPattern.matcher(balls);
+		while (matcher.find()) {
+			list.add(matcher.group());
+		}
+		return list;
 	}
 }

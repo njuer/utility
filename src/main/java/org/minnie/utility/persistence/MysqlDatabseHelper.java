@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.minnie.utility.entity.lottery.FiveInEleven;
 import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.xinyingba.Video;
@@ -534,7 +535,7 @@ public class MysqlDatabseHelper {
 					ssq.setBlue(rs.getString("blue"));
 					list.add(ssq);
 				}
-//				logger.info("已获取双色球结果列表！");
+				// logger.info("已获取双色球结果列表！");
 			}
 
 		} catch (SQLException e) {
@@ -549,12 +550,12 @@ public class MysqlDatabseHelper {
 	}
 
 	public static Map<Integer, DoubleColor> getDoubleColorLotteryMap(String sql) {
-		
+
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		Map<Integer, DoubleColor> map = new HashMap<Integer, DoubleColor>();
-		
+
 		try {
 			conn = MysqlConnectionManager.getConnection();
 			if (conn != null) {
@@ -575,9 +576,9 @@ public class MysqlDatabseHelper {
 					ssq.setBlue(rs.getString("blue"));
 					map.put(phase, ssq);
 				}
-//				logger.info("已获取双色球结果列表！");
+				// logger.info("已获取双色球结果列表！");
 			}
-			
+
 		} catch (SQLException e) {
 			logger.error("SQLException[MysqlDatabseHelper->getDoubleColorLotteryList(String sql)]: "
 					+ e.getMessage());
@@ -588,18 +589,20 @@ public class MysqlDatabseHelper {
 		}
 		return map;
 	}
-	
+
 	/**
 	 * 获取某期双色球信息
-	 * @param phase	期号
+	 * 
+	 * @param phase
+	 *            期号
 	 * @return
 	 */
 	public static DoubleColor getDoubleColorByPhase(Integer phase) {
 
-		if(null == phase){
+		if (null == phase) {
 			return null;
 		}
-		
+
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -610,7 +613,7 @@ public class MysqlDatabseHelper {
 			conn = MysqlConnectionManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
-				
+
 				rs = stmt.executeQuery(sql);
 				if (rs.next()) {
 					ssq.setPhase(rs.getInt("phase"));
@@ -637,11 +640,11 @@ public class MysqlDatabseHelper {
 		}
 		return ssq;
 	}
-	
+
 	public static void batchAddLotterySuperLotto(List<SuperLotto> list) {
 		batchAddLotterySuperLotto(list, null);
 	}
-	
+
 	public static void batchAddLotterySuperLotto(List<SuperLotto> list,
 			String sql) {
 
@@ -690,5 +693,158 @@ public class MysqlDatabseHelper {
 		}
 	}
 
+	public static void batchAddLotteryFiveInEleven(List<FiveInEleven> list) {
+		batchAddLotteryFiveInEleven(list, null);
+	}
+
+	public static void batchAddLotteryFiveInEleven(List<FiveInEleven> list,
+			String sql) {
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+			if (conn != null) {
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "insert into lottery_five_in_eleven (period, red_1, red_2, red_3, red_4, red_5, category, period_date) VALUES (?,?,?,?,?,?,?,?)";
+				}
+				pst = (PreparedStatement) conn.prepareStatement(sql);
+				for (FiveInEleven fie : list) {
+					pst.setInt(1, fie.getPeriod());
+					List<String> red = fie.getRed();
+					for (int i = 0; i < 5; i++) {
+						pst.setString(i + 2, red.get(i));
+					}
+					pst.setString(7, fie.getCategory());
+					pst.setString(8, fie.getDate());
+
+					logger.info(fie.toString());
+
+					// 把一个SQL命令加入命令列表
+					pst.addBatch();
+				}
+
+				// 执行批量更新
+				pst.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入11选5信息成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddLotteryFiveInEleven]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pst);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
+
+	public static Map<String, Integer> statsMaxPeriod(String sql) {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		Map<String, Integer> map = new HashMap<String, Integer>();
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "SELECT category,MAX(period) FROM lottery_five_in_eleven GROUP BY category";
+				}
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					map.put(rs.getString(1), rs.getInt(2));
+				}
+				logger.info("已获取各类11选5最大期数信息");
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getVideoList]: "
+					+ e.getMessage());
+			// e.printStackTrace();
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return map;
+	}
+
+	/**
+	 * 按日获取11选5数据
+	 * 
+	 * @param category
+	 * @param date
+	 * @return
+	 */
+	public static List<FiveInEleven> getFiveInElevenList(String category, String date) {
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * FROM lottery_five_in_eleven WHERE 1 = 1 ");
+		if (null != category) {
+			sb.append(" AND category ='").append(category).append("'");
+		}
+		if (null != category && !StringUtils.isBlank(date)) {
+			sb.append(" AND period_date ='").append(date).append("'");
+		}
+		sb.append(" ORDER BY period");
+
+		return getFiveInElevenList(sb.toString());
+	}
+
+	/**
+	 * 获取11选5数据
+	 * 
+	 * @param sql
+	 * @return
+	 */
+	public static List<FiveInEleven> getFiveInElevenList(String sql) {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<FiveInEleven> list = new ArrayList<FiveInEleven>();
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "SELECT * FROM lottery_five_in_eleven ORDER BY period";
+				}
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					FiveInEleven fie = new FiveInEleven();
+					fie.setPeriod(rs.getInt("period"));
+					List<String> red = new ArrayList<String>(5);
+					red.add(rs.getString("red_1"));
+					red.add(rs.getString("red_2"));
+					red.add(rs.getString("red_3"));
+					red.add(rs.getString("red_4"));
+					red.add(rs.getString("red_5"));
+					fie.setRed(red);
+					fie.setCategory(rs.getString("category"));
+					fie.setDate(rs.getString("period_date"));
+					logger.info(fie.toString());
+					list.add(fie);
+				}
+				logger.info("已获取11选5结果列表！");
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getDoubleColorLotteryList(String sql)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return list;
+	}
 
 }
