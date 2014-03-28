@@ -546,19 +546,22 @@ public class FiveInElevenApp {
 			temp.clear();
 			last = fie;
 		}
-//		Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
-//		while (it.hasNext()) { 
-//		    Entry<String, List<FiveInEleven>> entry = it.next(); 
-//		    String key = entry.getKey(); 
-//		    List<FiveInEleven> val = entry.getValue(); 
-//		}  
-//		Collections.sort(adjacentList);
 		
 		//保存 连号
-		if (consecutiveList.size() > 0) {
-			MysqlDatabseHelper.batchAddFiveInElevenAdjacent(consecutiveList,
-					category, date, null);
-		}
+		Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
+		while (it.hasNext()) { 
+		    Entry<String, List<FiveInEleven>> entry = it.next(); 
+		    String key = entry.getKey(); 
+		    List<FiveInEleven> val = entry.getValue(); 
+			MysqlDatabseHelper.batchAddFiveInElevenConsecutive(val, category, date, null);
+		}  
+		Collections.sort(adjacentList);
+		
+//		//保存 连号
+//		if (consecutive.size() > 0) {
+//			MysqlDatabseHelper.batchAddFiveInElevenConsecutive(consecutive,
+//					category, date, null);
+//		}
 //		//保存 与上期相同
 //		if(adjacentList.size() > 0){
 //			MysqlDatabseHelper.batchAddFiveInElevenAdjacent(adjacentList, category, date, null);

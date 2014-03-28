@@ -42,13 +42,13 @@ public class Test {
 		// hs.get("d:/0431la.xls");
 		
 		String category = Constant.LOTTERY_FIVE_IN_ELEVEN_GUANGDONG;
-//		String date = "2014-03-24";
+		String date = "2014-03-28";
 		
 		List<String> list = DateUtil.standardDateTraversal(2014, 3, 1);
 //		System.out.println(list.toString());
-		for(String date : list){
+//		for(String date : list){
 			FiveInElevenApp.fiveInElevenAnaylse(category,date);
-		}
+//		}
 			
 //		List<String> list = new ArrayList<String>(5); 
 //		list.add("01");

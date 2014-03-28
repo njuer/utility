@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Consts;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -32,7 +36,8 @@ import org.minnie.utility.util.Constant;
  */
 public class HttpSimulation {
 
-	private static Logger logger = Logger.getLogger(HttpSimulation.class.getName());
+	private static Logger logger = Logger.getLogger(HttpSimulation.class
+			.getName());
 
 	/**
 	 * @param args
@@ -92,14 +97,13 @@ public class HttpSimulation {
 		paramPair.add(new BasicNameValuePair("zhushu", "100"));
 
 		HttpSimulation hs = new HttpSimulation();
-		
+
 		System.out.println(hs.getResponseBodyByPost(action, paramPair, "gbk"));
 
-	
 	}
 
 	public String getResponseBodyByPost(String action,
-			List<NameValuePair> paramPair, String charset) {
+			List<NameValuePair> nvps, String charset) {
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		String responseBody = null;
@@ -109,7 +113,7 @@ public class HttpSimulation {
 
 			// System.out.println("Executing request " + post.getRequestLine());
 
-			UrlEncodedFormEntity params = new UrlEncodedFormEntity(paramPair,
+			UrlEncodedFormEntity params = new UrlEncodedFormEntity(nvps,
 					charset);
 			post.setEntity(params);
 
@@ -147,24 +151,33 @@ public class HttpSimulation {
 		return responseBody;
 	}
 
-	public void getFileByDefaultSchemePort(String host, String uriPath, List<NameValuePair> nvps, String filePath) {
+	public void getFileByDefaultSchemePort(String host, String uriPath,
+			List<NameValuePair> nvps, String filePath) {
 		downloadFileByGet("http", host, 80, uriPath, nvps, filePath);
 	}
 
-	
 	/**
 	 * 
-	 * @param scheme	URI scheme
-	 * @param host		URI host
-	 * @param port		URI port
-	 * @param uriPath	URI path. The value is expected to be unescaped and may contain non ASCII characters.
-	 * @param nvps		URI query parameters. The parameter name / values are expected to be unescaped and may contain non ASCII characters.
-	 * @param filePath	Target file destination path
+	 * @param scheme
+	 *            URI scheme
+	 * @param host
+	 *            URI host
+	 * @param port
+	 *            URI port
+	 * @param uriPath
+	 *            URI path. The value is expected to be unescaped and may
+	 *            contain non ASCII characters.
+	 * @param nvps
+	 *            URI query parameters. The parameter name / values are expected
+	 *            to be unescaped and may contain non ASCII characters.
+	 * @param filePath
+	 *            Target file destination path
 	 */
-	public void downloadFileByGet(String scheme, String host, int port, String uriPath, List<NameValuePair> nvps, String filePath) {
+	public void downloadFileByGet(String scheme, String host, int port,
+			String uriPath, List<NameValuePair> nvps, String filePath) {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
-		
+
 		try {
 			URIBuilder uriBuilder = new URIBuilder();
 			uriBuilder.setScheme(scheme);
@@ -177,25 +190,25 @@ public class HttpSimulation {
 			httpGet.setHeader("User-Agent", Constant.USER_AGENT_IE);
 
 			response = httpClient.execute(httpGet);
-			
-			if(HttpStatus.SC_OK == response.getStatusLine().getStatusCode()){
-				//请求成功
-				//取得请求内容
+
+			if (HttpStatus.SC_OK == response.getStatusLine().getStatusCode()) {
+				// 请求成功
+				// 取得请求内容
 				HttpEntity entity = response.getEntity();
-				//显示内容
+				// 显示内容
 				if (entity != null) {
-					//设置本地保存的文件
+					// 设置本地保存的文件
 					File destFile = new File(filePath);
 					FileOutputStream output = new FileOutputStream(destFile);
-					//得到网络资源并写入文件
+					// 得到网络资源并写入文件
 					InputStream is = entity.getContent();
 					byte bt[] = new byte[Constant.BUFFER_SIZE_1024];
 					int index = 0;
-					while( (index = is.read(bt))!=-1){
-						output.write(bt,0,index);
+					while ((index = is.read(bt)) != -1) {
+						output.write(bt, 0, index);
 					}
 					output.flush();
-					output.close(); 
+					output.close();
 					is.close();
 				}
 			}
@@ -206,7 +219,7 @@ public class HttpSimulation {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if(null != response){
+			if (null != response) {
 				try {
 					response.close();
 				} catch (IOException e) {
@@ -216,20 +229,98 @@ public class HttpSimulation {
 		}
 
 	}
-	
-	public String getResponseBodyByGet(String host, String uriPath, List<NameValuePair> nvps) {
+
+	/**
+	 * POST方式下载文件
+	 * 
+	 * @param action
+	 *            URI path. The value is expected to be unescaped and may
+	 *            contain non ASCII characters.
+	 * @param nvps
+	 *            URI query parameters. The parameter name / values are expected
+	 *            to be unescaped and may contain non ASCII characters.
+	 * @param directory
+	 *            Target file destination directory
+	 */
+	public void downloadFileByPost(String action, List<NameValuePair> nvps,
+			String directory) {
+
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+
+			HttpPost httpPost = new HttpPost(action);
+			httpPost.setEntity(new UrlEncodedFormEntity(nvps, Consts.UTF_8));
+			httpPost.setHeader("User-Agent", Constant.USER_AGENT_IE);
+			CloseableHttpResponse response = httpclient.execute(httpPost);
+
+			logger.info("Download from [" + action + "], StatusLine = "
+					+ response.getStatusLine());
+
+			String fileName = getFileName(response);
+			
+			if(null == fileName){
+				fileName = action.substring(action.lastIndexOf("/") + 1);
+				fileName = fileName.substring(0, fileName.lastIndexOf("."));
+			}
+			
+			HttpEntity entity = response.getEntity();
+
+			// 显示内容
+			if (entity != null) {
+				// 如果目录不存在，则创建目录
+				File dir = new File(directory);
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+				String path = directory + File.separator + fileName;
+				File destFile = new File(path);
+				
+				FileOutputStream output = new FileOutputStream(destFile);
+				// 得到网络资源并写入文件
+				InputStream is = entity.getContent();
+				byte bt[] = new byte[Constant.BUFFER_SIZE_1024];
+				int index = 0;
+				while ((index = is.read(bt)) != -1) {
+					output.write(bt, 0, index);
+				}
+				output.flush();
+				output.close();
+				is.close();
+			}
+			// and ensure it is fully consumed
+			EntityUtils.consume(entity);
+
+			response.close();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				httpclient.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public String getResponseBodyByGet(String host, String uriPath,
+			List<NameValuePair> nvps) {
 		return getResponseBodyByGet("http", host, 80, uriPath, nvps);
 	}
-	
-	public String getResponseBodyByGet(String scheme, String host, int port, String uriPath, List<NameValuePair> nvps) {
-		
+
+	public String getResponseBodyByGet(String scheme, String host, int port,
+			String uriPath, List<NameValuePair> nvps) {
+
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		String responseBody = null;
-		
-        try {
-            
-        	URIBuilder uriBuilder = new URIBuilder();
+
+		try {
+
+			URIBuilder uriBuilder = new URIBuilder();
 			uriBuilder.setScheme(scheme);
 			uriBuilder.setHost(host);
 			uriBuilder.setPort(port);
@@ -241,24 +332,25 @@ public class HttpSimulation {
 
 			response = httpClient.execute(httpGet);
 
+			// Create a custom response handler
+			ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
-            // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+				public String handleResponse(final HttpResponse response)
+						throws ClientProtocolException, IOException {
+					int status = response.getStatusLine().getStatusCode();
+					if (HttpStatus.SC_OK == status) {
+						HttpEntity entity = response.getEntity();
+						return entity != null ? EntityUtils.toString(entity)
+								: null;
+					} else {
+						throw new ClientProtocolException(
+								"Unexpected response status: " + status);
+					}
+				}
 
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (HttpStatus.SC_OK == status) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-            responseBody = httpClient.execute(httpGet, responseHandler);
-        } catch (ClientProtocolException e) {
+			};
+			responseBody = httpClient.execute(httpGet, responseHandler);
+		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -268,15 +360,47 @@ public class HttpSimulation {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-        	try {
-        		if(null != httpClient){
-        			httpClient.close();
-        		}
+			try {
+				if (null != httpClient) {
+					httpClient.close();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-        }
+		}
 		return responseBody;
+	}
+
+	/**
+	 * 获取Http请求中的文件名
+	 * @param response
+	 * @return
+	 */
+	public String getFileName(HttpResponse response) {
+		String filename = null;
+		if (null != response) {
+			Header responseHeader = response
+					.getFirstHeader("Content-Disposition");
+			if (null != responseHeader) {
+				HeaderElement[] values = responseHeader.getElements();
+				if (values.length == 1) {
+					NameValuePair param = values[0]
+							.getParameterByName("filename");
+					if (null != param) {
+						try {
+							// filename = new
+							// String(param.getValue().toString().getBytes(),
+							// "utf-8");
+							// filename=URLDecoder.decode(param.getValue(),"utf-8");
+							filename = param.getValue();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		return filename;
 	}
 }

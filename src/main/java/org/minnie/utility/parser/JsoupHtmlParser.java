@@ -10,6 +10,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -551,6 +553,55 @@ public class JsoupHtmlParser {
 		} // end of if (null != dateSelects)
 		
 		return list;
+	}
+	
+	/**
+	 * 从BT工厂下载种子
+	 * @param hs	HttpClient对象实例
+	 * @param url	下载页面地址
+	 * @param directory	种子存放目录
+	 */
+	public static void downTorrentsFromBitTorrentFactory(HttpSimulation hs, String url, String directory){
+		Document doc;
+		String action = null;
+		 List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		try {
+			doc = Jsoup.connect(url).get();
+
+			Elements forms = doc.select("form");
+			if(null != forms && !forms.isEmpty()){
+				Element form = forms.first();
+				/**
+				 * 将action属性中的相对URI转换成绝对URI
+				 */
+				//方法一
+				action = form.attr("abs:action"); 
+				//方法二
+//				action = form.absUrl("action");
+				
+				Elements elements = form.select("#type");
+				if(null != elements && !elements.isEmpty()){
+					nvps.add(new BasicNameValuePair("type", elements.first().val()));
+				}
+				
+				elements = form.select("#id");
+				if(null != elements && !elements.isEmpty()){
+					nvps.add(new BasicNameValuePair("id", elements.first().val()));
+				}
+				
+				elements = form.select("#name");
+				if(null != elements && !elements.isEmpty()){
+					nvps.add(new BasicNameValuePair("name", elements.first().val()));
+				}
+				
+				 hs.downloadFileByPost(action, nvps, directory);
+			}
+
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
