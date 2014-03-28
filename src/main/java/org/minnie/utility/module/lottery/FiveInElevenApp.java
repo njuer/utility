@@ -3,6 +3,7 @@ package org.minnie.utility.module.lottery;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -449,13 +450,17 @@ public class FiveInElevenApp {
 		MysqlDatabseHelper.batchAddLotteryFiveInEleven(list);
 
 	}
+	
+	public static void fiveInElevenAnaylse(String category, String date) {
 
-	public static void fiveInElevenAnaylse(List<FiveInEleven> list) {
+		List<FiveInEleven> list = MysqlDatabseHelper.getFiveInElevenList(category,date);
 
 		//连号分析
 		Map<String, List<FiveInEleven>> consecutive = new HashMap<String, List<FiveInEleven>>();
 		List<FiveInEleven> adjacentList = new ArrayList<FiveInEleven>();
 		Map<String, Set<Integer>> same = new HashMap<String, Set<Integer>>();
+		Map<Integer, FiveInEleven> map = new HashMap<Integer, FiveInEleven>();
+
 
 		FiveInEleven last = null;
 		List<String> result = new ArrayList<String>(5); 
@@ -463,6 +468,8 @@ public class FiveInElevenApp {
 		int size = list.size();
 		for(int p = 0; p < size; p++){
 			FiveInEleven fie = list.get(p);
+			Integer period = fie.getPeriod();
+			map.put(period, fie);
 			
 			result.clear();
 			List<String> balls = fie.getRed();
@@ -488,7 +495,7 @@ public class FiveInElevenApp {
 			 * 处理与上期相同
 			 */
 			if(null != last){
-				List<String> lastBalls = fie.getRed();
+				List<String> lastBalls = last.getRed();
 				int [] lastRed = new int[12];
 				for(String ball : lastBalls){
 					lastRed[Integer.valueOf(ball)] = 1;
@@ -496,6 +503,7 @@ public class FiveInElevenApp {
 				if(isTheSame(lastRed, red)){
 					adjacentList.add(last);
 					adjacentList.add(fie);
+//					System.out.println(date+"["+period+"]=="+balls.toString());
 				}
 			}
 			
@@ -533,17 +541,28 @@ public class FiveInElevenApp {
 					set = new HashSet<Integer>();
 				}
 				set.add(prev.getPeriod());
-				set.add(fie.getPeriod());
+				set.add(period);
 			}
 			temp.clear();
 			last = fie;
 		}
-		Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
-		while (it.hasNext()) { 
-		    Entry<String, List<FiveInEleven>> entry = it.next(); 
-		    String key = entry.getKey(); 
-		    List<FiveInEleven> val = entry.getValue(); 
-		}  
+//		Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
+//		while (it.hasNext()) { 
+//		    Entry<String, List<FiveInEleven>> entry = it.next(); 
+//		    String key = entry.getKey(); 
+//		    List<FiveInEleven> val = entry.getValue(); 
+//		}  
+//		Collections.sort(adjacentList);
+		
+		//保存 连号
+		if (consecutiveList.size() > 0) {
+			MysqlDatabseHelper.batchAddFiveInElevenAdjacent(consecutiveList,
+					category, date, null);
+		}
+//		//保存 与上期相同
+//		if(adjacentList.size() > 0){
+//			MysqlDatabseHelper.batchAddFiveInElevenAdjacent(adjacentList, category, date, null);
+//		}
 		
 	}
 	
