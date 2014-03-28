@@ -18,8 +18,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -903,7 +905,7 @@ public class MysqlDatabseHelper {
 		}
 	}
 	
-	public static void batchAddFiveInElevenConsecutive(List<FiveInEleven> consecutiveList, String category, String date, String sql) {
+	public static void batchAddFiveInElevenConsecutive(Map<String, List<FiveInEleven>> consecutive, String category, String date, String sql) {
 		
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -914,32 +916,31 @@ public class MysqlDatabseHelper {
 			conn.setAutoCommit(false);
 			if (conn != null) {
 				if (null == sql || StringUtils.isBlank(sql)) {
-					sql = "INSERT INTO analysis_fie_consecutive(period, lottery_number, category, date, create_date, update_date) VALUES (?,?,?,?,?,?)";
+					sql = "INSERT INTO analysis_fie_consecutive(period, lottery_number, consecutive, category, date, create_date, update_date) VALUES (?,?,?,?,?,?,?)";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
 				Date myDate = new Date();
-				for (FiveInEleven fie : consecutiveList) {
-					pst.setInt(1, fie.getPeriod());
-					List<String> list = fie.getRed();
-					Collections.sort(list);
-//					int count = 0;
-//					String ballStr = "";
-//					for(String ball : list){
-//						if(count++ > 0){
-//							ballStr += ",";
-//						}
-//						ballStr += ball;
-//					}
-//					pst.setString(2, ballStr);
-					pst.setString(2, list.toString());
-					pst.setString(3, category);
-					pst.setString(4, date);
-					pst.setTimestamp(5, new Timestamp(myDate.getTime()));
-					pst.setTimestamp(6, new Timestamp(myDate.getTime()));
-//					logger.info(fie.toString());
-					// 把一个SQL命令加入命令列表
-					pst.addBatch();
-				}
+				Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
+				while (it.hasNext()) { 
+				    Entry<String, List<FiveInEleven>> entry = it.next(); 
+				    String key = entry.getKey(); 
+				    List<FiveInEleven> val = entry.getValue(); 
+				    
+					for (FiveInEleven fie : val) {
+						pst.setInt(1, fie.getPeriod());
+						List<String> list = fie.getRed();
+						Collections.sort(list);
+						pst.setString(2, list.toString());
+						pst.setString(3, key);
+						pst.setString(4, category);
+						pst.setString(5, date);
+						pst.setTimestamp(6, new Timestamp(myDate.getTime()));
+						pst.setTimestamp(7, new Timestamp(myDate.getTime()));
+//						logger.info(fie.toString());
+						// 把一个SQL命令加入命令列表
+						pst.addBatch();
+					}
+				}  
 				
 				// 执行批量更新
 				pst.executeBatch();

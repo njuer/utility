@@ -44,8 +44,7 @@ public class Test {
 		String category = Constant.LOTTERY_FIVE_IN_ELEVEN_GUANGDONG;
 		String date = "2014-03-28";
 		
-		List<String> list = DateUtil.standardDateTraversal(2014, 3, 1);
-//		System.out.println(list.toString());
+//		List<String> list = DateUtil.standardDateTraversal(2014, 3, 1);
 //		for(String date : list){
 			FiveInElevenApp.fiveInElevenAnaylse(category,date);
 //		}

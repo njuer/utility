@@ -11,7 +11,7 @@
 	</page_setting>
 	<category_index>0</category_index>
 	<zoom>1.0</zoom>
-	<x>121</x>
+	<x>0</x>
 	<y>0</y>
 	<default_color>
 		<r>128</r>
@@ -110,7 +110,7 @@
 			</connections>
 			<display>false</display>
 			<creation_date>2014-02-28 15:48:58</creation_date>
-			<updated_date>2014-03-27 13:44:59</updated_date>
+			<updated_date>2014-03-29 07:38:52</updated_date>
 			<model_property>
 				<name>Project Name</name>
 				<value></value>
@@ -209,7 +209,7 @@
 		</word>
 		<word>
 			<id>4</id>
-			<length>15</length>
+			<length>25</length>
 			<decimal>null</decimal>
 			<array>false</array>
 			<array_dimension>null</array_dimension>
@@ -359,7 +359,7 @@
 		</word>
 		<word>
 			<id>14</id>
-			<length>20</length>
+			<length>25</length>
 			<decimal>null</decimal>
 			<array>false</array>
 			<array_dimension>null</array_dimension>

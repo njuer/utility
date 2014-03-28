@@ -516,6 +516,7 @@ public class FiveInElevenApp {
 					consecutiveList = new ArrayList<FiveInEleven>();
 				}
 				consecutiveList.add(fie);
+				consecutive.put(result.toString(), consecutiveList);
 			}
 			
 			/**
@@ -548,14 +549,18 @@ public class FiveInElevenApp {
 		}
 		
 		//保存 连号
-		Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
-		while (it.hasNext()) { 
-		    Entry<String, List<FiveInEleven>> entry = it.next(); 
-		    String key = entry.getKey(); 
-		    List<FiveInEleven> val = entry.getValue(); 
-			MysqlDatabseHelper.batchAddFiveInElevenConsecutive(val, category, date, null);
-		}  
-		Collections.sort(adjacentList);
+		if(!consecutive.isEmpty()){
+			MysqlDatabseHelper.batchAddFiveInElevenConsecutive(consecutive, category, date, null);
+		}
+		
+//		Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
+//		while (it.hasNext()) { 
+//		    Entry<String, List<FiveInEleven>> entry = it.next(); 
+//		    String key = entry.getKey(); 
+//		    List<FiveInEleven> val = entry.getValue(); 
+//			MysqlDatabseHelper.batchAddFiveInElevenConsecutive(val, category, date, null);
+//		}  
+//		Collections.sort(adjacentList);
 		
 //		//保存 连号
 //		if (consecutive.size() > 0) {
