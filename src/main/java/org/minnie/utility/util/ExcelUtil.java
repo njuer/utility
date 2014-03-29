@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1301,6 +1302,8 @@ public class ExcelUtil {
 					// }
 				}
 				fie.setRed(red);
+				Collections.sort(red);
+				fie.setLotteryNumber(red.toString());
 				fie.setCategory(category);
 				fie.setDate(org.minnie.utility.util.DateUtil.dateCovert(period.substring(0, 6)));
 				logger.info(fie.toString());

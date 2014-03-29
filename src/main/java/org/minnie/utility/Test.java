@@ -41,13 +41,14 @@ public class Test {
 		// HttpSimulation hs = new HttpSimulation();
 		// hs.get("d:/0431la.xls");
 		
-		String category = Constant.LOTTERY_FIVE_IN_ELEVEN_GUANGDONG;
-		String date = "2014-03-28";
-		
+//		String category = Constant.LOTTERY_FIVE_IN_ELEVEN_GUANGDONG;
+////		String date = "2010-01-01";
+//		
 //		List<String> list = DateUtil.standardDateTraversal(2014, 3, 1);
 //		for(String date : list){
-			FiveInElevenApp.fiveInElevenAnaylse(category,date);
+//			FiveInElevenApp.fiveInElevenAnaylse(category,date);
 //		}
+		System.out.println(DateUtil.getDate());
 			
 //		List<String> list = new ArrayList<String>(5); 
 //		list.add("01");

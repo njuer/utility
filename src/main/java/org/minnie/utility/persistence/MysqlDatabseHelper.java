@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -425,9 +426,11 @@ public class MysqlDatabseHelper {
 			conn.setAutoCommit(false);
 			if (conn != null) {
 				if (null == sql || StringUtils.isBlank(sql)) {
-					sql = "insert into lottery_double_color (phase, red_1, red_2, red_3, red_4, red_5, red_6, blue, year) VALUES (?,?,?,?,?,?,?,?,?)";
+					sql = "insert into lottery_double_color (phase, red_1, red_2, red_3, red_4, red_5, red_6, blue, year, create_date, update_date) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
+				
+				Date myDate = new Date();
 				for (DoubleColor ssq : list) {
 					pst.setInt(1, ssq.getPhase());
 					List<String> red = ssq.getRed();
@@ -436,6 +439,8 @@ public class MysqlDatabseHelper {
 					}
 					pst.setString(8, ssq.getBlue());
 					pst.setInt(9, ssq.getYear());
+					pst.setTimestamp(10, new Timestamp(myDate.getTime()));
+					pst.setTimestamp(11, new Timestamp(myDate.getTime()));
 
 					logger.info(ssq.toString());
 
@@ -714,17 +719,22 @@ public class MysqlDatabseHelper {
 			conn.setAutoCommit(false);
 			if (conn != null) {
 				if (null == sql || StringUtils.isBlank(sql)) {
-					sql = "insert into lottery_five_in_eleven (period, red_1, red_2, red_3, red_4, red_5, category, period_date) VALUES (?,?,?,?,?,?,?,?)";
+					sql = "insert into lottery_five_in_eleven (period, red_1, red_2, red_3, red_4, red_5, lottery_number, category, period_date, create_date, update_date) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
+				Date myDate = new Date();
+				
 				for (FiveInEleven fie : list) {
 					pst.setInt(1, fie.getPeriod());
 					List<String> red = fie.getRed();
 					for (int i = 0; i < 5; i++) {
 						pst.setString(i + 2, red.get(i));
 					}
-					pst.setString(7, fie.getCategory());
-					pst.setString(8, fie.getDate());
+					pst.setString(7, fie.getLotteryNumber());
+					pst.setString(8, fie.getCategory());
+					pst.setString(9, fie.getDate());
+					pst.setTimestamp(10, new Timestamp(myDate.getTime()));
+					pst.setTimestamp(11, new Timestamp(myDate.getTime()));
 
 					logger.info(fie.toString());
 
@@ -863,7 +873,7 @@ public class MysqlDatabseHelper {
 			conn.setAutoCommit(false);
 			if (conn != null) {
 				if (null == sql || StringUtils.isBlank(sql)) {
-					sql = "INSERT INTO analysis_fie_adjacent(period, lottery_number, category, date, create_date, update_date) VALUES (?,?,?,?,?,?)";
+					sql = "INSERT INTO analysis_fie_adjacent(period, lottery_number, category, period_date, create_date, update_date) VALUES (?,?,?,?,?,?)";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
 				Date myDate = new Date();
@@ -905,7 +915,7 @@ public class MysqlDatabseHelper {
 		}
 	}
 	
-	public static void batchAddFiveInElevenConsecutive(Map<String, List<FiveInEleven>> consecutive, String category, String date, String sql) {
+	public static void batchAddFiveInElevenConsecutive(List<FiveInEleven> consecutiveList, String category, String date, String sql) {
 		
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -916,40 +926,152 @@ public class MysqlDatabseHelper {
 			conn.setAutoCommit(false);
 			if (conn != null) {
 				if (null == sql || StringUtils.isBlank(sql)) {
-					sql = "INSERT INTO analysis_fie_consecutive(period, lottery_number, consecutive, category, date, create_date, update_date) VALUES (?,?,?,?,?,?,?)";
+					sql = "INSERT INTO analysis_fie_consecutive(period, lottery_number, consecutive, amount, category, period_date, create_date, update_date) VALUES (?,?,?,?,?,?,?,?)";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
 				Date myDate = new Date();
-				Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
-				while (it.hasNext()) { 
-				    Entry<String, List<FiveInEleven>> entry = it.next(); 
-				    String key = entry.getKey(); 
-				    List<FiveInEleven> val = entry.getValue(); 
-				    
-					for (FiveInEleven fie : val) {
-						pst.setInt(1, fie.getPeriod());
-						List<String> list = fie.getRed();
-						Collections.sort(list);
-						pst.setString(2, list.toString());
-						pst.setString(3, key);
-						pst.setString(4, category);
-						pst.setString(5, date);
-						pst.setTimestamp(6, new Timestamp(myDate.getTime()));
-						pst.setTimestamp(7, new Timestamp(myDate.getTime()));
-//						logger.info(fie.toString());
-						// 把一个SQL命令加入命令列表
-						pst.addBatch();
-					}
-				}  
+				for (FiveInEleven fie : consecutiveList) {
+					pst.setInt(1, fie.getPeriod());
+					List<String> list = fie.getRed();
+					Collections.sort(list);
+					pst.setString(2, list.toString());
+					pst.setString(3, fie.getConsecutive());
+					pst.setInt(4, fie.getAmount());
+					pst.setString(5, category);
+					pst.setString(6, date);
+					pst.setTimestamp(7, new Timestamp(myDate.getTime()));
+					pst.setTimestamp(8, new Timestamp(myDate.getTime()));
+//					logger.info(fie.toString());
+					// 把一个SQL命令加入命令列表
+					pst.addBatch();
+				}
 				
 				// 执行批量更新
 				pst.executeBatch();
 				// 语句执行完毕，提交本事务
 				conn.commit();
-				logger.info("批量导入11选5[相邻期相同]信息成功！");
+				logger.info("批量导入11选5[连号]信息成功！");
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddLotteryFiveInEleven]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pst);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
+	
+	/**
+	 * 删除某日某种分析结果
+	 * @param table	分析表名
+	 * @param date	日期
+	 * @return
+	 */
+	public static int deleteFiveInElevenAnalysis(String table, String date) {
+
+		if(null == table || StringUtils.isBlank(table)){
+			return -1;
+		}
+		
+		Connection conn = null;
+		Statement stmt = null;
+		StringBuilder sb = new StringBuilder();
+		sb.append("DELETE FROM ").append(table);
+		if(null != date){
+			sb.append(" WHERE period_date = '").append(date).append("'");
+		}
+		int result = -1;
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				result = stmt.executeUpdate(sb.toString());
+				if (result >= 0) {
+					if(null != date){
+						logger.info("删除[" + date + "]分析记录！");
+					} else {
+						logger.info("删除分析记录！");
+					}
+				}
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->deleteFiveInElevenConsecutiveByDate(String date)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return result;
+	}
+	
+	/**
+	 *  删除某日[连号]分析结果
+	 * @param date	日期
+	 * @return
+	 */
+	public static int deleteFiveInElevenAnalysisByConsecutive(String date){
+		return deleteFiveInElevenAnalysis("analysis_fie_consecutive", date);
+	}
+	
+	/**
+	 *  删除某日[与上期相同]分析结果
+	 * @param date	日期
+	 * @return
+	 */
+	public static int deleteFiveInElevenAnalysisByAdjacent(String date){
+		return deleteFiveInElevenAnalysis("analysis_fie_adjacent", date);
+	}
+	
+	/**
+	 *  删除某日[同号]分析结果
+	 * @param date	日期
+	 * @return
+	 */
+	public static int deleteFiveInElevenAnalysisBySame(String date){
+		return deleteFiveInElevenAnalysis("analysis_fie_same", date);
+	}
+	
+	
+	public static void batchAddFiveInElevenSame(List<FiveInEleven> samePeriodList, String category, String date, String sql) {
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+			if (conn != null) {
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "INSERT INTO analysis_fie_same(period, lottery_number, category, period_date, create_date, update_date) VALUES (?,?,?,?,?,?)";
+				}
+				pst = (PreparedStatement) conn.prepareStatement(sql);
+				Date myDate = new Date();
+				
+				for (FiveInEleven fie : samePeriodList) {
+					pst.setInt(1, fie.getPeriod());
+					List<String> list = fie.getRed();
+					Collections.sort(list);
+					pst.setString(2, list.toString());
+					pst.setString(3, category);
+					pst.setString(4, date);
+					pst.setTimestamp(5, new Timestamp(myDate.getTime()));
+					pst.setTimestamp(6, new Timestamp(myDate.getTime()));
+//					logger.info(fie.toString());
+					// 把一个SQL命令加入命令列表
+					pst.addBatch();
+				}
+				
+				// 执行批量更新
+				pst.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入11选5[同号]信息成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddFiveInElevenSame(List<FiveInEleven> samePeriodList, String category, String date, String sql)]: "
 					+ e.getMessage());
 		} finally {
 			MysqlConnectionManager.closePreparedStatement(pst);

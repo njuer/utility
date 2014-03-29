@@ -2,6 +2,7 @@ package org.minnie.utility.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -503,7 +504,10 @@ public class JsoupHtmlParser {
 										} else if("154".equals(td.attr("width"))){
 											Element strong = td.select("strong").first();
 											if(null != strong){
-												fie.setRed(StringUtil.getBalls(strong.html()));
+												List<String> red = StringUtil.getBalls(strong.html());
+												fie.setRed(red);
+												Collections.sort(red);
+												fie.setLotteryNumber(red.toString());
 											} else {
 												break;
 											}

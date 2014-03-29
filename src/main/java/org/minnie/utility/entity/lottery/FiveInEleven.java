@@ -6,17 +6,19 @@ import java.util.List;
 /**
  * @author neiplzer@gmail.com
  * @version 2014-3-23
- * 类说明
+ * 11选5类
  */
 public class FiveInEleven implements Comparable<Object>  {
 
 	
 	private Integer period;
 	private List<String> red = new ArrayList<String>(5);
+	private String lotteryNumber;//排序后的号码
 	private String date;
-	private String category;
+	private String category;//11选5类别
 	private String consecutive;//连号
-	
+	private Integer amount;//连号数目
+
 	public Integer getPeriod() {
 		return period;
 	}
@@ -57,6 +59,22 @@ public class FiveInEleven implements Comparable<Object>  {
 		this.consecutive = consecutive;
 	}
 
+	public Integer getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Integer amount) {
+		this.amount = amount;
+	}
+
+	public String getLotteryNumber() {
+		return lotteryNumber;
+	}
+
+	public void setLotteryNumber(String lotteryNumber) {
+		this.lotteryNumber = lotteryNumber;
+	}
+
 	@Override
 	public int compareTo(Object o) {
 		 return this.period - ((FiveInEleven) o).getPeriod();
@@ -64,9 +82,10 @@ public class FiveInEleven implements Comparable<Object>  {
 
 	@Override
 	public String toString() {
-		return "FiveInEleven [period=" + period + ", red=" + red + ", date="
-				+ date + ", category=" + category + ", consecutive="
-				+ consecutive + "]";
+		return "FiveInEleven [period=" + period + ", red=" + red
+				+ ", lotteryNumber=" + lotteryNumber + ", date=" + date
+				+ ", category=" + category + ", consecutive=" + consecutive
+				+ ", amount=" + amount + "]";
 	}
 
 }

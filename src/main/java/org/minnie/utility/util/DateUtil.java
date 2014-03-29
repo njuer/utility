@@ -1,5 +1,6 @@
 package org.minnie.utility.util;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,11 +47,20 @@ public class DateUtil {
 		return calendar.get(Calendar.DAY_OF_MONTH);
 	}
 
+	/**
+	 * 获取当前时间
+	 * @param currentTimeMillis
+	 * @return
+	 */
 	public static String getTime(long currentTimeMillis) {
 		Date dateTime = new Date(currentTimeMillis);
 		return standardDateFormat.format(dateTime);
 	}
 
+	public static String getDate(){
+		return dateFormat.format(new Date());
+	}
+	
 	/**
 	 * 获取yyMMdd格式的日期列表
 	 * 

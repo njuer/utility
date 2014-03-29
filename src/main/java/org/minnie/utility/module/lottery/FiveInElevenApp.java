@@ -326,7 +326,7 @@ public class FiveInElevenApp {
 		nvps.add(new BasicNameValuePair("method", "to11x5kjggzst"));
 		nvps.add(new BasicNameValuePair("date", "2009-11-11"));
 
-		String sql = "insert into lottery_five_in_eleven_gd (period, red_1, red_2, red_3, red_4, red_5, category, period_date) VALUES (?,?,?,?,?,?,?,?)";
+		String sql = "insert into lottery_five_in_eleven (period, red_1, red_2, red_3, red_4, red_5, lottery_number, category, period_date, create_date, update_date) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
 		List<String> dateList = JsoupHtmlParser
 				.getGDLotteryFiveInElevenDateList(hs.getResponseBodyByGet(
@@ -396,7 +396,7 @@ public class FiveInElevenApp {
 
 			String beginPeriod = day + "01";
 			String endPeriod = day + periods;
-			if (sPeriod.equals(day)) {
+			if (sPeriod.substring(0, 6).equals(day)) {
 				if (mPeriod >= periods) {
 					continue;
 				}
@@ -451,16 +451,19 @@ public class FiveInElevenApp {
 
 	}
 	
+	/**
+	 * 11选5分析
+	 * @param category	类别：广东11选5、好运11选5、旧11选5
+	 * @param date	分析日期
+	 */
 	public static void fiveInElevenAnaylse(String category, String date) {
 
 		List<FiveInEleven> list = MysqlDatabseHelper.getFiveInElevenList(category,date);
-
-		//连号分析
-		Map<String, List<FiveInEleven>> consecutive = new HashMap<String, List<FiveInEleven>>();
+		
 		List<FiveInEleven> adjacentList = new ArrayList<FiveInEleven>();
-		Map<String, Set<Integer>> same = new HashMap<String, Set<Integer>>();
+		List<FiveInEleven> consecutiveList = new ArrayList<FiveInEleven>();
 		Map<Integer, FiveInEleven> map = new HashMap<Integer, FiveInEleven>();
-
+		Set<Integer> set = new HashSet<Integer>();
 
 		FiveInEleven last = null;
 		List<String> result = new ArrayList<String>(5); 
@@ -471,7 +474,10 @@ public class FiveInElevenApp {
 			Integer period = fie.getPeriod();
 			map.put(period, fie);
 			
+			temp.clear();
 			result.clear();
+//			set.clear();
+			
 			List<String> balls = fie.getRed();
 			
 			int [] red = new int[12];
@@ -503,7 +509,6 @@ public class FiveInElevenApp {
 				if(isTheSame(lastRed, red)){
 					adjacentList.add(last);
 					adjacentList.add(fie);
-//					System.out.println(date+"["+period+"]=="+balls.toString());
 				}
 			}
 			
@@ -511,12 +516,9 @@ public class FiveInElevenApp {
 			 * 处理连号
 			 */
 			if(result.size() > 2){
-				List<FiveInEleven> consecutiveList = consecutive.get(result);
-				if(null == consecutiveList){
-					consecutiveList = new ArrayList<FiveInEleven>();
-				}
+				fie.setConsecutive(result.toString());
+				fie.setAmount(result.size());
 				consecutiveList.add(fie);
-				consecutive.put(result.toString(), consecutiveList);
 			}
 			
 			/**
@@ -531,47 +533,46 @@ public class FiveInElevenApp {
 				}
 				
 				if(isTheSame(prevRedArray,red)){
-					for (int j = 1; j < 12; j++) {
-						if (red[j] == 1) {
-							temp.add(StringUtil.getTwoBitValue(j));
-						}
-					} // end of for(int j = 1; j < 12; j++)
+					set.add(prev.getPeriod());
+					set.add(period);
 				}
-				Set<Integer> set = same.get(temp.toString());
-				if(null == set){
-					set = new HashSet<Integer>();
-				}
-				set.add(prev.getPeriod());
-				set.add(period);
 			}
-			temp.clear();
+			
 			last = fie;
 		}
 		
-		//保存 连号
-		if(!consecutive.isEmpty()){
-			MysqlDatabseHelper.batchAddFiveInElevenConsecutive(consecutive, category, date, null);
+		//删除某日[连号]分析数据
+		MysqlDatabseHelper.deleteFiveInElevenAnalysisByConsecutive(date);
+		//保存[连号]
+		if(consecutiveList.size() > 0){
+			MysqlDatabseHelper.batchAddFiveInElevenConsecutive(consecutiveList, category, date, null);
+		}
+
+		//删除某日[与上期相同]分析数据
+		MysqlDatabseHelper.deleteFiveInElevenAnalysisByAdjacent(date);
+		//保存[与上期相同]
+		if(adjacentList.size() > 0){
+			MysqlDatabseHelper.batchAddFiveInElevenAdjacent(adjacentList, category, date, null);
 		}
 		
-//		Iterator<Entry<String, List<FiveInEleven>>> it = consecutive.entrySet().iterator(); 
-//		while (it.hasNext()) { 
-//		    Entry<String, List<FiveInEleven>> entry = it.next(); 
-//		    String key = entry.getKey(); 
-//		    List<FiveInEleven> val = entry.getValue(); 
-//			MysqlDatabseHelper.batchAddFiveInElevenConsecutive(val, category, date, null);
-//		}  
-//		Collections.sort(adjacentList);
+		//删除某日[同号]分析数据
+		MysqlDatabseHelper.deleteFiveInElevenAnalysisBySame(date);
+		//保存[同号]
+		List<Integer> samePeriodList= new ArrayList<Integer>(set);
+		Collections.sort(samePeriodList);
+		List<FiveInEleven> sameList= new ArrayList<FiveInEleven>();
+		for(Integer period:samePeriodList){
+			sameList.add(map.get(period));
+		}
+		if(samePeriodList.size() > 0){
+			MysqlDatabseHelper.batchAddFiveInElevenSame(sameList, category, date, null);
+		}
 		
-//		//保存 连号
-//		if (consecutive.size() > 0) {
-//			MysqlDatabseHelper.batchAddFiveInElevenConsecutive(consecutive,
-//					category, date, null);
-//		}
-//		//保存 与上期相同
-//		if(adjacentList.size() > 0){
-//			MysqlDatabseHelper.batchAddFiveInElevenAdjacent(adjacentList, category, date, null);
-//		}
-		
+	}
+	
+	public static void fiveInElevenAnaylse(String category){
+		//使用当前日期
+		fiveInElevenAnaylse(category,DateUtil.getDate());
 	}
 	
 	/**
