@@ -333,8 +333,15 @@ public class FiveInElevenApp {
 						"www.gdlottery.cn", "/zst11xuan5.jspx", nvps), "#date",
 						null);
 
+		Set<String> daySet = MysqlDatabseHelper.statsPeriodPerDay(null);
+		
+		
 		for (String date : dateList) {
 			long startTime = System.currentTimeMillis();
+			if(daySet.contains(date)){
+				continue;
+			}
+			
 			list.clear();
 
 			nvps.clear();
@@ -594,6 +601,49 @@ public class FiveInElevenApp {
 	
 	public static void analyseSame(List<FiveInEleven> list, int index){
 		
+	}
+	
+	/**
+	 * 两个FiveInEleven实例，验证相同红球个数是否满足[minHit,maxHit]区间
+	 * @param target
+	 * @param candidate
+	 * @return
+	 */
+	public static boolean analyseCandidate(FiveInEleven target, FiveInEleven candidate, int minHit, int maxHit){
+		
+//		List<String> targetList = target.getRed();
+		List<String> targetList = new ArrayList<String>();
+		List<String> candidateList = candidate.getRed();
+		
+		targetList.addAll(target.getRed());
+		//求交集
+		targetList.retainAll(candidateList);
+		
+		int size = targetList.size();
+		
+		if(size >= minHit && size <= maxHit){
+			return true;
+		}
+		
+		return false;
+	}
+
+	public static int analyseCandidateHit(FiveInEleven target, FiveInEleven candidate, int minHit, int maxHit){
+		
+		List<String> targetList = new ArrayList<String>();
+		List<String> candidateList = candidate.getRed();
+		
+		targetList.addAll(target.getRed());
+		//求交集
+		targetList.retainAll(candidateList);
+		
+		int size = targetList.size();
+		
+		if(size >= minHit && size <= maxHit){
+			return size;
+		}
+		
+		return -1;
 	}
 
 }

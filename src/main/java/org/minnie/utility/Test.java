@@ -48,7 +48,7 @@ public class Test {
 //		for(String date : list){
 //			FiveInElevenApp.fiveInElevenAnaylse(category,date);
 //		}
-		System.out.println(DateUtil.getDate());
+//		System.out.println(DateUtil.getDate());
 			
 //		List<String> list = new ArrayList<String>(5); 
 //		list.add("01");

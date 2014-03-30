@@ -18,11 +18,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -736,7 +735,7 @@ public class MysqlDatabseHelper {
 					pst.setTimestamp(10, new Timestamp(myDate.getTime()));
 					pst.setTimestamp(11, new Timestamp(myDate.getTime()));
 
-					logger.info(fie.toString());
+//					logger.info(fie.toString());
 
 					// 把一个SQL命令加入命令列表
 					pst.addBatch();
@@ -843,6 +842,7 @@ public class MysqlDatabseHelper {
 					red.add(rs.getString("red_4"));
 					red.add(rs.getString("red_5"));
 					fie.setRed(red);
+					fie.setLotteryNumber(rs.getString("lottery_number"));
 					fie.setCategory(rs.getString("category"));
 					fie.setDate(rs.getString("period_date"));
 //					logger.info(fie.toString());
@@ -1077,6 +1077,70 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closePreparedStatement(pst);
 			MysqlConnectionManager.closeConnection(conn);
 		}
+	}
+	
+	public static Set<String> statsPeriodPerDay(String sql) {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		Set<String> set = new HashSet<String>();
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "SELECT period_date,COUNT(id) FROM lottery_five_in_eleven GROUP BY period_date ORDER BY period_date";
+				}
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					set.add(rs.getString(1));
+				}
+				logger.info("已获取各类11选5每天期数");
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getVideoList]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return set;
+	}
+	
+	public static Set<String> getFiveInElevenAnalysisBySame(String sql) {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		Set<String> set = new HashSet<String>();
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "SELECT DISTINCT lottery_number FROM analysis_fie_same";
+				}
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					set.add(rs.getString(1));
+				}
+				logger.info("已获取11选5结果列表！");
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getDoubleColorLotteryList(String sql)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return set;
 	}
 
 }
