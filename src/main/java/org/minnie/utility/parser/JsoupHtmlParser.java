@@ -860,26 +860,6 @@ public class JsoupHtmlParser {
 			}
 		}
 
-		// logger.info(Arrays.toString(accuracy));
-		// logger.info(Arrays.toString(candidate));
-		// Set<Integer> set = new HashSet<Integer>();
-		// for (int i = 0; i < 10; i++) {
-		// set.add(i);
-		// }
-		//
-		// Set<Integer> excludeSet = new HashSet<Integer>();
-		// if (onAccuracy) {
-		// for (int j = 0; j < 10; j++) {
-		// if (accuracy[j] >= 90) {
-		// set.remove(candidate[j]);
-		// }
-		// }
-		// } else {
-		// for (int j = 0; j < 10; j++) {
-		// set.remove(candidate[j]);
-		// }
-		// }
-
 		int[] excluded = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 		if (onAccuracy) {
@@ -893,82 +873,129 @@ public class JsoupHtmlParser {
 				excluded[candidate[j]]++;
 			}
 		}
-		
+
 		List<Integer> list = new ArrayList<Integer>();
 
 		String weiCn = "";
-		if (Constant.JXSSC_GEWEI.equals(wei)) {
-			weiCn = "个位";
-			int odd = 0;
-			int even = 0;
-			int big = 0;
-			int small = 0;
-			int oddHit = 0;
-			int evenHit = 0;
-			int bigHit = 0;
-			int smallHit = 0;
-			// List<Integer> odd = new ArrayList<Integer>();
-			// List<Integer> even = new ArrayList<Integer>();
-			// List<Integer> big = new ArrayList<Integer>();
-			// List<Integer> small = new ArrayList<Integer>();
-			for (int i = 0; i < 10; i++) {
-				if(excluded[i] == 0){
-					list.add(i);
-					
-					if(i % 2 == 0){
-						even++;
-					} else {
-						odd++;
-					}
-					
-					if(i < 5){
-						small++;
-					} else {
-						big++;
-					}
-				}
-				
-				
+		if (Constant.JXSSC_GEWEI.equals(wei)
+				|| Constant.JXSSC_SHIWEI.equals(wei)) {
+			if (Constant.JXSSC_GEWEI.equals(wei)) {
+				weiCn = "个位";
+			} else {
+				weiCn = "十位";
 			}
-			
-			
-			logger.info("[" + weiCn + "]单[" + current + "]：" + odd);
-			logger.info("[" + weiCn + "]双[" + current + "]：" + even);
-			logger.info("[" + weiCn + "]小[" + current + "]：" + small);
-			logger.info("[" + weiCn + "]大[" + current + "]：" + big);
-		} else if (Constant.JXSSC_SHIWEI.equals(wei)) {
-			weiCn = "十位";
-			int odd = 0;
-			int even = 0;
-			int big = 0;
-			int small = 0;
-			for (int i = 0; i < 10; i++) {
-				if (candidate[i] % 2 == 0) {
-					even++;
-				} else {
-					odd++;
-				}
 
-				if (candidate[i] > 4) {
-					big++;
+			int oddKill = 0;
+			int evenKill = 0;
+			int bigKill = 0;
+			int smallKill = 0;
+			for (int i = 0; i < 10; i++) {
+				if (excluded[i] == 0) {
+					list.add(i);
 				} else {
-					small++;
+					if (i % 2 == 0) {
+						evenKill++;
+					} else {
+						oddKill++;
+					}
+					if (i < 5) {
+						smallKill++;
+					} else {
+						bigKill++;
+					}
 				}
 			}
-			logger.info("[" + weiCn + "]单[" + current + "]：" + odd);
-			logger.info("[" + weiCn + "]双[" + current + "]：" + even);
-			logger.info("[" + weiCn + "]小[" + current + "]：" + small);
-			logger.info("[" + weiCn + "]大[" + current + "]：" + big);
-		} else if (Constant.JXSSC_BAIWEI.equals(wei)) {
-			weiCn = "百位";
-		} else if (Constant.JXSSC_QIANWEI.equals(wei)) {
-			weiCn = "千位";
-		} else if (Constant.JXSSC_WANWEI.equals(wei)) {
-			weiCn = "万位";
+
+			int count = 0;
+			// 除单
+			if (oddKill == 5) {
+				for (int i = 1; i < 10; i += 2) {
+					if (excluded[i] > 0) {
+						count += excluded[i];
+					}
+				}
+				StringBuffer sb = new StringBuffer();
+				sb.append("=====[").append(weiCn).append("]");
+				sb.append("\t双(").append(count).append(")");
+				if (count > 6) {
+					sb.append("★★★★★");
+				}
+				sb.append("\n");
+				logger.info(sb.toString());
+			}
+			// 除双
+			count = 0;
+			if (evenKill == 5) {
+				for (int i = 0; i < 10; i += 2) {
+					if (excluded[i] > 0) {
+						count += excluded[i];
+					}
+				}
+				StringBuffer sb = new StringBuffer();
+				sb.append("=====[").append(weiCn).append("]");
+				sb.append("\t单(").append(count).append(")");
+				if (count > 6) {
+					sb.append("★★★★★");
+				}
+				sb.append("\n");
+				logger.info(sb.toString());
+			}
+			// 除小
+			count = 0;
+			if (smallKill == 5) {
+				for (int i = 0; i < 5; i++) {
+					if (excluded[i] > 0) {
+						count += excluded[i];
+					}
+				}
+				StringBuffer sb = new StringBuffer();
+				sb.append("=====[").append(weiCn).append("]");
+				sb.append("\t大(").append(count).append(")");
+				if (count > 6) {
+					sb.append("★★★★★");
+				}
+				sb.append("\n");
+				logger.info(sb.toString());
+			}
+			// 除大
+			count = 0;
+			if (bigKill == 5) {
+				for (int i = 5; i < 10; i++) {
+					if (excluded[i] > 0) {
+						count += excluded[i];
+					}
+				}
+				StringBuffer sb = new StringBuffer();
+				sb.append("=====[").append(weiCn).append("]");
+				sb.append("\t小(").append(count).append(")");
+				if (count > 6) {
+					sb.append("★★★★★");
+				}
+				sb.append("\n");
+				logger.info(sb.toString());
+			}
+		} else {
+			if (Constant.JXSSC_BAIWEI.equals(wei)) {
+				weiCn = "百位";
+			} else if (Constant.JXSSC_QIANWEI.equals(wei)) {
+				weiCn = "千位";
+			} else if (Constant.JXSSC_WANWEI.equals(wei)) {
+				weiCn = "万位";
+			}
+			for (int i = 0; i < 10; i++) {
+				if (excluded[i] == 0) {
+					list.add(i);
+				}
+			}
 		}
 
-		logger.info("[" + weiCn + "]预测结果[" + current + "]："
-				+ Arrays.toString(list.toArray()));
+		StringBuilder sb = new StringBuilder();
+		sb.append("[").append(weiCn).append("]预测结果[").append(current)
+				.append("]：").append(Arrays.toString(list.toArray()));
+		if (list.size() <= 3) {
+			sb.append("★★★★★");
+		}
+		logger.info(sb.toString());
 
 	}
 
