@@ -63,7 +63,7 @@ public class WelfareLottery {
 		logger.info("程序开始执行时间：" + DateUtil.getTime(startTime));
 
 		 List<Integer> cutRegion = new ArrayList<Integer>();
-		ExcelUtil.generateFullAnalysis(doubleColorAnalyse(2003001, null),
+		ExcelUtil.generateFullAnalysis(doubleColorAnalyse(2014001, null),
 				"C:/temp/Analyse.xlsx", generateNewCandidate(cutRegion));
 		long endTime = System.currentTimeMillis();
 		logger.info("程序结束执行时间：" + DateUtil.getTime(startTime));

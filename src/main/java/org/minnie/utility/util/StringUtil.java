@@ -96,4 +96,18 @@ public class StringUtil {
 		}
 		return list;
 	}
+	
+
+	public static String getNumber(String str) {
+		Pattern p = Pattern.compile(Constant.REG_NUMBER);
+		Matcher matcher = p.matcher(str);
+//		return m.replaceAll("").trim();
+//		Matcher matcher = ballPattern.matcher(balls);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+//			list.add(matcher.group());
+			sb.append(matcher.group());
+		}
+		return sb.toString();
+	}
 }

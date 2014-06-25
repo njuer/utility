@@ -107,5 +107,13 @@ public class Constant {
 	public static final String LOTTERY_FIVE_IN_ELEVEN_OLD = "jxd11";//老11选5
 	public static final String LOTTERY_FIVE_IN_ELEVEN_LUCKY = "hljd11";//好运11选5
 
+	/**
+	 * 新时时彩
+	 */
+	public static final String JXSSC_GEWEI = "gewei";
+	public static final String JXSSC_SHIWEI = "shiwei";
+	public static final String JXSSC_BAIWEI = "baiwei";
+	public static final String JXSSC_QIANWEI = "qianwei";
+	public static final String JXSSC_WANWEI = "wanwei";
 
 }

@@ -34,18 +34,18 @@ public class App {
 	private static Map<Integer, Integer> phaseMap = new HashMap<Integer, Integer>();
 
 	static {
-		phaseMap.put(2014, 26);
-		phaseMap.put(2013, 154);
-		phaseMap.put(2012, 154);
-		phaseMap.put(2011, 153);
-		phaseMap.put(2010, 153);
-		phaseMap.put(2009, 154);
-		phaseMap.put(2008, 154);
-		phaseMap.put(2007, 153);
-		phaseMap.put(2006, 154);
-		phaseMap.put(2005, 153);
-		phaseMap.put(2004, 122);
-		phaseMap.put(2003, 89);
+		phaseMap.put(2014, 70);
+//		phaseMap.put(2013, 154);
+//		phaseMap.put(2012, 154);
+//		phaseMap.put(2011, 153);
+//		phaseMap.put(2010, 153);
+//		phaseMap.put(2009, 154);
+//		phaseMap.put(2008, 154);
+//		phaseMap.put(2007, 153);
+//		phaseMap.put(2006, 154);
+//		phaseMap.put(2005, 153);
+//		phaseMap.put(2004, 122);
+//		phaseMap.put(2003, 89);
 	};
 
 	/**

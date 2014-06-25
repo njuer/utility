@@ -2,10 +2,13 @@ package org.minnie.utility.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import net.sf.json.JSONObject;
@@ -19,6 +22,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.minnie.utility.entity.lottery.FiveInEleven;
+import org.minnie.utility.entity.lottery.ShiShiCaiAnalysis;
 import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
@@ -456,7 +460,7 @@ public class JsoupHtmlParser {
 						}
 						sl.setBlue(blue);
 						sl.setYear(year);
-						
+
 						logger.info(sl.toString());
 						list.add(sl);
 					}
@@ -467,23 +471,25 @@ public class JsoupHtmlParser {
 
 		return list;
 	}
-	
+
 	/**
 	 * 获取某日广东11选5数据清单
+	 * 
 	 * @param html
 	 * @param cssQuery
 	 * @param date
 	 * @return
 	 */
-	public static List<FiveInEleven> getGDLotteryFiveInEleven(String html, String cssQuery, String date) {
-		
+	public static List<FiveInEleven> getGDLotteryFiveInEleven(String html,
+			String cssQuery, String date) {
+
 		List<FiveInEleven> list = new ArrayList<FiveInEleven>();
-		
+
 		Document doc = Jsoup.parse(html);
 		Elements chartTables = doc.select(cssQuery);
-		
+
 		if (null != chartTables && !chartTables.isEmpty()) {
-			for (Element table : chartTables){
+			for (Element table : chartTables) {
 				if ("1".equals(table.attr("cellspacing"))) {
 					Element tbody = table.select("tbody").first();
 					if (null != tbody) {
@@ -491,23 +497,29 @@ public class JsoupHtmlParser {
 						for (Element tr : trs) {
 							if (!tr.hasAttr("bgcolor")) {
 								Elements tds = tr.select("td");
-								if(null != tds && !tds.isEmpty()){
+								if (null != tds && !tds.isEmpty()) {
 									FiveInEleven fie = new FiveInEleven();
 									for (Element td : tds) {
-										if(!td.hasAttr("width")){
+										if (!td.hasAttr("width")) {
 											String period = td.html();
-											if(StringUtil.isLegalPeriod(period)){
-												fie.setPeriod(Integer.valueOf(period));
+											if (StringUtil
+													.isLegalPeriod(period)) {
+												fie.setPeriod(Integer
+														.valueOf(period));
 											} else {
 												break;
 											}
-										} else if("154".equals(td.attr("width"))){
-											Element strong = td.select("strong").first();
-											if(null != strong){
-												List<String> red = StringUtil.getBalls(strong.html());
+										} else if ("154".equals(td
+												.attr("width"))) {
+											Element strong = td
+													.select("strong").first();
+											if (null != strong) {
+												List<String> red = StringUtil
+														.getBalls(strong.html());
 												fie.setRed(red);
 												Collections.sort(red);
-												fie.setLotteryNumber(red.toString());
+												fie.setLotteryNumber(red
+														.toString());
 											} else {
 												break;
 											}
@@ -517,7 +529,7 @@ public class JsoupHtmlParser {
 									}// end of for (Element td : tds)
 									fie.setCategory("gdd11");
 									fie.setDate(date);
-									if(null != fie.getPeriod()){
+									if (null != fie.getPeriod()) {
 										logger.info(fie.toString());
 										list.add(fie);
 									}
@@ -528,24 +540,26 @@ public class JsoupHtmlParser {
 				} // end of if ("1".equals(table.attr("cellspacing")))
 			} // end of for (Element table : chartTables)
 		} // end of if (null != chartTables && !chartTables.isEmpty())
-		
+
 		return list;
 	}
-	
+
 	/**
 	 * 获取广东体彩网11选5日期清单
+	 * 
 	 * @param html
 	 * @param cssQuery
 	 * @param date
 	 * @return
 	 */
-	public static List<String> getGDLotteryFiveInElevenDateList(String html, String cssQuery, String date) {
-		
+	public static List<String> getGDLotteryFiveInElevenDateList(String html,
+			String cssQuery, String date) {
+
 		List<String> list = new ArrayList<String>();
-		
+
 		Document doc = Jsoup.parse(html);
 		Elements dateSelects = doc.select(cssQuery);
-		
+
 		if (null != dateSelects) {
 			Element dateSelect = dateSelects.first();
 			if (null != dateSelect) {
@@ -555,57 +569,407 @@ public class JsoupHtmlParser {
 				} // end of for (Element option : options)
 			} // end of if (null != dateSelect)
 		} // end of if (null != dateSelects)
-		
+
 		return list;
 	}
-	
+
 	/**
 	 * 从BT工厂下载种子
-	 * @param hs	HttpClient对象实例
-	 * @param url	下载页面地址
-	 * @param directory	种子存放目录
+	 * 
+	 * @param hs
+	 *            HttpClient对象实例
+	 * @param url
+	 *            下载页面地址
+	 * @param directory
+	 *            种子存放目录
 	 */
-	public static void downTorrentsFromBitTorrentFactory(HttpSimulation hs, String url, String directory){
+	public static void downTorrentsFromBitTorrentFactory(HttpSimulation hs,
+			String url, String directory) {
 		Document doc;
 		String action = null;
-		 List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 		try {
 			doc = Jsoup.connect(url).get();
 
 			Elements forms = doc.select("form");
-			if(null != forms && !forms.isEmpty()){
+			if (null != forms && !forms.isEmpty()) {
 				Element form = forms.first();
 				/**
 				 * 将action属性中的相对URI转换成绝对URI
 				 */
-				//方法一
-				action = form.attr("abs:action"); 
-				//方法二
-//				action = form.absUrl("action");
-				
+				// 方法一
+				action = form.attr("abs:action");
+				// 方法二
+				// action = form.absUrl("action");
+
 				Elements elements = form.select("#type");
-				if(null != elements && !elements.isEmpty()){
-					nvps.add(new BasicNameValuePair("type", elements.first().val()));
+				if (null != elements && !elements.isEmpty()) {
+					nvps.add(new BasicNameValuePair("type", elements.first()
+							.val()));
 				}
-				
+
 				elements = form.select("#id");
-				if(null != elements && !elements.isEmpty()){
-					nvps.add(new BasicNameValuePair("id", elements.first().val()));
+				if (null != elements && !elements.isEmpty()) {
+					nvps.add(new BasicNameValuePair("id", elements.first()
+							.val()));
 				}
-				
+
 				elements = form.select("#name");
-				if(null != elements && !elements.isEmpty()){
-					nvps.add(new BasicNameValuePair("name", elements.first().val()));
+				if (null != elements && !elements.isEmpty()) {
+					nvps.add(new BasicNameValuePair("name", elements.first()
+							.val()));
 				}
-				
-				 hs.downloadFileByPost(action, nvps, directory);
+
+				hs.downloadFileByPost(action, nvps, directory);
 			}
 
-			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * 获取http://zx.caipiao.163.com/shahao/jxssc/gewei_20.html杀号结果集
+	 * 
+	 * @param html
+	 * @return
+	 */
+	public static List<ShiShiCaiAnalysis> getNeteaseShiShiCai(String html) {
+
+		List<ShiShiCaiAnalysis> list = new ArrayList<ShiShiCaiAnalysis>();
+		int[] candidate = new int[10];
+		int[] accuracy = new int[11];
+		int current = 0;
+
+		Document doc = Jsoup.parse(html);
+		// Elements currentPeriod = doc.select("#currentPeriod");
+		//
+		// if (null != currentPeriod) {
+		// logger.info("当前期号：" + currentPeriod.first().html());
+		// }
+
+		Elements tbodies = doc.select("tbody");
+		if (null != tbodies) {
+			for (Element tbody : tbodies) {
+				if (!tbody.hasAttr("class")) {
+					Elements trs = tbody.select("tr");
+					for (Element tr : trs) {
+						if (tr.hasClass("splitBottom")) {
+							continue;
+						} else if (tr.hasClass("current")) {
+							// logger.info(tr.html());
+							current = Integer.valueOf(tr.child(0).html());
+							for (int i = 2; i <= 11; i++) {
+								candidate[i - 2] = Integer.valueOf(tr.child(i)
+										.child(0).html());
+							}
+							break;
+						}
+						ShiShiCaiAnalysis ssca = new ShiShiCaiAnalysis();
+						Element elem = tr.child(0);
+						String period = elem.html();
+						if (StringUtils.isNumeric(period)) {
+							ssca.setPeriod(Integer.valueOf(period));
+						}
+
+						elem = tr.child(1);
+						Elements spans = elem.select("span");
+						StringBuffer sb = new StringBuffer();
+						for (Element span : spans) {
+							sb.append(span.html());
+						}
+						String result = sb.toString();
+						if (StringUtils.isBlank(result)) {
+							continue;
+						}
+						ssca.setResult(result);
+
+						Map<Integer, Boolean> map = new HashMap<Integer, Boolean>();
+						elem = tr.child(2);
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setXuanYuan(map);
+
+						elem = tr.child(3);
+						map.clear();
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setZhanLu(map);
+
+						elem = tr.child(4);
+						map.clear();
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setChiXiao(map);
+
+						elem = tr.child(5);
+						map.clear();
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setTaiE(map);
+
+						elem = tr.child(6);
+						map.clear();
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setQiXing(map);
+
+						elem = tr.child(7);
+						map.clear();
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setMoYe(map);
+
+						elem = tr.child(8);
+						map.clear();
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setGanJiang(map);
+
+						elem = tr.child(9);
+						map.clear();
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setYuChang(map);
+
+						elem = tr.child(10);
+						map.clear();
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setChunJian(map);
+
+						elem = tr.child(11);
+						map.clear();
+						map.put(Integer.valueOf(StringUtil.getNumber(elem
+								.ownText())),
+								elem.select("em").hasClass("iconRight"));
+						ssca.setChengYing(map);
+
+						elem = tr.child(12);
+						if (elem.hasClass("allRight")) {
+							ssca.setHit(10);
+						} else {
+							ssca.setHit(Integer.valueOf(elem.html()));
+						}
+
+						list.add(ssca);
+						// logger.info(ssca);
+
+					}
+				} else {
+					Elements trs = tbody.select("tr");
+					for (Element tr : trs) {
+						if ("准确率".equals(tr.child(0).html())) {
+							for (int i = 1; i <= 11; i++) {
+								String accu = tr.child(i).html();
+								if ("全对".equals(accu)) {
+									accuracy[i - 1] = 100;
+								} else {
+									accu = accu.replaceAll("%", "");
+									if (StringUtils.isNumeric(accu)) {
+										accuracy[i - 1] = Integer.valueOf(accu);
+									}
+								}
+							}
+						}
+					}// end of for (Element tr : trs)
+				}// end of else
+			}
+		}
+
+		logger.info(Arrays.toString(accuracy));
+		logger.info(Arrays.toString(candidate));
+		Set<Integer> set = new HashSet<Integer>();
+		for (int i = 0; i < 10; i++) {
+			set.add(i);
+		}
+
+		for (int j = 0; j < 10; j++) {
+			if (accuracy[j] >= 90) {
+				set.remove(candidate[j]);
+			}
+		}
+
+		logger.info("预测结果[" + current + "]：" + Arrays.toString(set.toArray()));
+
+		return list;
+
+	}
+
+	/**
+	 * 预测某位结果
+	 * 
+	 * @param wei
+	 *            位：个(gewei)、十(shiwei)、百(baiwei)、千(qianwei)、万(wanwei)
+	 * @param html
+	 *            抓取的html内容
+	 * @param onAccuracy
+	 *            是否参照“准确率”
+	 */
+	public static void analyzeXinShiShiCai(String wei, String html,
+			Boolean onAccuracy) {
+
+		int[] candidate = new int[10];
+		int[] accuracy = new int[11];
+		int current = 0;
+
+		Document doc = Jsoup.parse(html);
+		Elements predicts = doc.select("tr.current");
+		if (null != predicts) {
+			Element predict = predicts.first();
+			if (null != predict) {
+				current = Integer.valueOf(predict.child(0).html());
+				for (int i = 2; i <= 11; i++) {
+					candidate[i - 2] = Integer.valueOf(predict.child(i)
+							.child(0).html());
+				}
+			}
+		}
+
+		// <tbody class="statistics">
+		Elements statistics = doc.select("tbody.statistics");
+		if (null != statistics) {
+			Element statistic = statistics.first();
+			if (null != statistic) {
+				Elements trs = statistic.select("tr");
+				for (Element tr : trs) {
+					if ("准确率".equals(tr.child(0).html())) {
+						for (int i = 1; i <= 11; i++) {
+							String accu = tr.child(i).html();
+							if ("全对".equals(accu)) {
+								accuracy[i - 1] = 100;
+							} else {
+								accu = accu.replaceAll("%", "");
+								if (StringUtils.isNumeric(accu)) {
+									accuracy[i - 1] = Integer.valueOf(accu);
+								}
+							}
+						}
+					}
+				}// end of for (Element tr : trs)
+			}
+		}
+
+		// logger.info(Arrays.toString(accuracy));
+		// logger.info(Arrays.toString(candidate));
+		// Set<Integer> set = new HashSet<Integer>();
+		// for (int i = 0; i < 10; i++) {
+		// set.add(i);
+		// }
+		//
+		// Set<Integer> excludeSet = new HashSet<Integer>();
+		// if (onAccuracy) {
+		// for (int j = 0; j < 10; j++) {
+		// if (accuracy[j] >= 90) {
+		// set.remove(candidate[j]);
+		// }
+		// }
+		// } else {
+		// for (int j = 0; j < 10; j++) {
+		// set.remove(candidate[j]);
+		// }
+		// }
+
+		int[] excluded = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+		if (onAccuracy) {
+			for (int j = 0; j < 10; j++) {
+				if (accuracy[j] >= 90) {
+					excluded[candidate[j]]++;
+				}
+			}
+		} else {
+			for (int j = 0; j < 10; j++) {
+				excluded[candidate[j]]++;
+			}
+		}
+		
+		List<Integer> list = new ArrayList<Integer>();
+
+		String weiCn = "";
+		if (Constant.JXSSC_GEWEI.equals(wei)) {
+			weiCn = "个位";
+			int odd = 0;
+			int even = 0;
+			int big = 0;
+			int small = 0;
+			int oddHit = 0;
+			int evenHit = 0;
+			int bigHit = 0;
+			int smallHit = 0;
+			// List<Integer> odd = new ArrayList<Integer>();
+			// List<Integer> even = new ArrayList<Integer>();
+			// List<Integer> big = new ArrayList<Integer>();
+			// List<Integer> small = new ArrayList<Integer>();
+			for (int i = 0; i < 10; i++) {
+				if(excluded[i] == 0){
+					list.add(i);
+					
+					if(i % 2 == 0){
+						even++;
+					} else {
+						odd++;
+					}
+					
+					if(i < 5){
+						small++;
+					} else {
+						big++;
+					}
+				}
+				
+				
+			}
+			
+			
+			logger.info("[" + weiCn + "]单[" + current + "]：" + odd);
+			logger.info("[" + weiCn + "]双[" + current + "]：" + even);
+			logger.info("[" + weiCn + "]小[" + current + "]：" + small);
+			logger.info("[" + weiCn + "]大[" + current + "]：" + big);
+		} else if (Constant.JXSSC_SHIWEI.equals(wei)) {
+			weiCn = "十位";
+			int odd = 0;
+			int even = 0;
+			int big = 0;
+			int small = 0;
+			for (int i = 0; i < 10; i++) {
+				if (candidate[i] % 2 == 0) {
+					even++;
+				} else {
+					odd++;
+				}
+
+				if (candidate[i] > 4) {
+					big++;
+				} else {
+					small++;
+				}
+			}
+			logger.info("[" + weiCn + "]单[" + current + "]：" + odd);
+			logger.info("[" + weiCn + "]双[" + current + "]：" + even);
+			logger.info("[" + weiCn + "]小[" + current + "]：" + small);
+			logger.info("[" + weiCn + "]大[" + current + "]：" + big);
+		} else if (Constant.JXSSC_BAIWEI.equals(wei)) {
+			weiCn = "百位";
+		} else if (Constant.JXSSC_QIANWEI.equals(wei)) {
+			weiCn = "千位";
+		} else if (Constant.JXSSC_WANWEI.equals(wei)) {
+			weiCn = "万位";
+		}
+
+		logger.info("[" + weiCn + "]预测结果[" + current + "]："
+				+ Arrays.toString(list.toArray()));
+
 	}
 
 }
