@@ -30,15 +30,6 @@ import org.minnie.utility.util.StringUtil;
  */
 public class ShiShiCaiApp {
 
-	// public static final String JXSSC_GEWEI_20 =
-	// "http://zx.caipiao.163.com/shahao/jxssc/gewei_20.html";
-	// public static final String JXSSC_GEWEI_30 =
-	// "http://zx.caipiao.163.com/shahao/jxssc/gewei_30.html";
-	// public static final String JXSSC_GEWEI_50 =
-	// "http://zx.caipiao.163.com/shahao/jxssc/gewei_50.html";
-	// public static final String JXSSC_GEWEI_100 =
-	// "http://zx.caipiao.163.com/shahao/jxssc/gewei_100.html";
-
 	private static Logger logger = Logger.getLogger(ShiShiCaiApp.class
 			.getName());
 
@@ -149,22 +140,12 @@ public class ShiShiCaiApp {
 
 		List<ShiShiCaiPredict> list = new ArrayList<ShiShiCaiPredict>();
 		
-//		logger.info("============(有概率)============");
-//		list.clear();
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_GEWEI, 20, true));
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_SHIWEI, 20, true));
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_BAIWEI, 20, true));
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_QIANWEI, 20, true));
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_WANWEI, 20, true));
 
-//		logger.info("============(无概率)============");
-//		list.clear();
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_GEWEI, 20, false));
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_SHIWEI, 20, false));
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_BAIWEI, 20, false));
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_QIANWEI, 20, false));
-//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_WANWEI, 20, false));
-		
+		/**
+		 * ========================================================
+		 * =======	                                    无概率						=======
+		 * ========================================================
+		 */
 		Boolean flag = false;
 		StringBuffer sb = new StringBuffer();
 		/**
@@ -175,7 +156,7 @@ public class ShiShiCaiApp {
 		Integer period = ssc.getPeriod();
 
 		sb.append("============(无概率)============").append("\n");
-		sb.append("[").append(period).append("]个位[").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]个位>>>>").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
 			sb.append("★★★★★");
@@ -183,19 +164,19 @@ public class ShiShiCaiApp {
 		sb.append("\n");
 		if(ssc.getOdd() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]个位[").append("\t单(").append(ssc.getOdd()).append(")").append("\n");
+			sb.append("\t[").append(period).append("]个位<<<<").append("\t单(").append(ssc.getOdd()).append(")").append("\n");
 		}
 		if(ssc.getEven() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]个位[").append("\t双(").append(ssc.getEven()).append(")").append("\n");
+			sb.append("\t[").append(period).append("]个位<<<<").append("\t双(").append(ssc.getEven()).append(")").append("\n");
 		}
 		if(ssc.getBig() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]个位[").append("\t大(").append(ssc.getBig()).append(")").append("\n");
+			sb.append("\t[").append(period).append("]个位<<<<").append("\t大(").append(ssc.getBig()).append(")").append("\n");
 		}
 		if(ssc.getSmall() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]个位[").append("\t小(").append(ssc.getSmall()).append(")").append("\n");
+			sb.append("\t[").append(period).append("]个位<<<<").append("\t小(").append(ssc.getSmall()).append(")").append("\n");
 		}
 		
 		/**
@@ -205,7 +186,7 @@ public class ShiShiCaiApp {
 		predict.clear();
 		predict = ssc.getPredict();
 
-		sb.append("[").append(period).append("]十位[").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]十位>>>>").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
 			sb.append("★★★★★");
@@ -214,19 +195,19 @@ public class ShiShiCaiApp {
 
 		if(ssc.getOdd() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]十位[").append("\t单(").append(ssc.getOdd()).append(")").append("\n");
+			sb.append("\t[").append(period).append("]十位<<<<").append("\t单(").append(ssc.getOdd()).append(")").append("\n");
 		}
 		if(ssc.getEven() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]十位[").append("\t双(").append(ssc.getEven()).append(")").append("\n");
+			sb.append("\t[").append(period).append("]十位<<<<").append("\t双(").append(ssc.getEven()).append(")").append("\n");
 		}
 		if(ssc.getBig() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]十位[").append("\t大(").append(ssc.getBig()).append(")").append("\n");
+			sb.append("\t[").append(period).append("]十位<<<<").append("\t大(").append(ssc.getBig()).append(")").append("\n");
 		}
 		if(ssc.getSmall() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]十位[").append("\t小(").append(ssc.getSmall()).append(")").append("\n");
+			sb.append("\t[").append(period).append("]十位<<<<").append("\t小(").append(ssc.getSmall()).append(")").append("\n");
 		}
 		
 		/**
@@ -236,7 +217,7 @@ public class ShiShiCaiApp {
 		predict.clear();
 		predict = ssc.getPredict();
 
-		sb.append("[").append(period).append("]百位[").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]百位>>>>").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
 			sb.append("★★★★★");
@@ -250,7 +231,7 @@ public class ShiShiCaiApp {
 		predict.clear();
 		predict = ssc.getPredict();
 
-		sb.append("[").append(period).append("]千位[").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]千位>>>>").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
 			sb.append("★★★★★");
@@ -264,7 +245,7 @@ public class ShiShiCaiApp {
 		predict.clear();
 		predict = ssc.getPredict();
 
-		sb.append("[").append(period).append("]万位[").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]万位>>>>").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
 			sb.append("★★★★★");
@@ -276,6 +257,19 @@ public class ShiShiCaiApp {
 		if(flag){
 			MailUtil.sendMail(session, host, user, pwd, to, period + "期(无概率)预测", result);
 		}
+		
+		/**
+		 * ========================================================
+		 * =======	                                    有概率						=======
+		 * ========================================================
+		 */
+//		logger.info("============(有概率)============");
+//		list.clear();
+//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_GEWEI, 20, true));
+//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_SHIWEI, 20, true));
+//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_BAIWEI, 20, true));
+//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_QIANWEI, 20, true));
+//		list.add(analyzeXinShiShiCai(hs, nvps, Constant.JXSSC_WANWEI, 20, true));
 	}
 
 	/**
