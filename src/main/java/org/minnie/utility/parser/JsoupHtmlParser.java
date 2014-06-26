@@ -23,6 +23,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.minnie.utility.entity.lottery.FiveInEleven;
 import org.minnie.utility.entity.lottery.ShiShiCaiAnalysis;
+import org.minnie.utility.entity.lottery.ShiShiCaiPredict;
 import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
@@ -816,19 +817,23 @@ public class JsoupHtmlParser {
 	 * @param onAccuracy
 	 *            是否参照“准确率”
 	 */
-	public static void analyzeXinShiShiCai(String wei, String html,
+	public static ShiShiCaiPredict analyzeXinShiShiCai(String wei, String html,
 			Boolean onAccuracy) {
 
 		int[] candidate = new int[10];
 		int[] accuracy = new int[11];
-		int current = 0;
+//		int current = 0;
+		ShiShiCaiPredict result = new ShiShiCaiPredict();
+//		StringBuffer sb = new StringBuffer();
+		
 
 		Document doc = Jsoup.parse(html);
 		Elements predicts = doc.select("tr.current");
 		if (null != predicts) {
 			Element predict = predicts.first();
 			if (null != predict) {
-				current = Integer.valueOf(predict.child(0).html());
+//				current = Integer.valueOf(predict.child(0).html());
+				result.setPeriod(Integer.valueOf(predict.child(0).html()));
 				for (int i = 2; i <= 11; i++) {
 					candidate[i - 2] = Integer.valueOf(predict.child(i)
 							.child(0).html());
@@ -914,14 +919,15 @@ public class JsoupHtmlParser {
 						count += excluded[i];
 					}
 				}
-				StringBuffer sb = new StringBuffer();
-				sb.append("=====[").append(weiCn).append("]");
-				sb.append("\t双(").append(count).append(")");
-				if (count > 6) {
-					sb.append("★★★★★");
-				}
-				sb.append("\n");
-				logger.info(sb.toString());
+//				StringBuffer sb = new StringBuffer();
+//				sb.append("=====[").append(weiCn).append("]");
+//				sb.append("\t双(").append(count).append(")");
+//				if (count > 6) {
+//					sb.append("★★★★★");
+//				}
+//				sb.append("\n");
+//				logger.info(sb.toString());
+				result.setEven(count);
 			}
 			// 除双
 			count = 0;
@@ -931,14 +937,15 @@ public class JsoupHtmlParser {
 						count += excluded[i];
 					}
 				}
-				StringBuffer sb = new StringBuffer();
-				sb.append("=====[").append(weiCn).append("]");
-				sb.append("\t单(").append(count).append(")");
-				if (count > 6) {
-					sb.append("★★★★★");
-				}
-				sb.append("\n");
-				logger.info(sb.toString());
+				result.setOdd(count);
+//				StringBuffer sb = new StringBuffer();
+//				sb.append("=====[").append(weiCn).append("]");
+//				sb.append("\t单(").append(count).append(")");
+//				if (count > 6) {
+//					sb.append("★★★★★");
+//				}
+//				sb.append("\n");
+//				logger.info(sb.toString());
 			}
 			// 除小
 			count = 0;
@@ -948,14 +955,15 @@ public class JsoupHtmlParser {
 						count += excluded[i];
 					}
 				}
-				StringBuffer sb = new StringBuffer();
-				sb.append("=====[").append(weiCn).append("]");
-				sb.append("\t大(").append(count).append(")");
-				if (count > 6) {
-					sb.append("★★★★★");
-				}
-				sb.append("\n");
-				logger.info(sb.toString());
+				result.setBig(count);
+//				StringBuffer sb = new StringBuffer();
+//				sb.append("=====[").append(weiCn).append("]");
+//				sb.append("\t大(").append(count).append(")");
+//				if (count > 6) {
+//					sb.append("★★★★★");
+//				}
+//				sb.append("\n");
+//				logger.info(sb.toString());
 			}
 			// 除大
 			count = 0;
@@ -965,14 +973,15 @@ public class JsoupHtmlParser {
 						count += excluded[i];
 					}
 				}
-				StringBuffer sb = new StringBuffer();
-				sb.append("=====[").append(weiCn).append("]");
-				sb.append("\t小(").append(count).append(")");
-				if (count > 6) {
-					sb.append("★★★★★");
-				}
-				sb.append("\n");
-				logger.info(sb.toString());
+				result.setSmall(count);
+//				StringBuffer sb = new StringBuffer();
+//				sb.append("=====[").append(weiCn).append("]");
+//				sb.append("\t小(").append(count).append(")");
+//				if (count > 6) {
+//					sb.append("★★★★★");
+//				}
+//				sb.append("\n");
+//				logger.info(sb.toString());
 			}
 		} else {
 			if (Constant.JXSSC_BAIWEI.equals(wei)) {
@@ -989,13 +998,20 @@ public class JsoupHtmlParser {
 			}
 		}
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("[").append(weiCn).append("]预测结果[").append(current)
-				.append("]：").append(Arrays.toString(list.toArray()));
-		if (list.size() <= 3) {
-			sb.append("★★★★★");
-		}
-		logger.info(sb.toString());
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("[").append(weiCn).append("]预测结果[").append(current)
+//				.append("]：").append(Arrays.toString(list.toArray()));
+//		if (list.size() <= 3) {
+//			sb.append("★★★★★");
+//		}
+//		logger.info(sb.toString());
+		
+		
+		
+		result.setWei(weiCn);
+		result.setPredict(list);
+		
+		return result;
 
 	}
 

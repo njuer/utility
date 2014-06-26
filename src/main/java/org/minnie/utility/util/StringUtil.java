@@ -110,4 +110,15 @@ public class StringUtil {
 		}
 		return sb.toString();
 	}
+	
+    /**
+     * @param 待验证的字符串
+     * @return 如果是符合网址格式的字符串,返回<b>true</b>,否则为<b>false</b>
+     */
+    public static boolean isEmail( String str ){
+        String regex =  "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher  matcher = pattern.matcher( str );
+        return matcher.matches();
+    }
 }

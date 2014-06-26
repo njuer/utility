@@ -115,5 +115,6 @@ public class Constant {
 	public static final String JXSSC_BAIWEI = "baiwei";
 	public static final String JXSSC_QIANWEI = "qianwei";
 	public static final String JXSSC_WANWEI = "wanwei";
+	
 
 }
