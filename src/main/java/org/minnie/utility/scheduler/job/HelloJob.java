@@ -1,4 +1,4 @@
-package org.minnie.utility.scheduler;
+package org.minnie.utility.scheduler.job;
 
 import java.util.Date;
 
@@ -10,11 +10,16 @@ import org.quartz.JobExecutionException;
 public class HelloJob implements Job {
 
 	private static Logger logger = Logger.getLogger(HelloJob.class.getName());
-	
+
 	@Override
-	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+	public void execute(JobExecutionContext context)
+			throws JobExecutionException {
 		// Say Hello to the World and display the date/time
-		logger.info("Hello World! - " + new Date());
+		String word = context.getMergedJobDataMap().getString("word");
+		int centense = context.getMergedJobDataMap().getInt("sentence");
+
+		logger.info("[" + word + "]Hello World! " + centense + "- "
+				+ new Date());
 	}
 
 }

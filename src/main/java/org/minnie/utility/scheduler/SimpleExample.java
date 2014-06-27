@@ -1,9 +1,11 @@
 package org.minnie.utility.scheduler;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.minnie.utility.scheduler.job.HelloJob;
 import org.minnie.utility.util.Constant;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -29,6 +31,9 @@ public class SimpleExample {
  
         JobDetail job = JobBuilder.newJob(HelloJob.class)
         .withIdentity("dummyJobName", "group1").build();
+        JobDataMap dataMap = job.getJobDataMap();
+        dataMap.put("word", "fuck");
+        dataMap.put("sentence", 66);
  
         // Quartz 1.6.3
         //CronTrigger trigger = new CronTrigger();
@@ -37,7 +42,7 @@ public class SimpleExample {
  
         Trigger trigger = TriggerBuilder.newTrigger()
         .withIdentity("dummyTriggerName", "group1")
-        .withSchedule(CronScheduleBuilder.cronSchedule("0 7/10 8-22 * * ?"))
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 7/1 8-22 * * ?"))
         .build();
  
         // schedule it

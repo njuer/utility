@@ -156,27 +156,27 @@ public class ShiShiCaiApp {
 		Integer period = ssc.getPeriod();
 
 		sb.append("============(无概率)============").append("\n");
-		sb.append("[").append(period).append("]个位>>>>").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]个位").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
-			sb.append("★★★★★");
+			sb.append("★");
 		}
 		sb.append("\n");
 		if(ssc.getOdd() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]个位<<<<").append("\t单(").append(ssc.getOdd()).append(")").append("\n");
+			sb.append("\t单(").append(ssc.getOdd()).append(")").append("\n");
 		}
 		if(ssc.getEven() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]个位<<<<").append("\t双(").append(ssc.getEven()).append(")").append("\n");
+			sb.append("\t双(").append(ssc.getEven()).append(")").append("\n");
 		}
 		if(ssc.getBig() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]个位<<<<").append("\t大(").append(ssc.getBig()).append(")").append("\n");
+			sb.append("\t大(").append(ssc.getBig()).append(")").append("\n");
 		}
 		if(ssc.getSmall() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]个位<<<<").append("\t小(").append(ssc.getSmall()).append(")").append("\n");
+			sb.append("\t小(").append(ssc.getSmall()).append(")").append("\n");
 		}
 		
 		/**
@@ -186,28 +186,28 @@ public class ShiShiCaiApp {
 		predict.clear();
 		predict = ssc.getPredict();
 
-		sb.append("[").append(period).append("]十位>>>>").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]十位").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
-			sb.append("★★★★★");
+			sb.append("★");
 		}
 		sb.append("\n");
 
 		if(ssc.getOdd() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]十位<<<<").append("\t单(").append(ssc.getOdd()).append(")").append("\n");
+			sb.append("\t单(").append(ssc.getOdd()).append(")").append("\n");
 		}
 		if(ssc.getEven() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]十位<<<<").append("\t双(").append(ssc.getEven()).append(")").append("\n");
+			sb.append("\t双(").append(ssc.getEven()).append(")").append("\n");
 		}
 		if(ssc.getBig() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]十位<<<<").append("\t大(").append(ssc.getBig()).append(")").append("\n");
+			sb.append("\t大(").append(ssc.getBig()).append(")").append("\n");
 		}
 		if(ssc.getSmall() > 6){
 			flag = true;
-			sb.append("\t[").append(period).append("]十位<<<<").append("\t小(").append(ssc.getSmall()).append(")").append("\n");
+			sb.append("\t小(").append(ssc.getSmall()).append(")").append("\n");
 		}
 		
 		/**
@@ -217,10 +217,10 @@ public class ShiShiCaiApp {
 		predict.clear();
 		predict = ssc.getPredict();
 
-		sb.append("[").append(period).append("]百位>>>>").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]百位").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
-			sb.append("★★★★★");
+			sb.append("★");
 		}
 		sb.append("\n");
 		
@@ -231,10 +231,10 @@ public class ShiShiCaiApp {
 		predict.clear();
 		predict = ssc.getPredict();
 
-		sb.append("[").append(period).append("]千位>>>>").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]千位").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
-			sb.append("★★★★★");
+			sb.append("★");
 		}
 		sb.append("\n");
 
@@ -245,10 +245,10 @@ public class ShiShiCaiApp {
 		predict.clear();
 		predict = ssc.getPredict();
 
-		sb.append("[").append(period).append("]万位>>>>").append(Arrays.toString(predict.toArray()));
+		sb.append("[").append(period).append("]万位").append(Arrays.toString(predict.toArray()));
 		if(predict.size() <= 3){
 			flag = true;
-			sb.append("★★★★★");
+			sb.append("★");
 		}
 		sb.append("\n");
 		String result = sb.toString();

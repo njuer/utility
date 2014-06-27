@@ -22,6 +22,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.minnie.utility.entity.lottery.FiveInEleven;
+import org.minnie.utility.entity.lottery.FiveInElevenCandidate;
+import org.minnie.utility.entity.lottery.FiveInElevenPredict;
 import org.minnie.utility.entity.lottery.ShiShiCaiAnalysis;
 import org.minnie.utility.entity.lottery.ShiShiCaiPredict;
 import org.minnie.utility.entity.lottery.SuperLotto;
@@ -636,7 +638,7 @@ public class JsoupHtmlParser {
 	 * @param html
 	 * @return
 	 */
-	public static List<ShiShiCaiAnalysis> getNeteaseShiShiCai(String html) {
+	public static List<ShiShiCaiAnalysis> getNeteaseXinShiShiCai(String html) {
 
 		List<ShiShiCaiAnalysis> list = new ArrayList<ShiShiCaiAnalysis>();
 		int[] candidate = new int[10];
@@ -822,17 +824,13 @@ public class JsoupHtmlParser {
 
 		int[] candidate = new int[10];
 		int[] accuracy = new int[11];
-//		int current = 0;
 		ShiShiCaiPredict result = new ShiShiCaiPredict();
-//		StringBuffer sb = new StringBuffer();
 		
-
 		Document doc = Jsoup.parse(html);
 		Elements predicts = doc.select("tr.current");
 		if (null != predicts) {
 			Element predict = predicts.first();
 			if (null != predict) {
-//				current = Integer.valueOf(predict.child(0).html());
 				result.setPeriod(Integer.valueOf(predict.child(0).html()));
 				for (int i = 2; i <= 11; i++) {
 					candidate[i - 2] = Integer.valueOf(predict.child(i)
@@ -919,14 +917,6 @@ public class JsoupHtmlParser {
 						count += excluded[i];
 					}
 				}
-//				StringBuffer sb = new StringBuffer();
-//				sb.append("=====[").append(weiCn).append("]");
-//				sb.append("\t双(").append(count).append(")");
-//				if (count > 6) {
-//					sb.append("★★★★★");
-//				}
-//				sb.append("\n");
-//				logger.info(sb.toString());
 				result.setEven(count);
 			}
 			// 除双
@@ -938,14 +928,6 @@ public class JsoupHtmlParser {
 					}
 				}
 				result.setOdd(count);
-//				StringBuffer sb = new StringBuffer();
-//				sb.append("=====[").append(weiCn).append("]");
-//				sb.append("\t单(").append(count).append(")");
-//				if (count > 6) {
-//					sb.append("★★★★★");
-//				}
-//				sb.append("\n");
-//				logger.info(sb.toString());
 			}
 			// 除小
 			count = 0;
@@ -956,14 +938,6 @@ public class JsoupHtmlParser {
 					}
 				}
 				result.setBig(count);
-//				StringBuffer sb = new StringBuffer();
-//				sb.append("=====[").append(weiCn).append("]");
-//				sb.append("\t大(").append(count).append(")");
-//				if (count > 6) {
-//					sb.append("★★★★★");
-//				}
-//				sb.append("\n");
-//				logger.info(sb.toString());
 			}
 			// 除大
 			count = 0;
@@ -974,14 +948,6 @@ public class JsoupHtmlParser {
 					}
 				}
 				result.setSmall(count);
-//				StringBuffer sb = new StringBuffer();
-//				sb.append("=====[").append(weiCn).append("]");
-//				sb.append("\t小(").append(count).append(")");
-//				if (count > 6) {
-//					sb.append("★★★★★");
-//				}
-//				sb.append("\n");
-//				logger.info(sb.toString());
 			}
 		} else {
 			if (Constant.JXSSC_BAIWEI.equals(wei)) {
@@ -997,21 +963,161 @@ public class JsoupHtmlParser {
 				}
 			}
 		}
-
-//		StringBuilder sb = new StringBuilder();
-//		sb.append("[").append(weiCn).append("]预测结果[").append(current)
-//				.append("]：").append(Arrays.toString(list.toArray()));
-//		if (list.size() <= 3) {
-//			sb.append("★★★★★");
-//		}
-//		logger.info(sb.toString());
-		
-		
 		
 		result.setWei(weiCn);
 		result.setPredict(list);
 		
 		return result;
+
+	}
+
+	
+	/**
+	 * "好运11选5"预测结果
+	 * 
+	 * @param wei
+	 *            位：个(gewei)、十(shiwei)、百(baiwei)、千(qianwei)、万(wanwei)
+	 * @param html
+	 *            抓取的html内容
+	 * @param onAccuracy
+	 *            是否参照“准确率”
+	 */
+	public static FiveInElevenCandidate getLuckFiveInElevenCandidate(String category, String html, Boolean onAccuracy) {
+		
+		int [] kill = {0,0,0,0,0,0,0,0,0,0,0,0};
+		FiveInElevenCandidate fiec = new FiveInElevenCandidate();
+		
+		Document doc = Jsoup.parse(html);
+		Elements predicts = doc.select("tr.current");
+		if (null != predicts) {
+			Element predict = predicts.first();
+			if (null != predict) {
+				fiec.setPeriod(Integer.valueOf(predict.child(0).html()));
+				for (int i = 2; i <= 11; i++) {
+					kill[Integer.valueOf(predict.child(i).child(0).html())]++;
+				}
+			}
+		}
+		fiec.setCandidate(kill);
+		
+		return fiec;
+
+	}
+	
+	public static List<FiveInElevenPredict> getNeteaseLuckFiveInEleven(String html) {
+
+		List<FiveInElevenPredict> list = new ArrayList<FiveInElevenPredict>();
+		String [] candidate = new String[10];
+		int[] accuracy = new int[11];
+		int current = 0;
+
+		Document doc = Jsoup.parse(html);
+		// Elements currentPeriod = doc.select("#currentPeriod");
+		//
+		// if (null != currentPeriod) {
+		// logger.info("当前期号：" + currentPeriod.first().html());
+		// }
+
+		Elements tbodies = doc.select("tbody");
+		if (null != tbodies) {
+			for (Element tbody : tbodies) {
+				if (!tbody.hasAttr("class")) {
+					Elements trs = tbody.select("tr");
+					for (Element tr : trs) {
+						if (tr.hasClass("splitBottom")) {
+							continue;
+						} else if (tr.hasClass("current")) {
+							// logger.info(tr.html());
+							current = Integer.valueOf(tr.child(0).html());
+							for (int i = 2; i <= 11; i++) {
+								candidate[i - 2] = tr.child(i).child(0).html();
+							}
+							break;
+						}
+						FiveInElevenPredict fiea = new FiveInElevenPredict();
+						Element elem = tr.child(0);
+						String period = elem.html();
+						if (StringUtils.isNumeric(period)) {
+							fiea.setPeriod(Integer.valueOf(period));
+						}
+
+						elem = tr.child(1);
+						Elements spans = elem.select("span");
+//						StringBuffer sb = new StringBuffer();
+						Set<String> set = new HashSet<String>();
+						for (Element span : spans) {
+//							sb.append(span.html());
+							set.add(span.html());
+						}
+//						String result = sb.toString();
+						if (set.size() == 0) {
+							continue;
+						}
+						fiea.setResult(set);
+						
+//						int [] rightKill = {0,0,0,0,0,0,0,0,0,0,0,0};
+//						int [] wrongKill = {0,0,0,0,0,0,0,0,0,0,0,0};
+						int [] kill = {0,0,0,0,0,0,0,0,0,0,0,0};
+
+						for(int j = 2; j < 12; j++){
+							elem = tr.child(j);
+							if(elem.select("em").hasClass("iconRight")){
+								kill[Integer.valueOf(StringUtil.getNumber(elem.ownText()))]++;
+							} else {
+								kill[Integer.valueOf(StringUtil.getNumber(elem.ownText()))]--;
+							}
+						}
+						fiea.setKill(kill);
+
+
+						elem = tr.child(12);
+						if (elem.hasClass("allRight")) {
+							fiea.setHit(10);
+						} else {
+							fiea.setHit(Integer.valueOf(elem.html()));
+						}
+
+						list.add(fiea);
+						// logger.info(ssca);
+
+					}
+				} else {
+					Elements trs = tbody.select("tr");
+					for (Element tr : trs) {
+						if ("准确率".equals(tr.child(0).html())) {
+							for (int i = 1; i <= 11; i++) {
+								String accu = tr.child(i).html();
+								if ("全对".equals(accu)) {
+									accuracy[i - 1] = 100;
+								} else {
+									accu = accu.replaceAll("%", "");
+									if (StringUtils.isNumeric(accu)) {
+										accuracy[i - 1] = Integer.valueOf(accu);
+									}
+								}
+							}
+						}
+					}// end of for (Element tr : trs)
+				}// end of else
+			}
+		}
+
+//		logger.info(Arrays.toString(accuracy));
+//		logger.info(Arrays.toString(candidate));
+//		Set<Integer> set = new HashSet<Integer>();
+//		for (int i = 0; i < 10; i++) {
+//			set.add(i);
+//		}
+//
+//		for (int j = 0; j < 10; j++) {
+//			if (accuracy[j] >= 90) {
+//				set.remove(candidate[j]);
+//			}
+//		}
+//
+//		logger.info("预测结果[" + current + "]：" + Arrays.toString(set.toArray()));
+
+		return list;
 
 	}
 

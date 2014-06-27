@@ -25,9 +25,9 @@ import org.minnie.utility.util.StringUtil;
  * @version 2014-3-29
  * 11选5分析
  */
-public class FiveInElevenAnalysis {
+public class FiveInElevenAnalyze {
 	
-	private static Logger logger = Logger.getLogger(FiveInElevenAnalysis.class.getName());
+	private static Logger logger = Logger.getLogger(FiveInElevenAnalyze.class.getName());
 	
 	/**
 	 * @param args

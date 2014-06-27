@@ -108,13 +108,31 @@ public class Constant {
 	public static final String LOTTERY_FIVE_IN_ELEVEN_LUCKY = "hljd11";//好运11选5
 
 	/**
-	 * 新时时彩
+	 * 新时时彩"杀号"类别
 	 */
-	public static final String JXSSC_GEWEI = "gewei";
-	public static final String JXSSC_SHIWEI = "shiwei";
-	public static final String JXSSC_BAIWEI = "baiwei";
-	public static final String JXSSC_QIANWEI = "qianwei";
-	public static final String JXSSC_WANWEI = "wanwei";
+	public static final String JXSSC_GEWEI = "gewei";//个位
+	public static final String JXSSC_SHIWEI = "shiwei";//十位
+	public static final String JXSSC_BAIWEI = "baiwei";//百位
+	public static final String JXSSC_QIANWEI = "qianwei";//千位
+	public static final String JXSSC_WANWEI = "wanwei";//万位
+	
+	public static final String HOST_NETEASE_LOTTERY = "zx.caipiao.163.com";
+	
+	/**
+	 * 好运11选5"杀号"类别
+	 */
+	public static final String HLJ11XUAN5_FIRST = "first1";
+	public static final String HLJ11XUAN5_SECOND = "first2";
+	public static final String HLJ11XUAN5_THIRD = "first3";
+	public static final String HLJ11XUAN5_FOURTH = "first4";
+	public static final String HLJ11XUAN5_FFIFTH = "first5";
+	public static final String HLJ11XUAN5_FIRST_TWO = "qian2";
+	public static final String HLJ11XUAN5_FIRST_THREE = "qian3";
+	public static final String HLJ11XUAN5_ANY_FIVE = "ren5";
+
+	
+
+
 	
 
 }
