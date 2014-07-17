@@ -1143,4 +1143,49 @@ public class MysqlDatabseHelper {
 		return set;
 	}
 
+	
+	public static void batchAddLuckFiveInEleven(List<Video> list, String sql) {
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+
+			if (conn != null) {
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "insert into ent_movie (uuid, number, title, url, imageSource, category, year, starring, rate, introduction) VALUES (?,?,?,?,?,?,?,?,?,?)";
+				}
+				pst = (PreparedStatement) conn.prepareStatement(sql);
+				for (Video video : list) {
+					pst.setString(1, UUID.randomUUID().toString());
+					pst.setInt(2, video.getNumber());
+					pst.setString(3, video.getTitle());
+					pst.setString(4, video.getUrl());
+					pst.setString(5, video.getImageSource());
+					pst.setString(6, video.getCategory());
+					pst.setInt(7, video.getYear());
+					pst.setString(8, video.getStarring());
+					pst.setFloat(9, video.getRate());
+					pst.setString(10, video.getIntroduction());
+					// 把一个SQL命令加入命令列表
+					pst.addBatch();
+				}
+
+				// 执行批量更新
+				pst.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入影片信息[缺图片]成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddVideo]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pst);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
 }

@@ -23,7 +23,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.minnie.utility.entity.lottery.FiveInEleven;
 import org.minnie.utility.entity.lottery.FiveInElevenCandidate;
-import org.minnie.utility.entity.lottery.FiveInElevenPredict;
+import org.minnie.utility.entity.lottery.FiveInElevenPredict2;
 import org.minnie.utility.entity.lottery.ShiShiCaiAnalysis;
 import org.minnie.utility.entity.lottery.ShiShiCaiPredict;
 import org.minnie.utility.entity.lottery.SuperLotto;
@@ -1004,9 +1004,9 @@ public class JsoupHtmlParser {
 
 	}
 	
-	public static List<FiveInElevenPredict> getNeteaseLuckFiveInEleven(String html) {
+	public static List<FiveInElevenPredict2> getNeteaseLuckFiveInEleven(String html) {
 
-		List<FiveInElevenPredict> list = new ArrayList<FiveInElevenPredict>();
+		List<FiveInElevenPredict2> list = new ArrayList<FiveInElevenPredict2>();
 		String [] candidate = new String[10];
 		int[] accuracy = new int[11];
 		int current = 0;
@@ -1034,7 +1034,7 @@ public class JsoupHtmlParser {
 							}
 							break;
 						}
-						FiveInElevenPredict fiea = new FiveInElevenPredict();
+						FiveInElevenPredict2 fiea = new FiveInElevenPredict2();
 						Element elem = tr.child(0);
 						String period = elem.html();
 						if (StringUtils.isNumeric(period)) {

@@ -12,7 +12,7 @@ import org.apache.http.NameValuePair;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.minnie.utility.entity.lottery.FiveInElevenCandidate;
-import org.minnie.utility.entity.lottery.FiveInElevenPredict;
+import org.minnie.utility.entity.lottery.FiveInElevenPredict2;
 import org.minnie.utility.entity.lottery.ShiShiCaiPredict;
 import org.minnie.utility.parser.HttpSimulation;
 import org.minnie.utility.parser.JsoupHtmlParser;
@@ -96,7 +96,7 @@ public class LuckFiveInElevenApp {
 	 * @param onAccuracy
 	 *            是否参照“准确率”
 	 */
-	public static List<FiveInElevenPredict> analyzeLuckFiveInEleven(HttpSimulation hs,
+	public static List<FiveInElevenPredict2> analyzeLuckFiveInEleven(HttpSimulation hs,
 			List<NameValuePair> nvps, String category, int records, Boolean onAccuracy) {
 		String uriPath = "/shahao/hlj11x5/";
 		uriPath += category + "_" + records + ".html";
