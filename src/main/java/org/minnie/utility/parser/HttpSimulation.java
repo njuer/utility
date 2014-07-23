@@ -43,58 +43,61 @@ public class HttpSimulation {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+//		String action = "http://www.163.com";
+//
+//		String action = "http://s.taobao.com/search?q=ddr3&commend=all&ssid=s5-e&search_type=item&sourceId=tb.index&spm=1.7274553.1997520841.1&initiative_id=tbindexz_20140709";
+		String action = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.4.v0XJU1&q=ddr3+1600+4g&sort=d&style=g&from=mallfp..pc_1_suggest&suggest=0_1#J_Filter";
 
-		String action = "http://www.17500.cn/ssq/newhot.php";
-
+		//
 		List<NameValuePair> paramPair = new ArrayList<NameValuePair>();
-		paramPair.add(new BasicNameValuePair("all", "1"));
-		paramPair.add(new BasicNameValuePair("bh[]", ""));
-		paramPair.add(new BasicNameValuePair("bh[]", ""));
-		paramPair.add(new BasicNameValuePair("bh[]", ""));
-		paramPair.add(new BasicNameValuePair("hz1", "60"));
-		paramPair.add(new BasicNameValuePair("hz2", "140"));
-		paramPair.add(new BasicNameValuePair("jo[]", "2"));
-		paramPair.add(new BasicNameValuePair("jo[]", "3"));
-		paramPair.add(new BasicNameValuePair("jo[]", "4"));
-		paramPair.add(new BasicNameValuePair("mid[]", "01"));
-		paramPair.add(new BasicNameValuePair("mid[]", "02"));
-		paramPair.add(new BasicNameValuePair("mid[]", "03"));
-		paramPair.add(new BasicNameValuePair("mid[]", "04"));
-		paramPair.add(new BasicNameValuePair("mid[]", "05"));
-		paramPair.add(new BasicNameValuePair("mid[]", "06"));
-		paramPair.add(new BasicNameValuePair("mid[]", "07"));
-		paramPair.add(new BasicNameValuePair("mid[]", "08"));
-		paramPair.add(new BasicNameValuePair("mid[]", "09"));
-		paramPair.add(new BasicNameValuePair("mid[]", "10"));
-		paramPair.add(new BasicNameValuePair("mid[]", "11"));
-		paramPair.add(new BasicNameValuePair("mid[]", "12"));
-		paramPair.add(new BasicNameValuePair("mid[]", "13"));
-		paramPair.add(new BasicNameValuePair("mid[]", "14"));
-		paramPair.add(new BasicNameValuePair("mid[]", "15"));
-		paramPair.add(new BasicNameValuePair("mid[]", "16"));
-		paramPair.add(new BasicNameValuePair("mid[]", "17"));
-		paramPair.add(new BasicNameValuePair("mid[]", "18"));
-		paramPair.add(new BasicNameValuePair("mid[]", "19"));
-		paramPair.add(new BasicNameValuePair("mid[]", "20"));
-		paramPair.add(new BasicNameValuePair("mid[]", "21"));
-		paramPair.add(new BasicNameValuePair("mid[]", "22"));
-		paramPair.add(new BasicNameValuePair("mid[]", "23"));
-		paramPair.add(new BasicNameValuePair("mid[]", "24"));
-		paramPair.add(new BasicNameValuePair("mid[]", "25"));
-		paramPair.add(new BasicNameValuePair("mid[]", "26"));
-		paramPair.add(new BasicNameValuePair("mid[]", "27"));
-		paramPair.add(new BasicNameValuePair("mid[]", "28"));
-		paramPair.add(new BasicNameValuePair("mid[]", "29"));
-		paramPair.add(new BasicNameValuePair("mid[]", "30"));
-		paramPair.add(new BasicNameValuePair("mid[]", "31"));
-		paramPair.add(new BasicNameValuePair("mid[]", "32"));
-		paramPair.add(new BasicNameValuePair("mid[]", "33"));
-		paramPair
-				.add(new BasicNameValuePair("pastresult", "12,18,19,23,24,30"));
-		paramPair.add(new BasicNameValuePair("th[]", "0"));
-		paramPair.add(new BasicNameValuePair("th[]", "1"));
-		paramPair.add(new BasicNameValuePair("th[]", "2"));
-		paramPair.add(new BasicNameValuePair("zhushu", "100"));
+//		paramPair.add(new BasicNameValuePair("all", "1"));
+//		paramPair.add(new BasicNameValuePair("bh[]", ""));
+//		paramPair.add(new BasicNameValuePair("bh[]", ""));
+//		paramPair.add(new BasicNameValuePair("bh[]", ""));
+//		paramPair.add(new BasicNameValuePair("hz1", "60"));
+//		paramPair.add(new BasicNameValuePair("hz2", "140"));
+//		paramPair.add(new BasicNameValuePair("jo[]", "2"));
+//		paramPair.add(new BasicNameValuePair("jo[]", "3"));
+//		paramPair.add(new BasicNameValuePair("jo[]", "4"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "01"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "02"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "03"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "04"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "05"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "06"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "07"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "08"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "09"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "10"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "11"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "12"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "13"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "14"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "15"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "16"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "17"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "18"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "19"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "20"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "21"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "22"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "23"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "24"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "25"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "26"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "27"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "28"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "29"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "30"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "31"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "32"));
+//		paramPair.add(new BasicNameValuePair("mid[]", "33"));
+//		paramPair
+//				.add(new BasicNameValuePair("pastresult", "12,18,19,23,24,30"));
+//		paramPair.add(new BasicNameValuePair("th[]", "0"));
+//		paramPair.add(new BasicNameValuePair("th[]", "1"));
+//		paramPair.add(new BasicNameValuePair("th[]", "2"));
+//		paramPair.add(new BasicNameValuePair("zhushu", "100"));
 
 		HttpSimulation hs = new HttpSimulation();
 

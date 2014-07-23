@@ -3,7 +3,7 @@ package org.minnie.utility.entity.lottery;
 import java.util.Arrays;
 import java.util.Set;
 
-public class FiveInElevenPredict {
+public class FiveInElevenPredict2 {
 
 	private Integer period;
 	private Set<String> result;//开奖号码集合

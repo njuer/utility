@@ -150,7 +150,7 @@ public class ShiShiCaiScheduler {
 				.newTrigger()
 				.withIdentity("jxsscTrigger", "groupSSC")
 				.withSchedule(
-						CronScheduleBuilder.cronSchedule("0 2/10 9-22 * * ?"))
+						CronScheduleBuilder.cronSchedule("0 1/3 9-22 * * ?"))
 				.build();
 
 		// schedule it
