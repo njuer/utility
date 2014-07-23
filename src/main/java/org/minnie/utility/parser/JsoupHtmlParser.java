@@ -51,52 +51,38 @@ public class JsoupHtmlParser {
 			// Document doc =
 			// Jsoup.connect("http://39yss.com/yinshi/yingyang/2014030725664.html").get();
 			Document doc = Jsoup.connect(
-					"http://39yss.com/mysn/yingyouerqi/20140226/25276.html")
+					"http://s.taobao.com/search?initiative_id=staobaoz_20140709&js=1&stats_click=search_radio_all%253A1&q=crucial+ddr3+1600+4g")
 					.get();
 			System.out.println(doc.title());
 
-			Elements pageBody = doc.select("div.c100Pages");
-			// System.out.println(doc.select("span.cptotal").html());
+			Elements pageBody = doc.select("div.list-view");
+			 System.out.println(pageBody.html());
 
-			if (null != pageBody) {
-				Element firstPageBody = pageBody.first();
-				if (!StringUtils.isBlank(firstPageBody.html())) {
-					// System.out.println(firstPageBody.select("span.cptotal").html().replace("共",
-					// "").replace("页", ""));
-					int total = Integer.valueOf(
-							firstPageBody.select("span.cptotal").html()
-									.replace("共", "").replace("页", ""))
-							.intValue();
-					System.out.println(total);
-					if (null != firstPageBody) {
-						Elements linkTag = firstPageBody.select("a");
-						for (Element e : linkTag) {
-							if (e.hasAttr("class")) {
-								System.out.println(e + "---跳过---");
-							} else {
-								System.out.println(e.attr("href"));
-							}
-						}
-					}
-				}
+//			if (null != pageBody) {
+//				Element firstPageBody = pageBody.first();
+//				if (!StringUtils.isBlank(firstPageBody.html())) {
+//					// System.out.println(firstPageBody.select("span.cptotal").html().replace("共",
+//					// "").replace("页", ""));
+//					int total = Integer.valueOf(
+//							firstPageBody.select("span.cptotal").html()
+//									.replace("共", "").replace("页", ""))
+//							.intValue();
+//					System.out.println(total);
+//					if (null != firstPageBody) {
+//						Elements linkTag = firstPageBody.select("a");
+//						for (Element e : linkTag) {
+//							if (e.hasAttr("class")) {
+//								System.out.println(e + "---跳过---");
+//							} else {
+//								System.out.println(e.attr("href"));
+//							}
+//						}
+//					}
+//				}
+//
+//			}
 
-			}
 
-			// Elements arcBody = doc.select("div.arcBody");
-			// if(null != arcBody){
-			// // System.out.println(arcBody.first());
-			// Element firstArcBody = arcBody.first();
-			//
-			// if(null != firstArcBody){
-			// Elements imgList = firstArcBody.select("img");
-			// if(null != imgList){
-			// for(Element e:imgList){
-			// String imgSrc = e.attr("src");
-			// }
-			// }
-			// // System.out.println(imgList.first().attr("src"));
-			// }
-			// }
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1119,6 +1105,68 @@ public class JsoupHtmlParser {
 
 		return list;
 
+	}
+	
+	public static void getTaobaoData(){
+//		String action = "http://s.taobao.com/search?initiative_id=staobaoz_20140709&js=1&style=list&stats_click=search_radio_all%253A1&q=hynix+ddr3l+1600+4g+%B1%CA%BC%C7%B1%BE";
+
+		String action = "http://s.taobao.com/search?spm=a230r.1.8.1.VhjZqz&promote=0&filter=reserve_price%5B150%2C250%5D&sort=default&fs=0&initiative_id=staobaoz_20140709&tab=all&q=crucial+ddr3+1600+4g+%B1%CA%BC%C7%B1%BE&style=list&stats_click=search_radio_all%253A1#J_relative";
+		try {
+			Document doc = Jsoup.connect(action)
+//					  .data("query", "Java")
+					  .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36")
+//					  .cookie("auth", "token")
+					  .timeout(3000)
+					  .post();
+			
+			Elements lists = doc.select("div.list-view");
+			if (null != lists) {
+//				System.out.println(lists.html());
+				Element listView = lists.first();
+				if(null != listView){
+					Elements rows = listView.select("div.icon-datalink");
+					
+					StringBuffer sb = new StringBuffer();
+					
+					for (Element row : rows) {
+						sb.append(row.attr("nid"));
+						sb.append("\t");
+						Element tagA = row.select("h3.summary").first().child(0);
+						sb.append(tagA.attr("title"));
+						sb.append("\t");
+						sb.append(tagA.attr("href"));
+						sb.append("\t");
+						sb.append(row.select("div.price").first().ownText());
+						sb.append("\t");
+						sb.append(row.select("div.shipping").first().html());
+						sb.append("\t");
+						sb.append(row.select("span.seller-loc").first().html());
+						sb.append("\t");
+						Element tagLink = row.select("a.feature-dsc-tgr").first();
+						sb.append("\t");
+						sb.append(tagLink.ownText());
+						sb.append("\t");
+						sb.append(tagLink.absUrl("href"));
+						sb.append("\n");
+					}
+					System.out.println(sb.toString());
+				}
+				
+//				
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		
+//		Document doc = Jsoup.parse(html);
+////		System.out.println(doc.html());
+//		Elements lists = doc.select("div.list-view");
+//		if (null != lists) {
+//			System.out.println(lists.html());
+//		}
 	}
 
 }
