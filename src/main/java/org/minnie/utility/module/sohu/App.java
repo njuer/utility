@@ -34,7 +34,7 @@ public class App {
 	private static Map<Integer, Integer> phaseMap = new HashMap<Integer, Integer>();
 
 	static {
-		phaseMap.put(2014, 70);
+		phaseMap.put(2014, 154);
 //		phaseMap.put(2013, 154);
 //		phaseMap.put(2012, 154);
 //		phaseMap.put(2011, 153);
