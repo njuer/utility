@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.json.JSONObject;
 
@@ -27,6 +29,7 @@ import org.minnie.utility.entity.lottery.FiveInElevenPredict2;
 import org.minnie.utility.entity.lottery.ShiShiCaiAnalysis;
 import org.minnie.utility.entity.lottery.ShiShiCaiPredict;
 import org.minnie.utility.entity.lottery.SuperLotto;
+import org.minnie.utility.module.netease.Article;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
 import org.minnie.utility.module.sohu.DoubleColor;
@@ -50,38 +53,39 @@ public class JsoupHtmlParser {
 		try {
 			// Document doc =
 			// Jsoup.connect("http://39yss.com/yinshi/yingyang/2014030725664.html").get();
-			Document doc = Jsoup.connect(
-					"http://s.taobao.com/search?initiative_id=staobaoz_20140709&js=1&stats_click=search_radio_all%253A1&q=crucial+ddr3+1600+4g")
+			Document doc = Jsoup
+					.connect(
+							"http://s.taobao.com/search?initiative_id=staobaoz_20140709&js=1&stats_click=search_radio_all%253A1&q=crucial+ddr3+1600+4g")
 					.get();
 			System.out.println(doc.title());
 
 			Elements pageBody = doc.select("div.list-view");
-			 System.out.println(pageBody.html());
+			System.out.println(pageBody.html());
 
-//			if (null != pageBody) {
-//				Element firstPageBody = pageBody.first();
-//				if (!StringUtils.isBlank(firstPageBody.html())) {
-//					// System.out.println(firstPageBody.select("span.cptotal").html().replace("共",
-//					// "").replace("页", ""));
-//					int total = Integer.valueOf(
-//							firstPageBody.select("span.cptotal").html()
-//									.replace("共", "").replace("页", ""))
-//							.intValue();
-//					System.out.println(total);
-//					if (null != firstPageBody) {
-//						Elements linkTag = firstPageBody.select("a");
-//						for (Element e : linkTag) {
-//							if (e.hasAttr("class")) {
-//								System.out.println(e + "---跳过---");
-//							} else {
-//								System.out.println(e.attr("href"));
-//							}
-//						}
-//					}
-//				}
-//
-//			}
-
+			// if (null != pageBody) {
+			// Element firstPageBody = pageBody.first();
+			// if (!StringUtils.isBlank(firstPageBody.html())) {
+			// //
+			// System.out.println(firstPageBody.select("span.cptotal").html().replace("共",
+			// // "").replace("页", ""));
+			// int total = Integer.valueOf(
+			// firstPageBody.select("span.cptotal").html()
+			// .replace("共", "").replace("页", ""))
+			// .intValue();
+			// System.out.println(total);
+			// if (null != firstPageBody) {
+			// Elements linkTag = firstPageBody.select("a");
+			// for (Element e : linkTag) {
+			// if (e.hasAttr("class")) {
+			// System.out.println(e + "---跳过---");
+			// } else {
+			// System.out.println(e.attr("href"));
+			// }
+			// }
+			// }
+			// }
+			//
+			// }
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -811,7 +815,7 @@ public class JsoupHtmlParser {
 		int[] candidate = new int[10];
 		int[] accuracy = new int[11];
 		ShiShiCaiPredict result = new ShiShiCaiPredict();
-		
+
 		Document doc = Jsoup.parse(html);
 		Elements predicts = doc.select("tr.current");
 		if (null != predicts) {
@@ -949,15 +953,14 @@ public class JsoupHtmlParser {
 				}
 			}
 		}
-		
+
 		result.setWei(weiCn);
 		result.setPredict(list);
-		
+
 		return result;
 
 	}
 
-	
 	/**
 	 * "好运11选5"预测结果
 	 * 
@@ -968,11 +971,12 @@ public class JsoupHtmlParser {
 	 * @param onAccuracy
 	 *            是否参照“准确率”
 	 */
-	public static FiveInElevenCandidate getLuckFiveInElevenCandidate(String category, String html, Boolean onAccuracy) {
-		
-		int [] kill = {0,0,0,0,0,0,0,0,0,0,0,0};
+	public static FiveInElevenCandidate getLuckFiveInElevenCandidate(
+			String category, String html, Boolean onAccuracy) {
+
+		int[] kill = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		FiveInElevenCandidate fiec = new FiveInElevenCandidate();
-		
+
 		Document doc = Jsoup.parse(html);
 		Elements predicts = doc.select("tr.current");
 		if (null != predicts) {
@@ -985,15 +989,16 @@ public class JsoupHtmlParser {
 			}
 		}
 		fiec.setCandidate(kill);
-		
+
 		return fiec;
 
 	}
-	
-	public static List<FiveInElevenPredict2> getNeteaseLuckFiveInEleven(String html) {
+
+	public static List<FiveInElevenPredict2> getNeteaseLuckFiveInEleven(
+			String html) {
 
 		List<FiveInElevenPredict2> list = new ArrayList<FiveInElevenPredict2>();
-		String [] candidate = new String[10];
+		String[] candidate = new String[10];
 		int[] accuracy = new int[11];
 		int current = 0;
 
@@ -1029,32 +1034,33 @@ public class JsoupHtmlParser {
 
 						elem = tr.child(1);
 						Elements spans = elem.select("span");
-//						StringBuffer sb = new StringBuffer();
+						// StringBuffer sb = new StringBuffer();
 						Set<String> set = new HashSet<String>();
 						for (Element span : spans) {
-//							sb.append(span.html());
+							// sb.append(span.html());
 							set.add(span.html());
 						}
-//						String result = sb.toString();
+						// String result = sb.toString();
 						if (set.size() == 0) {
 							continue;
 						}
 						fiea.setResult(set);
-						
-//						int [] rightKill = {0,0,0,0,0,0,0,0,0,0,0,0};
-//						int [] wrongKill = {0,0,0,0,0,0,0,0,0,0,0,0};
-						int [] kill = {0,0,0,0,0,0,0,0,0,0,0,0};
 
-						for(int j = 2; j < 12; j++){
+						// int [] rightKill = {0,0,0,0,0,0,0,0,0,0,0,0};
+						// int [] wrongKill = {0,0,0,0,0,0,0,0,0,0,0,0};
+						int[] kill = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+						for (int j = 2; j < 12; j++) {
 							elem = tr.child(j);
-							if(elem.select("em").hasClass("iconRight")){
-								kill[Integer.valueOf(StringUtil.getNumber(elem.ownText()))]++;
+							if (elem.select("em").hasClass("iconRight")) {
+								kill[Integer.valueOf(StringUtil.getNumber(elem
+										.ownText()))]++;
 							} else {
-								kill[Integer.valueOf(StringUtil.getNumber(elem.ownText()))]--;
+								kill[Integer.valueOf(StringUtil.getNumber(elem
+										.ownText()))]--;
 							}
 						}
 						fiea.setKill(kill);
-
 
 						elem = tr.child(12);
 						if (elem.hasClass("allRight")) {
@@ -1088,50 +1094,54 @@ public class JsoupHtmlParser {
 			}
 		}
 
-//		logger.info(Arrays.toString(accuracy));
-//		logger.info(Arrays.toString(candidate));
-//		Set<Integer> set = new HashSet<Integer>();
-//		for (int i = 0; i < 10; i++) {
-//			set.add(i);
-//		}
-//
-//		for (int j = 0; j < 10; j++) {
-//			if (accuracy[j] >= 90) {
-//				set.remove(candidate[j]);
-//			}
-//		}
-//
-//		logger.info("预测结果[" + current + "]：" + Arrays.toString(set.toArray()));
+		// logger.info(Arrays.toString(accuracy));
+		// logger.info(Arrays.toString(candidate));
+		// Set<Integer> set = new HashSet<Integer>();
+		// for (int i = 0; i < 10; i++) {
+		// set.add(i);
+		// }
+		//
+		// for (int j = 0; j < 10; j++) {
+		// if (accuracy[j] >= 90) {
+		// set.remove(candidate[j]);
+		// }
+		// }
+		//
+		// logger.info("预测结果[" + current + "]：" +
+		// Arrays.toString(set.toArray()));
 
 		return list;
 
 	}
-	
-	public static void getTaobaoData(){
-//		String action = "http://s.taobao.com/search?initiative_id=staobaoz_20140709&js=1&style=list&stats_click=search_radio_all%253A1&q=hynix+ddr3l+1600+4g+%B1%CA%BC%C7%B1%BE";
+
+	public static void getTaobaoData() {
+		// String action =
+		// "http://s.taobao.com/search?initiative_id=staobaoz_20140709&js=1&style=list&stats_click=search_radio_all%253A1&q=hynix+ddr3l+1600+4g+%B1%CA%BC%C7%B1%BE";
 
 		String action = "http://s.taobao.com/search?spm=a230r.1.8.1.VhjZqz&promote=0&filter=reserve_price%5B150%2C250%5D&sort=default&fs=0&initiative_id=staobaoz_20140709&tab=all&q=crucial+ddr3+1600+4g+%B1%CA%BC%C7%B1%BE&style=list&stats_click=search_radio_all%253A1#J_relative";
 		try {
-			Document doc = Jsoup.connect(action)
-//					  .data("query", "Java")
-					  .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36")
-//					  .cookie("auth", "token")
-					  .timeout(3000)
-					  .post();
-			
+			Document doc = Jsoup
+					.connect(action)
+					// .data("query", "Java")
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36")
+					// .cookie("auth", "token")
+					.timeout(3000).post();
+
 			Elements lists = doc.select("div.list-view");
 			if (null != lists) {
-//				System.out.println(lists.html());
+				// System.out.println(lists.html());
 				Element listView = lists.first();
-				if(null != listView){
+				if (null != listView) {
 					Elements rows = listView.select("div.icon-datalink");
-					
+
 					StringBuffer sb = new StringBuffer();
-					
+
 					for (Element row : rows) {
 						sb.append(row.attr("nid"));
 						sb.append("\t");
-						Element tagA = row.select("h3.summary").first().child(0);
+						Element tagA = row.select("h3.summary").first()
+								.child(0);
 						sb.append(tagA.attr("title"));
 						sb.append("\t");
 						sb.append(tagA.attr("href"));
@@ -1142,7 +1152,8 @@ public class JsoupHtmlParser {
 						sb.append("\t");
 						sb.append(row.select("span.seller-loc").first().html());
 						sb.append("\t");
-						Element tagLink = row.select("a.feature-dsc-tgr").first();
+						Element tagLink = row.select("a.feature-dsc-tgr")
+								.first();
 						sb.append("\t");
 						sb.append(tagLink.ownText());
 						sb.append("\t");
@@ -1151,22 +1162,141 @@ public class JsoupHtmlParser {
 					}
 					System.out.println(sb.toString());
 				}
-				
-//				
+
+				//
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
-		
-//		Document doc = Jsoup.parse(html);
-////		System.out.println(doc.html());
-//		Elements lists = doc.select("div.list-view");
-//		if (null != lists) {
-//			System.out.println(lists.html());
-//		}
+		// Document doc = Jsoup.parse(html);
+		// // System.out.println(doc.html());
+		// Elements lists = doc.select("div.list-view");
+		// if (null != lists) {
+		// System.out.println(lists.html());
+		// }
 	}
 
+	public static List<Article> getArticleList(String html, Integer authorId,
+			Map<Integer, String> authorMap) {
+
+		List<Article> list = new ArrayList<Article>();
+		Document doc = Jsoup.parse(html);
+		Elements table = doc.select("#delform>table");
+		if (null != table && table.size() > 0) {
+			Element tbody = table.first().child(0);
+			Elements trs = tbody.children();
+			for (Element tr : trs) {
+				if (tr.hasClass("th")) {
+					continue;
+				}
+				Article article = new Article();
+				// 主题
+				Element link = tr.child(1).child(0);
+				String subject = link.html();
+				if (subject.indexOf("易眼金睛") > -1) {
+					article.setSubject(subject);
+				} else {
+					continue;
+				}
+
+				// thread ID
+				String threadId = link.attr("href");
+				if (threadId.endsWith(".html")) {
+					threadId = threadId.substring(0, threadId.indexOf(".html"));
+					article.setThreadId(Integer.valueOf(threadId));
+					article.setLink("http://bbs.caipiao.163.com/thread-"
+							+ threadId + "-1-1.html");
+				}
+
+				Element module = tr.child(2).child(0);
+				article.setModule(module.attr("href"));
+
+				article.setCategory("recommendation");
+				article.setAuthorId(authorId);
+				article.setAuthor(authorMap.get(authorId));
+
+//				HttpSimulation hs = new HttpSimulation();
+//				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+//				String response = hs.getResponseBodyByGet("bbs.caipiao.163.com", "/thread-29834-1-1.html", nvps);
+//				JsoupHtmlParser.getArticleDetail(response,null);
+				
+
+				list.add(article);
+			}
+		}
+
+		return list;
+	}
+
+	public static Article getArticleDetail(String html, Article article) {
+
+		List<Article> list = new ArrayList<Article>();
+		Document doc = Jsoup.parse(html);
+		Elements postlist = doc.select("#postlist");
+		// logger.info(postlist.html());
+		// Elements divs = postlist.first().select("div");
+		// logger.info(divs.first().html());
+		// $("[href$='.jpg']")
+		// Element jj = postlist.first().select("#authorposton135631").first();
+		// Element jj = postlist.first().select("input[name^='news']").first();
+		// Elements spans =
+		// postlist.first().select("em>span").first().attr("title");
+
+		Element firstPost = postlist.first();
+//		String title = firstPost.select("em>span").first().attr("title");
+		String dateStr = firstPost.select("em[id]").first().html();
+		article.setPostTime(StringUtil.getNeteaseBbsDateTime(dateStr));
+//		logger.info(article.getPostTime());
+		logger.info(StringUtil.getNeteaseBbsDateTime(dateStr));
+//		logger.info(StringUtil.getNeteaseBbsDateTime(dateStr));
+
+//		logger.info(firstPost.select("div.t_fsz").first());
+		String content = firstPost.select("div.t_fsz").first().text();
+		article.setContent(content);
+		logger.info(content);
+		// logger.info(postlist.first().child(2).child(0).child(0).child(1).child(0).html());
+		
+		return article;
+
+		// if (null != table && table.size() > 0) {
+		// Element tbody = table.first().child(0);
+		// Elements trs = tbody.children();
+		// for (Element tr : trs) {
+		// if(tr.hasClass("th")){
+		// continue;
+		// }
+		// Article article = new Article();
+		// //主题
+		// Element link = tr.child(1).child(0);
+		// String subject = link.html();
+		// if(subject.indexOf("易眼金睛") > -1){
+		// article.setSubject(subject);
+		// } else {
+		// continue;
+		// }
+		//
+		// //thread ID
+		// String threadId = link.attr("href");
+		// if(threadId.endsWith(".html")){
+		// threadId = threadId.substring(0, threadId.indexOf(".html"));
+		// article.setThreadId(Integer.valueOf(threadId));
+		// article.setLink("http://bbs.caipiao.163.com/thread-"+threadId+"-1-1.html");
+		// }
+		//
+		// Element module = tr.child(2).child(0);
+		// article.setModule(module.attr("href"));
+		//
+		// article.setCategory("recommendation");
+		// article.setAuthorId(authorId);
+		// article.setAuthor(authorMap.get(authorId));
+		//
+		// list.add(article);
+		// }
+		// }
+		//
+		// return list;
+	}
+	
 }

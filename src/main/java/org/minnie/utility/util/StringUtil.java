@@ -19,6 +19,9 @@ public class StringUtil {
 			Pattern.CASE_INSENSITIVE);
 	public static Pattern ballPattern = Pattern.compile(Constant.REG_BALL,
 			Pattern.CASE_INSENSITIVE);
+	public static Pattern neteaseBbsDatetimePattern = Pattern.compile(Constant.REG_NETEASE_BBS_DATETIME,
+			Pattern.CASE_INSENSITIVE);
+	
 
 	/**
 	 * @param args
@@ -116,9 +119,17 @@ public class StringUtil {
      * @return 如果是符合网址格式的字符串,返回<b>true</b>,否则为<b>false</b>
      */
     public static boolean isEmail( String str ){
-        String regex =  "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
-        Pattern pattern = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile(Constant.REG_MAIL);
         Matcher  matcher = pattern.matcher( str );
         return matcher.matches();
     }
+    
+	public static String getNeteaseBbsDateTime(String src) {
+		Matcher matcher = neteaseBbsDatetimePattern.matcher(src);
+		if (matcher.find()) {
+			return matcher.group();
+		}
+		return null;
+	}
+	
 }

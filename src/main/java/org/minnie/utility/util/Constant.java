@@ -46,6 +46,9 @@ public class Constant {
 	public static final String REG_DOUBLE_COLOR_RED_BALL = "\\d{2}\\,\\d{2}\\,\\d{2}\\,\\d{2}\\,\\d{2}\\,\\d{2}";
 	public static final String REG_GD_FIVE_IN_ELEVEN = "\\d{8}";
 	public static final String REG_BALL = "\\d{2}";
+	public static final String REG_NETEASE_BBS_DATETIME = "\\d{4}\\-\\d{1,2}-\\d{1,2}\\s([0-1]{1}\\d{1}|[2]{1}[0-3]{1})(?::)?([0-5]{1}\\d{1})(?::)?([0-5]{1}\\d{1}){0,1}";
+
+	public static final String REG_MAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
 	
 	public static final String DOMAIN_163 = "163.com";
 	public static final String DOMAIN_HUPU = "hupu.com";
