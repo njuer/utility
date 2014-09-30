@@ -12,6 +12,7 @@ public class Article {
 	private String module;//模块，竞彩足球：zucai
 	private String subject;//主题
 	private String postTime;//发表时间
+	private String modifyTime;//编辑时间
 	private String author;//作者
 	private Integer authorId;//作者ID
 	private String category;//文章类别,recommendation:推荐
@@ -72,15 +73,19 @@ public class Article {
 	public void setLink(String link) {
 		this.link = link;
 	}
+	public String getModifyTime() {
+		return modifyTime;
+	}
+	public void setModifyTime(String modifyTime) {
+		this.modifyTime = modifyTime;
+	}
 	
 	@Override
 	public String toString() {
 		return "Article [threadId=" + threadId + ", module=" + module
 				+ ", subject=" + subject + ", postTime=" + postTime
-				+ ", author=" + author + ", authorId=" + authorId
-				+ ", category=" + category + ", content=" + content + ", link="
-				+ link + "]";
+				+ ", modifyTime=" + modifyTime + ", author=" + author
+				+ ", authorId=" + authorId + ", category=" + category
+				+ ", content=" + content + ", link=" + link + "]";
 	}
-	
-	
 }

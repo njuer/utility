@@ -1199,7 +1199,7 @@ public class MysqlDatabseHelper {
 	 * @param authorIdArray	作者ID数组
 	 * @return
 	 */
-	public static Set<Integer> getNeteaseArticleIdSet(int [] authorIdArray) {
+	public static Set<Integer> getNeteaseArticleIdSet(Integer [] authorIdArray) {
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -1245,6 +1245,54 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closeConnection(conn);
 		}
 		return threadIdSet;
+	}
+
+	public static Map<Integer,String> getNeteaseThreadTimeMap(Integer [] authorIdArray) {
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		Map<Integer,String> map = new HashMap<Integer,String>();
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT id,modify_time FROM lms_bbs_netease ");
+		if(null != authorIdArray){
+			sb.append("WHERE ");
+			int len = authorIdArray.length;
+			if(len == 1){
+				sb.append(" authorId = ").append(authorIdArray[0]);
+			} else {
+				sb.append(" authorId IN (");
+				for(int i = 0; i < len; i++){
+					if(i > 0){
+						sb.append(",");
+					}
+					sb.append(authorIdArray[i]);
+				}
+				sb.append(")");
+			}
+		}
+		
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery(sb.toString());
+				while (rs.next()) {
+					map.put(rs.getInt(1), rs.getString(2));
+				}
+				logger.info("已获取" + Arrays.toString(authorIdArray) + "发表文章<ID,编辑时间>集合");
+			}
+			
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getNeteaseThreadTimeMap(int [] authorIdArray): "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return map;
 	}
 	
 	/**
@@ -1345,6 +1393,7 @@ public class MysqlDatabseHelper {
 		sqlInsert.append("author,");
 		sqlInsert.append("authorId,");
 		sqlInsert.append("post_time,");
+		sqlInsert.append("modify_time,");
 		sqlInsert.append("del_flag,");
 		sqlInsert.append("create_date,");
 		sqlInsert.append("create_by,");
@@ -1352,7 +1401,7 @@ public class MysqlDatabseHelper {
 		sqlInsert.append("update_by,");
 		sqlInsert.append("remarks");
 		sqlInsert.append(" ) ");
-		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		
 		//更新
 		StringBuffer sqlUpdate = new StringBuffer();
@@ -1364,6 +1413,7 @@ public class MysqlDatabseHelper {
 		sqlUpdate.append(" content = ?,");
 		sqlUpdate.append(" category = ?,");
 		sqlUpdate.append(" post_time = ?,");
+		sqlUpdate.append(" modify_time = ?,");
 		sqlUpdate.append(" update_date = ?,");
 		sqlUpdate.append(" update_by = ? ");
 		sqlUpdate.append("where id = ? ");
@@ -1381,8 +1431,8 @@ public class MysqlDatabseHelper {
 					Integer threadId = article.getThreadId();
 					String content = article.getContent();
 					
-					logger.info(article);
-					logger.info(content.length());
+//					logger.info(article);
+//					logger.info(content.length());
 					
 					if(existThreadSet.contains(threadId)){
 						//更新
@@ -1391,9 +1441,10 @@ public class MysqlDatabseHelper {
 						pstUpdate.setString(3, article.getContent());
 						pstUpdate.setString(4, article.getCategory());
 						pstUpdate.setString(5, article.getPostTime());
-						pstUpdate.setString(6, DateUtil.getTime(System.currentTimeMillis()));
-						pstUpdate.setString(7, "admin");
-						pstUpdate.setInt(8, threadId);
+						pstUpdate.setString(6, article.getModifyTime());
+						pstUpdate.setString(7, DateUtil.getTime(System.currentTimeMillis()));
+						pstUpdate.setString(8, "admin");
+						pstUpdate.setInt(9, threadId);
 						// 把一个SQL命令加入命令列表
 						pstUpdate.addBatch();
 					} else {
@@ -1407,13 +1458,14 @@ public class MysqlDatabseHelper {
 						pstInsert.setString(7, article.getAuthor());
 						pstInsert.setInt(8, article.getAuthorId());
 						pstInsert.setString(9, article.getPostTime());
-						pstInsert.setInt(10, 1);
+						pstInsert.setString(10, article.getModifyTime());
+						pstInsert.setInt(11, 1);
 						String dt = DateUtil.getTime(System.currentTimeMillis());
-						pstInsert.setString(11, dt);
-						pstInsert.setString(12, "admin");
-						pstInsert.setString(13, dt);
-						pstInsert.setString(14, "admin");
-						pstInsert.setNull(15, Types.VARCHAR);
+						pstInsert.setString(12, dt);
+						pstInsert.setString(13, "admin");
+						pstInsert.setString(14, dt);
+						pstInsert.setString(15, "admin");
+						pstInsert.setNull(16, Types.VARCHAR);
 						// 把一个SQL命令加入命令列表
 						pstInsert.addBatch();
 					}
@@ -1433,6 +1485,258 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closePreparedStatement(pstInsert);
 			MysqlConnectionManager.closeConnection(conn);
 		}
+	}
+
+	public static void batchAddNeteaseArticles(List<Article> articleList, Map<Integer,String> existThreadMap) {
+		
+		Connection conn = null;
+		PreparedStatement pstInsert = null;
+		PreparedStatement pstUpdate = null;
+		
+		boolean existFlag = true;
+		if(null == existThreadMap){
+			existFlag = false;
+		}
+		
+		Set<Integer> existThreadSet = existThreadMap.keySet();
+		
+		//新增
+		StringBuffer sqlInsert = new StringBuffer();
+		sqlInsert.append("insert into ");
+		sqlInsert.append(" lms_bbs_netease ");
+		sqlInsert.append(" ( ");
+		sqlInsert.append("id,");
+		sqlInsert.append("module,");
+		sqlInsert.append("subject,");
+		sqlInsert.append("content,");
+		sqlInsert.append("link,");
+		sqlInsert.append("category,");
+		sqlInsert.append("author,");
+		sqlInsert.append("authorId,");
+		sqlInsert.append("post_time,");
+		sqlInsert.append("modify_time,");
+		sqlInsert.append("del_flag,");
+		sqlInsert.append("create_date,");
+		sqlInsert.append("create_by,");
+		sqlInsert.append("update_date,");
+		sqlInsert.append("update_by,");
+		sqlInsert.append("remarks");
+		sqlInsert.append(" ) ");
+		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		
+		//更新
+		StringBuffer sqlUpdate = new StringBuffer();
+		sqlUpdate.append("update ");
+		sqlUpdate.append(" lms_bbs_netease ");
+		sqlUpdate.append("set ");
+		sqlUpdate.append(" module = ?,");
+		sqlUpdate.append(" subject = ?,");
+		sqlUpdate.append(" content = ?,");
+		sqlUpdate.append(" category = ?,");
+		sqlUpdate.append(" post_time = ?,");
+		sqlUpdate.append(" modify_time = ?,");
+		sqlUpdate.append(" update_date = ?,");
+		sqlUpdate.append(" update_by = ? ");
+		sqlUpdate.append("where id = ? ");
+		
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+			
+			if (conn != null) {
+				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert.toString());
+				pstUpdate = (PreparedStatement) conn.prepareStatement(sqlUpdate.toString());
+				
+				for (Article article : articleList) {
+					Integer threadId = article.getThreadId();
+					String content = article.getContent();
+					
+					if(existFlag && existThreadSet.contains(threadId)){
+						String currentModifyTime = article.getModifyTime();
+						String lastModifyTime = existThreadMap.get(threadId);
+						
+						if(null != lastModifyTime && null != currentModifyTime && currentModifyTime.compareTo(lastModifyTime) > 0){
+							//更新
+							pstUpdate.setString(1, article.getModule());
+							pstUpdate.setString(2, article.getSubject());
+							pstUpdate.setString(3, content);
+							pstUpdate.setString(4, article.getCategory());
+							pstUpdate.setString(5, article.getPostTime());
+							pstUpdate.setString(6, currentModifyTime);
+							pstUpdate.setString(7, DateUtil.getTime(System.currentTimeMillis()));
+							pstUpdate.setString(8, "admin");
+							pstUpdate.setInt(9, threadId);
+							// 把一个SQL命令加入命令列表
+							pstUpdate.addBatch();
+						}
+					} else {
+						//新增
+						pstInsert.setInt(1, threadId);
+						pstInsert.setString(2, article.getModule());
+						pstInsert.setString(3, article.getSubject());
+						pstInsert.setString(4, content);
+						pstInsert.setString(5, article.getLink());
+						pstInsert.setString(6, article.getCategory());
+						pstInsert.setString(7, article.getAuthor());
+						pstInsert.setInt(8, article.getAuthorId());
+						pstInsert.setString(9, article.getPostTime());
+						pstInsert.setString(10, article.getModifyTime());
+						pstInsert.setInt(11, 1);
+						String dt = DateUtil.getTime(System.currentTimeMillis());
+						pstInsert.setString(12, dt);
+						pstInsert.setString(13, "admin");
+						pstInsert.setString(14, dt);
+						pstInsert.setString(15, "admin");
+						pstInsert.setNull(16, Types.VARCHAR);
+						// 把一个SQL命令加入命令列表
+						pstInsert.addBatch();
+					}
+				}
+				
+				// 执行批量更新
+				pstUpdate.executeBatch();
+				pstInsert.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入彩民社区文章成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddNeteaseArticles(List<Article> articleList)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pstInsert);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
+	
+	public static List<Article> persistAndToMail(List<Article> articleList, Map<Integer,String> existThreadMap) {
+		
+		Connection conn = null;
+		PreparedStatement pstInsert = null;
+		PreparedStatement pstUpdate = null;
+		
+		boolean existFlag = true;
+		if(null == existThreadMap){
+			existFlag = false;
+		}
+		
+		List<Article> mailList = new ArrayList<Article>();
+		Set<Integer> existThreadSet = existThreadMap.keySet();
+		
+		//新增
+		StringBuffer sqlInsert = new StringBuffer();
+		sqlInsert.append("insert into ");
+		sqlInsert.append(" lms_bbs_netease ");
+		sqlInsert.append(" ( ");
+		sqlInsert.append("id,");
+		sqlInsert.append("module,");
+		sqlInsert.append("subject,");
+		sqlInsert.append("content,");
+		sqlInsert.append("link,");
+		sqlInsert.append("category,");
+		sqlInsert.append("author,");
+		sqlInsert.append("authorId,");
+		sqlInsert.append("post_time,");
+		sqlInsert.append("modify_time,");
+		sqlInsert.append("del_flag,");
+		sqlInsert.append("create_date,");
+		sqlInsert.append("create_by,");
+		sqlInsert.append("update_date,");
+		sqlInsert.append("update_by,");
+		sqlInsert.append("remarks");
+		sqlInsert.append(" ) ");
+		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		
+		//更新
+		StringBuffer sqlUpdate = new StringBuffer();
+		sqlUpdate.append("update ");
+		sqlUpdate.append(" lms_bbs_netease ");
+		sqlUpdate.append("set ");
+		sqlUpdate.append(" module = ?,");
+		sqlUpdate.append(" subject = ?,");
+		sqlUpdate.append(" content = ?,");
+		sqlUpdate.append(" category = ?,");
+		sqlUpdate.append(" post_time = ?,");
+		sqlUpdate.append(" modify_time = ?,");
+		sqlUpdate.append(" update_date = ?,");
+		sqlUpdate.append(" update_by = ? ");
+		sqlUpdate.append("where id = ? ");
+		
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+			
+			if (conn != null) {
+				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert.toString());
+				pstUpdate = (PreparedStatement) conn.prepareStatement(sqlUpdate.toString());
+				
+				for (Article article : articleList) {
+					Integer threadId = article.getThreadId();
+					String content = article.getContent();
+					
+					if(existFlag && existThreadSet.contains(threadId)){
+						String currentModifyTime = article.getModifyTime();
+						String lastModifyTime = existThreadMap.get(threadId);
+						
+						if(null != lastModifyTime && null != currentModifyTime && currentModifyTime.compareTo(lastModifyTime) > 0){
+							//更新
+							pstUpdate.setString(1, article.getModule());
+							pstUpdate.setString(2, article.getSubject());
+							pstUpdate.setString(3, content);
+							pstUpdate.setString(4, article.getCategory());
+							pstUpdate.setString(5, article.getPostTime());
+							pstUpdate.setString(6, currentModifyTime);
+							pstUpdate.setString(7, DateUtil.getTime(System.currentTimeMillis()));
+							pstUpdate.setString(8, "admin");
+							pstUpdate.setInt(9, threadId);
+							// 把一个SQL命令加入命令列表
+							pstUpdate.addBatch();
+							//加入待发邮件列表
+							mailList.add(article);
+						}
+					} else {
+						//新增
+						pstInsert.setInt(1, threadId);
+						pstInsert.setString(2, article.getModule());
+						pstInsert.setString(3, article.getSubject());
+						pstInsert.setString(4, content);
+						pstInsert.setString(5, article.getLink());
+						pstInsert.setString(6, article.getCategory());
+						pstInsert.setString(7, article.getAuthor());
+						pstInsert.setInt(8, article.getAuthorId());
+						pstInsert.setString(9, article.getPostTime());
+						pstInsert.setString(10, article.getModifyTime());
+						pstInsert.setInt(11, 1);
+						String dt = DateUtil.getTime(System.currentTimeMillis());
+						pstInsert.setString(12, dt);
+						pstInsert.setString(13, "admin");
+						pstInsert.setString(14, dt);
+						pstInsert.setString(15, "admin");
+						pstInsert.setNull(16, Types.VARCHAR);
+						// 把一个SQL命令加入命令列表
+						pstInsert.addBatch();
+						//加入待发邮件列表
+						mailList.add(article);
+					}
+				}
+				
+				// 执行批量更新
+				pstUpdate.executeBatch();
+				pstInsert.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入彩民社区文章成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->persistAndToMail(List<Article> articleList)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pstInsert);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return mailList;
 	}
 	
 }

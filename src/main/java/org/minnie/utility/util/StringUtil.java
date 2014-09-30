@@ -132,4 +132,48 @@ public class StringUtil {
 		return null;
 	}
 	
+	/**
+	 * 将网易彩民论坛不规范的时间转换成规范格式
+	 * @param src
+	 * @return
+	 */
+	public  static String convertToStandardDateTime(String src){
+		
+		StringBuffer sb = new StringBuffer();
+		Matcher matcher = neteaseBbsDatetimePattern.matcher(src);
+		if (matcher.find()) {
+			String result = matcher.group();
+			
+			String [] dt = result.split(" ");
+			String [] date = dt[0].split("-");
+			//年
+			sb.append(date[0]);
+			sb.append("-");
+			//月
+			String month = date[1];
+			if(1 == month.length()){
+				sb.append("0");
+			}
+			sb.append(month);
+			sb.append("-");
+			//日
+			String day = date[2];
+			if(1 == day.length()){
+				sb.append("0");
+			}
+			sb.append(day);
+			sb.append(" ");
+			
+			String [] time = dt[1].split(":");
+			//时分秒
+			sb.append(dt[1]);
+			//如果秒不存在，则补零
+			if(2 == time.length){
+				sb.append(":00");
+			}
+			return sb.toString();
+		}
+		return null;
+	}
+	
 }

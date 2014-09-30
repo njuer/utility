@@ -1,6 +1,8 @@
 package org.minnie.utility.parser;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,13 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -1178,6 +1179,40 @@ public class JsoupHtmlParser {
 		// }
 	}
 
+	/**
+	 * 抓取下一页参数集合
+	 * 
+	 * @param html
+	 * @return
+	 */
+	public static List<NameValuePair> getParams(String html) {
+
+		Document doc = Jsoup.parse(html);
+		Elements link = doc.select("a.nxt");
+		if (null != link && link.size() > 0) {
+			Element nextPage = link.first();
+//			logger.error(nextPage.absUrl("href"));
+			try {
+				return URLEncodedUtils.parse(new URI(nextPage.absUrl("href")),
+						"UTF-8");
+
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+				logger.error("URL参数解析失败： " + e.getMessage());
+			}
+		}
+
+		return Collections.emptyList();
+	}
+
+	/**
+	 * 抓取文章列表
+	 * 
+	 * @param html
+	 * @param authorId
+	 * @param authorMap
+	 * @return
+	 */
 	public static List<Article> getArticleList(String html, Integer authorId,
 			Map<Integer, String> authorMap) {
 
@@ -1192,36 +1227,41 @@ public class JsoupHtmlParser {
 					continue;
 				}
 				Article article = new Article();
-				// 主题
-				Element link = tr.child(1).child(0);
-				String subject = link.html();
-				if (subject.indexOf("易眼金睛") > -1) {
-					article.setSubject(subject);
-				} else {
+//				logger.info(tr.childNodeSize());
+				
+				if(tr.childNodeSize() < 11){
 					continue;
 				}
-
-				// thread ID
-				String threadId = link.attr("href");
-				if (threadId.endsWith(".html")) {
-					threadId = threadId.substring(0, threadId.indexOf(".html"));
-					article.setThreadId(Integer.valueOf(threadId));
-					article.setLink("http://bbs.caipiao.163.com/thread-"
-							+ threadId + "-1-1.html");
+				
+				Element elem = tr.child(1);
+				if(null != elem && elem.childNodeSize() > 0){
+					Element link = elem.child(0);
+					// 主题
+					String subject = link.html();
+					if (subject.indexOf("易眼金睛") > -1) {
+						article.setSubject(subject);
+					} else {
+						continue;
+					}
+					
+					// thread ID
+					String threadId = link.attr("href");
+					if (threadId.endsWith(".html")) {
+						threadId = threadId.substring(0, threadId.indexOf(".html"));
+						article.setThreadId(Integer.valueOf(threadId));
+						article.setLink("http://bbs.caipiao.163.com/thread-"
+								+ threadId + "-1-1.html");
+					}
 				}
 
-				Element module = tr.child(2).child(0);
-				article.setModule(module.attr("href"));
+				elem = tr.child(2);
+				if(null != elem && elem.childNodeSize() > 0){
+					article.setModule(elem.child(0).attr("href"));
+				}
 
 				article.setCategory("recommendation");
 				article.setAuthorId(authorId);
 				article.setAuthor(authorMap.get(authorId));
-
-//				HttpSimulation hs = new HttpSimulation();
-//				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-//				String response = hs.getResponseBodyByGet("bbs.caipiao.163.com", "/thread-29834-1-1.html", nvps);
-//				JsoupHtmlParser.getArticleDetail(response,null);
-				
 
 				list.add(article);
 			}
@@ -1230,73 +1270,82 @@ public class JsoupHtmlParser {
 		return list;
 	}
 
+	/**
+	 * 获取帖子详细信息
+	 * @param html
+	 * @param article
+	 * @return
+	 */
 	public static Article getArticleDetail(String html, Article article) {
 
-		List<Article> list = new ArrayList<Article>();
 		Document doc = Jsoup.parse(html);
 		Elements postlist = doc.select("#postlist");
-		// logger.info(postlist.html());
-		// Elements divs = postlist.first().select("div");
-		// logger.info(divs.first().html());
-		// $("[href$='.jpg']")
-		// Element jj = postlist.first().select("#authorposton135631").first();
-		// Element jj = postlist.first().select("input[name^='news']").first();
-		// Elements spans =
-		// postlist.first().select("em>span").first().attr("title");
 
-		Element firstPost = postlist.first();
-//		String title = firstPost.select("em>span").first().attr("title");
-		String dateStr = firstPost.select("em[id]").first().html();
-		article.setPostTime(StringUtil.getNeteaseBbsDateTime(dateStr));
-//		logger.info(article.getPostTime());
-		logger.info(StringUtil.getNeteaseBbsDateTime(dateStr));
-//		logger.info(StringUtil.getNeteaseBbsDateTime(dateStr));
-
-//		logger.info(firstPost.select("div.t_fsz").first());
-		String content = firstPost.select("div.t_fsz").first().text();
-		article.setContent(content);
-		logger.info(content);
-		// logger.info(postlist.first().child(2).child(0).child(0).child(1).child(0).html());
-		
+		if(null != postlist){
+			Element firstPost = postlist.first();
+			if(null != firstPost){
+				//帖子首次发表时间
+				Elements elems = firstPost.select("em[id]");
+				if(null != elems && elems.size() > 0){
+					String postTime = StringUtil.convertToStandardDateTime(elems.first().html());
+					article.setPostTime(postTime);
+//					logger.info(postTime);
+				}
+				
+				//帖子内容
+				elems = firstPost.select("div.t_fsz");
+				if(null != elems && elems.size() > 0){
+					String content = elems.first().text();
+					article.setContent(content);
+//					logger.info(content);
+				}
+				
+				//最后编辑时间
+				elems = firstPost.select("i.pstatus");
+				if(null != elems && elems.size() > 0){
+					String  modifyTime = StringUtil.convertToStandardDateTime(elems.first().html());
+					article.setModifyTime(modifyTime);
+//					logger.info(modifyTime);
+				}
+			}
+		}
 		return article;
-
-		// if (null != table && table.size() > 0) {
-		// Element tbody = table.first().child(0);
-		// Elements trs = tbody.children();
-		// for (Element tr : trs) {
-		// if(tr.hasClass("th")){
-		// continue;
-		// }
-		// Article article = new Article();
-		// //主题
-		// Element link = tr.child(1).child(0);
-		// String subject = link.html();
-		// if(subject.indexOf("易眼金睛") > -1){
-		// article.setSubject(subject);
-		// } else {
-		// continue;
-		// }
-		//
-		// //thread ID
-		// String threadId = link.attr("href");
-		// if(threadId.endsWith(".html")){
-		// threadId = threadId.substring(0, threadId.indexOf(".html"));
-		// article.setThreadId(Integer.valueOf(threadId));
-		// article.setLink("http://bbs.caipiao.163.com/thread-"+threadId+"-1-1.html");
-		// }
-		//
-		// Element module = tr.child(2).child(0);
-		// article.setModule(module.attr("href"));
-		//
-		// article.setCategory("recommendation");
-		// article.setAuthorId(authorId);
-		// article.setAuthor(authorMap.get(authorId));
-		//
-		// list.add(article);
-		// }
-		// }
-		//
-		// return list;
 	}
-	
+
+	public static Article getArticleDetail(String html, Article article, Map<Integer,String> existThreadMap) {
+		
+		Document doc = Jsoup.parse(html);
+		Elements postlist = doc.select("#postlist");
+		
+		if(null != postlist){
+			Element firstPost = postlist.first();
+			if(null != firstPost){
+				//帖子首次发表时间
+				Elements elems = firstPost.select("em[id]");
+				if(null != elems && elems.size() > 0){
+					String postTime = StringUtil.convertToStandardDateTime(elems.first().html());
+					article.setPostTime(postTime);
+//					logger.info(postTime);
+				}
+				
+				//帖子内容
+				elems = firstPost.select("div.t_fsz");
+				if(null != elems && elems.size() > 0){
+					String content = elems.first().text();
+					article.setContent(content);
+//					logger.info(content);
+				}
+				
+				//最后编辑时间
+				elems = firstPost.select("i.pstatus");
+				if(null != elems && elems.size() > 0){
+					String  modifyTime = StringUtil.convertToStandardDateTime(elems.first().html());
+					article.setModifyTime(modifyTime);
+//					logger.info(modifyTime);
+				}
+			}
+		}
+		return article;
+	}
+
 }

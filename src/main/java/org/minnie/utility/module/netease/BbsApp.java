@@ -20,6 +20,16 @@ import org.minnie.utility.util.Constant;
 public class BbsApp {
 
 	private static Logger logger = Logger.getLogger(BbsApp.class.getName());
+	
+	private static final Map<Integer,String> authorMap = new HashMap<Integer,String>();
+	
+	static {
+		authorMap.put(667895, "巴乔巴蒂");
+		authorMap.put(747026, "彩票活动");
+		authorMap.put(732519, "彩票活动发布");
+	}
+
+	private static HttpSimulation hs = new HttpSimulation();
 
 	private static ResourceBundle rb;
 	private static BufferedInputStream inputStream;
@@ -44,27 +54,121 @@ public class BbsApp {
 
 		
 		// 主程序执行
-//		int [] authorIdArray = {747026,667895,732519};
-		int [] authorIdArray = {747026};
-		Set<Integer> existThreadSet = MysqlDatabseHelper.getNeteaseArticleIdSet(authorIdArray);
+		init();
+//		updateArticles();
+	}
+	
+	public static void init(){
+		Set<Integer> keySet = authorMap.keySet();
+		Integer[] authorIdArray = keySet.toArray(new Integer[keySet.size()]);
+		Map<Integer,String> existThreadMap = MysqlDatabseHelper.getNeteaseThreadTimeMap(authorIdArray);
 		
-		List<Article> list = getArticleList();
+		List<Article> list = initArticleList(authorIdArray);
 		List<Article> result = getArticleDetail(list);
 		
-		MysqlDatabseHelper.batchAddNeteaseArticles(result,existThreadSet);
-		
-//		HttpSimulation hs = new HttpSimulation();
-//		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-//		String response = hs.getResponseBodyByGet("bbs.caipiao.163.com", "/thread-28561-1-1.html", nvps);
-//		JsoupHtmlParser.getArticleDetail(response,null);
+		MysqlDatabseHelper.batchAddNeteaseArticles(result,existThreadMap);
 	}
+	
+	/**
+	 * 初始化文章列表
+	 * @param authorIdArray
+	 * @return
+	 */
+	public static List<Article> initArticleList(Integer[] authorIdArray){
+		
+		long consumerStartTime = System.currentTimeMillis();
+		
+		List<Article> list = new ArrayList<Article>();
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		
+		for(Integer authorId : authorIdArray){
+			
+			nvps.clear();
+			/**
+			 * 第一页
+			 */
+			nvps.add(new BasicNameValuePair("mod", "space"));
+			nvps.add(new BasicNameValuePair("uid", String.valueOf(authorId)));
+			nvps.add(new BasicNameValuePair("do", "thread"));
+			nvps.add(new BasicNameValuePair("thread", "me"));
+			nvps.add(new BasicNameValuePair("type", "thread"));
+			nvps.add(new BasicNameValuePair("from", "space"));
+			nvps.add(new BasicNameValuePair("order", "dateline"));
+			nvps.add(new BasicNameValuePair("page", "1"));
+			
+//			int i = 0;
+			while(true){
+//				logger.info("============" + i++);
+				String response = hs.getResponseBodyByGet("bbs.caipiao.163.com", "/home.php", nvps);
+				list.addAll(JsoupHtmlParser.getArticleList(response, authorId, authorMap));
+
+				/**
+				 * 下一页
+				 */
+				nvps.clear();
+				nvps.addAll(JsoupHtmlParser.getParams(response));
+				if(nvps.isEmpty()){
+					break;
+				}
+			}
+		}
+		
+		long consumerEndTime = System.currentTimeMillis();
+		logger.info("initArticleList运行耗时 : "
+				+ (consumerEndTime - consumerStartTime) + "ms");
+		return list;
+	}
+	
+
+	public static void updateArticles(){
+		Set<Integer> keySet = authorMap.keySet();
+		Integer[] authorIdArray = keySet.toArray(new Integer[keySet.size()]);
+		Map<Integer,String> existThreadMap = MysqlDatabseHelper.getNeteaseThreadTimeMap(authorIdArray);
+		
+		List<Article> list = getLastArticleList(authorIdArray);
+		List<Article> result = getArticleDetail(list);
+		
+		MysqlDatabseHelper.batchAddNeteaseArticles(result,existThreadMap);
+	}
+	
+	public static List<Article> getLastArticleList(Integer[] authorIdArray){
+		
+		long consumerStartTime = System.currentTimeMillis();
+		
+		List<Article> list = new ArrayList<Article>();
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		
+		for(Integer authorId : authorIdArray){
+			
+			nvps.clear();
+			/**
+			 * 第一页
+			 */
+			nvps.add(new BasicNameValuePair("mod", "space"));
+			nvps.add(new BasicNameValuePair("uid", String.valueOf(authorId)));
+			nvps.add(new BasicNameValuePair("do", "thread"));
+			nvps.add(new BasicNameValuePair("thread", "me"));
+			nvps.add(new BasicNameValuePair("type", "thread"));
+			nvps.add(new BasicNameValuePair("from", "space"));
+			nvps.add(new BasicNameValuePair("order", "dateline"));
+			nvps.add(new BasicNameValuePair("page", "1"));
+			
+			String response = hs.getResponseBodyByGet("bbs.caipiao.163.com", "/home.php", nvps);
+			list.addAll(JsoupHtmlParser.getArticleList(response, authorId, authorMap));
+		}
+		
+		long consumerEndTime = System.currentTimeMillis();
+		logger.info("getLastArticleList运行耗时 : "
+				+ (consumerEndTime - consumerStartTime) + "ms");
+		return list;
+	}
+	
 	
 	public static List<Article> getArticleDetail(List<Article> list){
 
 		long consumerStartTime = System.currentTimeMillis();
-
 		
-		HttpSimulation hs = new HttpSimulation();
+//		HttpSimulation hs = new HttpSimulation();
 		List<Article> result = new ArrayList<Article>();
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 		
@@ -83,52 +187,9 @@ public class BbsApp {
 		}
 		
 		long consumerEndTime = System.currentTimeMillis();
-		logger.info("程序运行耗时 : "
+		logger.info("getArticleDetail运行耗时 : "
 				+ (consumerEndTime - consumerStartTime) + "ms");
 		return result;
-	}
-
-	public static List<Article> getArticleList(){
-		
-		long consumerStartTime = System.currentTimeMillis();
-		
-		List<Article> list = new ArrayList<Article>();
-		Map<Integer,String> authorMap = new HashMap<Integer,String>();
-//		authorMap.put(667895, "巴乔巴蒂");
-		authorMap.put(747026, "彩票活动");
-//		authorMap.put(732519, "彩票活动发布");
-		
-		HttpSimulation hs = new HttpSimulation();
-		
-		int [] authorArray = {747026, 667895}; 		
-		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-		
-		for(int authorId : authorArray){
-			nvps.clear();
-			
-			nvps.add(new BasicNameValuePair("mod", "space"));
-			nvps.add(new BasicNameValuePair("uid", String.valueOf(authorId)));
-			nvps.add(new BasicNameValuePair("do", "thread"));
-			nvps.add(new BasicNameValuePair("thread", "me"));
-			nvps.add(new BasicNameValuePair("type", "thread"));
-			nvps.add(new BasicNameValuePair("from", "space"));
-			nvps.add(new BasicNameValuePair("order", "dateline"));
-			nvps.add(new BasicNameValuePair("page", "1"));
-			
-			String response = hs.getResponseBodyByGet("bbs.caipiao.163.com", "/home.php", nvps);
-			
-			list.addAll(JsoupHtmlParser.getArticleList(response, authorId, authorMap));
-			
-		}
-		
-//		for(Article article : list){
-//			logger.info(article);
-//		}
-		
-		long consumerEndTime = System.currentTimeMillis();
-		logger.info("程序运行耗时 : "
-				+ (consumerEndTime - consumerStartTime) + "ms");
-		return list;
 	}
 
 }
