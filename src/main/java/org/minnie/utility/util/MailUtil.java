@@ -60,6 +60,37 @@ public class MailUtil {
 			me.printStackTrace();
 		}
 	}
+	
+	public static void sendMailByHtml(Session session, String host,  String user, String pwd, String[] to, String subject,
+			String body) {
+		
+		MimeMessage message = new MimeMessage(session);
+		
+		try {
+			message.setFrom(new InternetAddress(user));
+			InternetAddress[] toAddress = new InternetAddress[to.length];
+			
+			// To get the array of addresses
+			for (int i = 0; i < to.length; i++) {
+				toAddress[i] = new InternetAddress(to[i]);
+			}
+			
+			for (int i = 0; i < toAddress.length; i++) {
+				message.addRecipient(Message.RecipientType.TO, toAddress[i]);
+			}
+			
+			message.setSubject(subject);
+			message.setContent(body, "text/html;charset=utf-8");
+			Transport transport = session.getTransport(PROTOCOL_SMTP);
+			transport.connect(host, user, pwd);
+			transport.sendMessage(message, message.getAllRecipients());
+			transport.close();
+		} catch (AddressException ae) {
+			ae.printStackTrace();
+		} catch (MessagingException me) {
+			me.printStackTrace();
+		}
+	}
 
 	public void sendFromYeah(String host, String port, boolean starttls,
 			boolean auth, String user, String pwd, String[] to, String subject,

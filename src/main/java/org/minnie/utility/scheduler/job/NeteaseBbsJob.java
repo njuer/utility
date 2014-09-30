@@ -118,7 +118,8 @@ public class NeteaseBbsJob implements Job {
 		 */
 		List<Article> mailList = MysqlDatabseHelper.persistAndToMail(detailList,existThreadMap);
 		for(Article atc : mailList){
-			MailUtil.sendMail(session, host, user, pwd, to, atc.getSubject(), atc.getContent());
+			MailUtil.sendMailByHtml(session, host, user, pwd, to, atc.getSubject(), atc.getContent());
+			logger.info("mail sent, subject [" + atc.getSubject() + "]");
 		}
 	}
 
