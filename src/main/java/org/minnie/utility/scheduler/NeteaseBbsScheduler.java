@@ -149,7 +149,7 @@ public class NeteaseBbsScheduler {
 				.newTrigger()
 				.withIdentity("triggerBBS", "groupBBS")
 				.withSchedule(
-						CronScheduleBuilder.cronSchedule("1 0/10 12-15 * * ?"))
+						CronScheduleBuilder.cronSchedule("1 0/30 11-20 * * ?"))
 				.build();
 
 		// schedule it
