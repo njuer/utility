@@ -21,6 +21,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -33,6 +34,7 @@ import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.netease.Article;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
+import org.minnie.utility.module.netease.SmgFootball;
 import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.yangshengsuo.Regimen;
 import org.minnie.utility.util.Constant;
@@ -1346,6 +1348,39 @@ public class JsoupHtmlParser {
 			}
 		}
 		return article;
+	}
+	
+	public static void getMatchList(String html){
+		
+		Document doc = Jsoup.parse(html);
+		Elements matchList = doc.select("div.dataBody.unAttention");
+		
+		for(Element elem : matchList){
+			Elements children = elem.children();
+			for(Element child : children){
+//				logger.info(child.attr("gameDate"));
+//				child.select("dd");
+//				logger.info(child.select("dd"));
+				
+				SmgFootball sf = new SmgFootball();
+				Elements dds = child.select("dd");
+				for(Element dd : dds){
+//					logger.info(dd.attributes());
+					Attributes attrs = dd.attributes();
+//					logger.info(attrs.get("matchnumcn"));
+//					sf.seti
+//					isstop
+				}
+				
+			}
+		}
+		
+//		if(null != matchList){
+//			Element firstPost = postlist.first();
+//			if(null != firstPost){
+//				logger.info(firstPost.html());
+//			}
+//		}
 	}
 
 }

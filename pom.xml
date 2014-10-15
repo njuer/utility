@@ -151,6 +151,20 @@
 			<artifactId>quartz-jobs</artifactId>
 			<version>2.2.1</version>
 		</dependency>
-
+		
+		<!-- AXIS -->
+		<dependency>
+		    <groupId>axis</groupId>
+		    <artifactId>axis</artifactId>
+		    <version>1.4</version>
+		</dependency>
+		
+		<!-- ces-tokens -->
+		<dependency>
+		    <groupId>ces</groupId>
+		    <artifactId>ces-tokens</artifactId>
+		    <version>1.0</version>
+		</dependency>
+		
 	</dependencies>
 </project>
