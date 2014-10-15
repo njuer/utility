@@ -1240,11 +1240,11 @@ public class JsoupHtmlParser {
 					Element link = elem.child(0);
 					// 主题
 					String subject = link.html();
-					if (subject.indexOf("易眼金睛") > -1) {
-						article.setSubject(subject);
-					} else {
-						continue;
-					}
+//					if (subject.indexOf("易眼金睛") > -1) {
+//						article.setSubject(subject);
+//					} else {
+//						continue;
+//					}
 					
 					// thread ID
 					String threadId = link.attr("href");

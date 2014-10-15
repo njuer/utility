@@ -47,6 +47,8 @@ public class NeteaseBbsJob implements Job {
 		authorMap.put(667895, "巴乔巴蒂");
 		authorMap.put(747026, "彩票活动");
 		authorMap.put(732519, "彩票活动发布");
+		authorMap.put(1425064, "陈明通");
+		authorMap.put(89871, "lghappy");
 	}
 
 
