@@ -44,7 +44,8 @@ public class SmgFootballApp {
 		PropertyConfigurator.configure(System.getProperty("user.dir")
 				+ Constant.LOG_LOG4J_PARAM_FILE);
 		
-		init();
+//		init();
+		getLeagueList();
 	}
 	
 	public static void init(){
@@ -58,5 +59,16 @@ public class SmgFootballApp {
 		
 		JsoupHtmlParser.getMatchList(response);
 	}
+	
+	public static void getLeagueList(){
+//		http://saishi.caipiao.163.com/
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+//		nvps.add(new BasicNameValuePair("betDate", "2014-10-07"));
+		
+		String response = hs.getResponseBodyByGet("saishi.caipiao.163.com", "/", nvps);
+		
+		JsoupHtmlParser.getLeagueList(response);
+	}
+	
 
 }

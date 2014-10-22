@@ -33,6 +33,7 @@ import org.minnie.utility.entity.lottery.ShiShiCaiAnalysis;
 import org.minnie.utility.entity.lottery.ShiShiCaiPredict;
 import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.netease.Article;
+import org.minnie.utility.module.netease.FootballLeague;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
 import org.minnie.utility.module.netease.SmgFootball;
@@ -1494,7 +1495,91 @@ public class JsoupHtmlParser {
 		return list;
 	}
 	
-	
+	public static List<FootballLeague> getLeagueList(String html) {
+		
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("英格兰","England");
+		map.put("意大利","Italy");
+		map.put("西班牙","Spain");
+		map.put("德国","Germany");
+		map.put("法国","France");
+		map.put("葡萄牙","Portugal");
+		map.put("荷兰","Netherlands");
+		map.put("丹麦","Denmark");
+		map.put("挪威","Norway");
+		map.put("瑞典","Sweden");
+		map.put("芬兰","Finland");
+		map.put("苏格兰","Scotland");
+		map.put("乌克兰","Ukraine");
+		map.put("比利时","Belgium");
+		map.put("捷克","Czech");
+		map.put("土耳其","Turkey");
+		map.put("希腊","Greece");
+		map.put("保加利亚","Bulgaria");
+		map.put("瑞士","Switzerland");
+		map.put("以色列","Israel");
+		map.put("塞尔维亚","Serbia");
+		map.put("奥地利","Austria");
+		map.put("波兰","Poland");
+		map.put("爱尔兰","Ireland");
+		map.put("匈牙利","Hungary");
+		map.put("斯洛伐克","Slovakia");
+		map.put("斯洛文尼亚","Slovenia");
+		map.put("美国","USA");
+		map.put("加拿大","Canada");
+		map.put("墨西哥","Mexico");
+		map.put("巴西","Brazil");
+		map.put("阿根廷","Argentina");
+		map.put("乌拉圭","Uruguay");
+		map.put("巴拉圭","Paraguay");
+		map.put("智利","Chile");
+		map.put("秘鲁","Peru");
+		map.put("哥伦比亚","Columbia");
+		map.put("厄瓜多尔","Ecuador");
+		map.put("玻利维亚","Bolivia");
+		map.put("委内瑞拉","Venezuela");
+		map.put("中国","China");
+		map.put("韩国","Korea");
+		map.put("日本","Japan");
+		map.put("澳大利亚","Australia");
+		map.put("新加坡","Singapore");
+		map.put("沙特","SaudiArabia");
+		map.put("摩洛哥","Morocco");
+		map.put("喀麦隆","Cameroon");
+		map.put("南非","SouthAfrica");
+
+
+		
+		Document doc = Jsoup.parse(html);
+//		Elements leagueList = doc.select("div.league_con.stip_lib");
+		Elements leagueList = doc.select("div.matchList");
+		List<FootballLeague> list = new ArrayList<FootballLeague>();
+		for (Element elem : leagueList) {
+			Elements leagueBox = elem.select("div.leagueBox");
+			if(leagueBox.size() == 1){
+				Elements leagues = leagueBox.first().select("div.league_con.stip_lib");
+				for (Element league : leagues) {
+					Element elemCountry = league.child(0);
+					FootballLeague fl = new FootballLeague();
+					String continental = league.attr("tip");
+					continental = continental.substring(1, continental.indexOf("League"));
+					if(elemCountry.hasAttr("href")){
+						String leagueName = elemCountry.select("span.leagueName").first().text();
+						String leagueLogoLink = elemCountry.select("span.leagueLogo>img").first().attr("data-src");
+
+						String country = map.get(leagueName);
+						logger.info(leagueName);
+						
+//						logger.info(leagueName + "->" + leagueLink);
+					}
+				}
+			}
+			
+//			logger.info(elem.select("span.leagueName").first().text());
+		}
+
+		return null;
+	}
 	
 
 }
