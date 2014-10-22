@@ -1,5 +1,6 @@
 package org.minnie.utility.util;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class DateUtil {
 
@@ -19,6 +23,8 @@ public class DateUtil {
 			Constant.DATE_FORMAT_NETEASE_LOTTERY_FIVE_IN_ELEVEN);
 	public static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			Constant.DATE_FORMAT_WITHOUT_HH_MM_SS);
+	private static final Pattern PATTERN_TIMESTAMP = Pattern
+			.compile(Constant.TIMESTAMP_FORMAT);
 
 	/**
 	 * 获取当前年份
@@ -49,6 +55,7 @@ public class DateUtil {
 
 	/**
 	 * 获取当前时间
+	 * 
 	 * @param currentTimeMillis
 	 * @return
 	 */
@@ -57,10 +64,10 @@ public class DateUtil {
 		return standardDateFormat.format(dateTime);
 	}
 
-	public static String getDate(){
+	public static String getDate() {
 		return dateFormat.format(new Date());
 	}
-	
+
 	/**
 	 * 获取yyMMdd格式的日期列表
 	 * 
@@ -212,5 +219,19 @@ public class DateUtil {
 			e.printStackTrace();
 		}
 		return sourceDateStringDateString;
+	}
+
+	// Convert Unix timestamp to normal date style
+	public static Date TimeStamp2Date(String timestampString) {
+
+		if(null != timestampString){
+			Matcher matcher = PATTERN_TIMESTAMP.matcher(timestampString);
+			if (matcher.find()) {
+				Long timestamp = Long.parseLong(matcher.group());
+				return new Timestamp(timestamp);
+			}
+		}
+		return null;
+
 	}
 }

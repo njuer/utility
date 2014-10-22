@@ -1,5 +1,8 @@
 package org.minnie.utility.module.netease;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 /**
  * 精彩足球实体类
  * 
@@ -10,34 +13,41 @@ public class SmgFootball {
 	
 	private String gameDate;// 比赛日期<-gameDate
 
-	private String matchId = "989613";// 比赛ID<-matchid
-	private String matchCode = "201410083011";// 比赛代码：年(4)月(2)日(2)轮?(1)编号(3)<-matchcode
-	private String matchNumCn = "周三011";// 周几第几场<-matchnumcn
-	private String startTime = "1412821800000";// 开赛时间,时间戳<-starttime
-	private String endTime = "1412821620000";// 代购截止时间,时间戳<-endtime
-	private String isAttention = "0";// 是否关注 0:未关注 1:已关注<-isattention
-	private String homeTeamId = "27972";// 主队ID<-hostteamid
-	private String homeTeamName = "波特兰";// 主队名称<-hostname
-	private Integer homeTeamRank;// 主队排名
-	
-	private String awayTeamId = "41560";// 客队ID<-visitteamid
-	private String awayTeamName = "圣何塞";// 客队名称<-guestname
-	private Integer awayTeamRank;// 客队排名
+	private String matchId;// 比赛ID<-matchid
+	private String matchCode;// 比赛代码：年(4)月(2)日(2)轮?(1)编号(3)<-matchcode
+	private String matchLink;// 比赛分析链接
+	private String matchNumCn;// 周几第几场<-matchnumcn
+//	private String startTime = "1412821800000";// 开赛时间,时间戳<-starttime
+//	private String endTime = "1412821620000";// 代购截止时间,时间戳<-endtime
 
-	private String leagueId = "38";// 联赛id<-leagueid
-	private String leagueName = "美大联盟";// 联赛名称<-leagueName
+	private Date startTime;	//开赛时间(e.g. 1412821800000),时间戳<-starttime
+	private Date endTime;	//代购截止时间(e.g. 1412821620000),时间戳<-endtime
 	
-	private String isStop = "0";// 已出赛果 1:是 0:否 <-isStop
-	private String isHot = "0";// 是否特点赛事 1:是 0:否<-ishot
-	private String score = "-1";// 比分,球赛结束前默认值为-1<-score
+	private String homeTeamId;// 主队ID<-hostteamid
+	private String homeTeamName;// 主队名称<-hostname
+	private String homeTeamRank;// 主队排名
 	
-	private Float winOdds;//主胜赔率
-	private Float drawOdds;//主平赔率
-	private Float loseOdds;//主负赔率
+	private String awayTeamId;// 客队ID<-visitteamid
+	private String awayTeamName;// 客队名称<-guestname
+	private String awayTeamRank;// 客队排名
 
-	private Float concedeWinOdds;//让球主胜赔率
-	private Float concedeDrawOdds;//让球主平赔率
-	private Float concedeLoseOdds;//让球主负赔率
+	private String leagueId;// 联赛id<-leagueid
+	private String leagueName;// 联赛名称<-leagueName
+	private String leagueLink;// 联赛链接
+	
+	private String isAttention;// 是否关注 0:未关注 1:已关注<-isattention
+	private String isStop;// 已出赛果 1:是 0:否 <-isStop
+	private String isHot;// 是否特点赛事 1:是 0:否<-ishot
+	private String score;// 比分,球赛结束前默认值为-1<-score
+	
+	private BigDecimal winOdds;//主胜赔率
+	private BigDecimal drawOdds;//主平赔率
+	private BigDecimal loseOdds;//主负赔率
+
+	private BigDecimal concedePoints;//让球数 
+	private BigDecimal concedeWinOdds;//让球主胜赔率
+	private BigDecimal concedeDrawOdds;//让球主平赔率
+	private BigDecimal concedeLoseOdds;//让球主负赔率
 	
 	public String getGameDate() {
 		return gameDate;
@@ -57,29 +67,29 @@ public class SmgFootball {
 	public void setMatchCode(String matchCode) {
 		this.matchCode = matchCode;
 	}
+	public String getMatchLink() {
+		return matchLink;
+	}
+	public void setMatchLink(String matchLink) {
+		this.matchLink = matchLink;
+	}
 	public String getMatchNumCn() {
 		return matchNumCn;
 	}
 	public void setMatchNumCn(String matchNumCn) {
 		this.matchNumCn = matchNumCn;
 	}
-	public String getStartTime() {
+	public Date getStartTime() {
 		return startTime;
 	}
-	public void setStartTime(String startTime) {
+	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
-	public String getEndTime() {
+	public Date getEndTime() {
 		return endTime;
 	}
-	public void setEndTime(String endTime) {
+	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
-	}
-	public String getIsAttention() {
-		return isAttention;
-	}
-	public void setIsAttention(String isAttention) {
-		this.isAttention = isAttention;
 	}
 	public String getHomeTeamId() {
 		return homeTeamId;
@@ -93,10 +103,10 @@ public class SmgFootball {
 	public void setHomeTeamName(String homeTeamName) {
 		this.homeTeamName = homeTeamName;
 	}
-	public Integer getHomeTeamRank() {
+	public String getHomeTeamRank() {
 		return homeTeamRank;
 	}
-	public void setHomeTeamRank(Integer homeTeamRank) {
+	public void setHomeTeamRank(String homeTeamRank) {
 		this.homeTeamRank = homeTeamRank;
 	}
 	public String getAwayTeamId() {
@@ -111,10 +121,10 @@ public class SmgFootball {
 	public void setAwayTeamName(String awayTeamName) {
 		this.awayTeamName = awayTeamName;
 	}
-	public Integer getAwayTeamRank() {
+	public String getAwayTeamRank() {
 		return awayTeamRank;
 	}
-	public void setAwayTeamRank(Integer awayTeamRank) {
+	public void setAwayTeamRank(String awayTeamRank) {
 		this.awayTeamRank = awayTeamRank;
 	}
 	public String getLeagueId() {
@@ -128,6 +138,18 @@ public class SmgFootball {
 	}
 	public void setLeagueName(String leagueName) {
 		this.leagueName = leagueName;
+	}
+	public String getLeagueLink() {
+		return leagueLink;
+	}
+	public void setLeagueLink(String leagueLink) {
+		this.leagueLink = leagueLink;
+	}
+	public String getIsAttention() {
+		return isAttention;
+	}
+	public void setIsAttention(String isAttention) {
+		this.isAttention = isAttention;
 	}
 	public String getIsStop() {
 		return isStop;
@@ -147,58 +169,67 @@ public class SmgFootball {
 	public void setScore(String score) {
 		this.score = score;
 	}
-	public Float getWinOdds() {
+	public BigDecimal getWinOdds() {
 		return winOdds;
 	}
-	public void setWinOdds(Float winOdds) {
+	public void setWinOdds(BigDecimal winOdds) {
 		this.winOdds = winOdds;
 	}
-	public Float getDrawOdds() {
+	public BigDecimal getDrawOdds() {
 		return drawOdds;
 	}
-	public void setDrawOdds(Float drawOdds) {
+	public void setDrawOdds(BigDecimal drawOdds) {
 		this.drawOdds = drawOdds;
 	}
-	public Float getLoseOdds() {
+	public BigDecimal getLoseOdds() {
 		return loseOdds;
 	}
-	public void setLoseOdds(Float loseOdds) {
+	public void setLoseOdds(BigDecimal loseOdds) {
 		this.loseOdds = loseOdds;
 	}
-	public Float getConcedeWinOdds() {
+	public BigDecimal getConcedePoints() {
+		return concedePoints;
+	}
+	public void setConcedePoints(BigDecimal concedePoints) {
+		this.concedePoints = concedePoints;
+	}
+	public BigDecimal getConcedeWinOdds() {
 		return concedeWinOdds;
 	}
-	public void setConcedeWinOdds(Float concedeWinOdds) {
+	public void setConcedeWinOdds(BigDecimal concedeWinOdds) {
 		this.concedeWinOdds = concedeWinOdds;
 	}
-	public Float getConcedeDrawOdds() {
+	public BigDecimal getConcedeDrawOdds() {
 		return concedeDrawOdds;
 	}
-	public void setConcedeDrawOdds(Float concedeDrawOdds) {
+	public void setConcedeDrawOdds(BigDecimal concedeDrawOdds) {
 		this.concedeDrawOdds = concedeDrawOdds;
 	}
-	public Float getConcedeLoseOdds() {
+	public BigDecimal getConcedeLoseOdds() {
 		return concedeLoseOdds;
 	}
-	public void setConcedeLoseOdds(Float concedeLoseOdds) {
+	public void setConcedeLoseOdds(BigDecimal concedeLoseOdds) {
 		this.concedeLoseOdds = concedeLoseOdds;
 	}
 	
 	@Override
 	public String toString() {
 		return "SmgFootball [gameDate=" + gameDate + ", matchId=" + matchId
-				+ ", matchCode=" + matchCode + ", matchNumCn=" + matchNumCn
-				+ ", startTime=" + startTime + ", endTime=" + endTime
-				+ ", isAttention=" + isAttention + ", homeTeamId=" + homeTeamId
+				+ ", matchCode=" + matchCode + ", matchLink=" + matchLink
+				+ ", matchNumCn=" + matchNumCn + ", startTime=" + startTime
+				+ ", endTime=" + endTime + ", homeTeamId=" + homeTeamId
 				+ ", homeTeamName=" + homeTeamName + ", homeTeamRank="
 				+ homeTeamRank + ", awayTeamId=" + awayTeamId
 				+ ", awayTeamName=" + awayTeamName + ", awayTeamRank="
 				+ awayTeamRank + ", leagueId=" + leagueId + ", leagueName="
-				+ leagueName + ", isStop=" + isStop + ", isHot=" + isHot
+				+ leagueName + ", leagueLink=" + leagueLink + ", isAttention="
+				+ isAttention + ", isStop=" + isStop + ", isHot=" + isHot
 				+ ", score=" + score + ", winOdds=" + winOdds + ", drawOdds="
-				+ drawOdds + ", loseOdds=" + loseOdds + ", concedeWinOdds="
-				+ concedeWinOdds + ", concedeDrawOdds=" + concedeDrawOdds
-				+ ", concedeLoseOdds=" + concedeLoseOdds + "]";
+				+ drawOdds + ", loseOdds=" + loseOdds + ", concedePoints="
+				+ concedePoints + ", concedeWinOdds=" + concedeWinOdds
+				+ ", concedeDrawOdds=" + concedeDrawOdds + ", concedeLoseOdds="
+				+ concedeLoseOdds + "]";
 	}
-
+	
+	
 }

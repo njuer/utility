@@ -102,16 +102,16 @@ public class StringUtil {
 	
 
 	public static String getNumber(String str) {
-		Pattern p = Pattern.compile(Constant.REG_NUMBER);
-		Matcher matcher = p.matcher(str);
-//		return m.replaceAll("").trim();
-//		Matcher matcher = ballPattern.matcher(balls);
-		StringBuffer sb = new StringBuffer();
-		while (matcher.find()) {
-//			list.add(matcher.group());
-			sb.append(matcher.group());
+		if(null != str){
+			Pattern p = Pattern.compile(Constant.REG_NUMBER);
+			Matcher matcher = p.matcher(str);
+			StringBuffer sb = new StringBuffer();
+			while (matcher.find()) {
+				sb.append(matcher.group());
+			}
+			return sb.toString();
 		}
-		return sb.toString();
+		return null;
 	}
 	
     /**
@@ -174,6 +174,20 @@ public class StringUtil {
 			return sb.toString();
 		}
 		return null;
+	}
+	
+	/**
+	 * 是否为合法的SP值(保留两位小数)
+	 * @param sp
+	 * @return
+	 */
+	public static Boolean isValidSp(String sp){
+		if(null != sp){
+			Pattern PATTERN_SP = Pattern.compile(Constant.REG_SP);
+			Matcher matcher = PATTERN_SP.matcher(sp);
+			return matcher.matches();
+		}
+		return false;
 	}
 	
 }

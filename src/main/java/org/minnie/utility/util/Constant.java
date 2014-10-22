@@ -47,7 +47,9 @@ public class Constant {
 	public static final String REG_GD_FIVE_IN_ELEVEN = "\\d{8}";
 	public static final String REG_BALL = "\\d{2}";
 	public static final String REG_NETEASE_BBS_DATETIME = "\\d{4}\\-\\d{1,2}-\\d{1,2}\\s([0-1]{1}\\d{1}|[2]{1}[0-3]{1})(?::)?([0-5]{1}\\d{1})(?::)?([0-5]{1}\\d{1}){0,1}";
-
+	//保留两位小数
+	public static final String REG_SP = "\\d+\\.\\d{2}";
+	
 	public static final String REG_MAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
 	
 	public static final String DOMAIN_163 = "163.com";
@@ -102,6 +104,7 @@ public class Constant {
 	public static final String DATE_FORMAT_STANDARD = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_FORMAT_NETEASE_LOTTERY_FIVE_IN_ELEVEN = "yyMMdd";
 	public static final String DATE_FORMAT_WITHOUT_HH_MM_SS = "yyyy-MM-dd";
+	public static final String TIMESTAMP_FORMAT = "\\d{13}";
 	
 	/**
 	 * 彩票

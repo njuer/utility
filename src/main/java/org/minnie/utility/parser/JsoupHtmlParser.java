@@ -1,6 +1,7 @@
 package org.minnie.utility.parser;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import org.minnie.utility.module.netease.SmgFootball;
 import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.yangshengsuo.Regimen;
 import org.minnie.utility.util.Constant;
+import org.minnie.utility.util.DateUtil;
 import org.minnie.utility.util.StringUtil;
 
 /**
@@ -1193,7 +1195,7 @@ public class JsoupHtmlParser {
 		Elements link = doc.select("a.nxt");
 		if (null != link && link.size() > 0) {
 			Element nextPage = link.first();
-//			logger.error(nextPage.absUrl("href"));
+			// logger.error(nextPage.absUrl("href"));
 			try {
 				return URLEncodedUtils.parse(new URI(nextPage.absUrl("href")),
 						"UTF-8");
@@ -1229,27 +1231,28 @@ public class JsoupHtmlParser {
 					continue;
 				}
 				Article article = new Article();
-//				logger.info(tr.childNodeSize());
-				
-				if(tr.childNodeSize() < 11){
+				// logger.info(tr.childNodeSize());
+
+				if (tr.childNodeSize() < 11) {
 					continue;
 				}
-				
+
 				Element elem = tr.child(1);
-				if(null != elem && elem.childNodeSize() > 0){
+				if (null != elem && elem.childNodeSize() > 0) {
 					Element link = elem.child(0);
 					// 主题
 					String subject = link.html();
-//					if (subject.indexOf("易眼金睛") > -1) {
-//						article.setSubject(subject);
-//					} else {
-//						continue;
-//					}
-					
+					// if (subject.indexOf("易眼金睛") > -1) {
+					// article.setSubject(subject);
+					// } else {
+					// continue;
+					// }
+
 					// thread ID
 					String threadId = link.attr("href");
 					if (threadId.endsWith(".html")) {
-						threadId = threadId.substring(0, threadId.indexOf(".html"));
+						threadId = threadId.substring(0,
+								threadId.indexOf(".html"));
 						article.setThreadId(Integer.valueOf(threadId));
 						article.setLink("http://bbs.caipiao.163.com/thread-"
 								+ threadId + "-1-1.html");
@@ -1257,7 +1260,7 @@ public class JsoupHtmlParser {
 				}
 
 				elem = tr.child(2);
-				if(null != elem && elem.childNodeSize() > 0){
+				if (null != elem && elem.childNodeSize() > 0) {
 					article.setModule(elem.child(0).attr("href"));
 				}
 
@@ -1274,6 +1277,7 @@ public class JsoupHtmlParser {
 
 	/**
 	 * 获取帖子详细信息
+	 * 
 	 * @param html
 	 * @param article
 	 * @return
@@ -1283,104 +1287,214 @@ public class JsoupHtmlParser {
 		Document doc = Jsoup.parse(html);
 		Elements postlist = doc.select("#postlist");
 
-		if(null != postlist){
+		if (null != postlist) {
 			Element firstPost = postlist.first();
-			if(null != firstPost){
-				//帖子首次发表时间
+			if (null != firstPost) {
+				// 帖子首次发表时间
 				Elements elems = firstPost.select("em[id]");
-				if(null != elems && elems.size() > 0){
-					String postTime = StringUtil.convertToStandardDateTime(elems.first().html());
+				if (null != elems && elems.size() > 0) {
+					String postTime = StringUtil
+							.convertToStandardDateTime(elems.first().html());
 					article.setPostTime(postTime);
-//					logger.info(postTime);
+					// logger.info(postTime);
 				}
-				
-				//帖子内容
+
+				// 帖子内容
 				elems = firstPost.select("div.t_fsz");
-				if(null != elems && elems.size() > 0){
+				if (null != elems && elems.size() > 0) {
 					String content = elems.first().text();
 					article.setContent(content);
-//					logger.info(content);
+					// logger.info(content);
 				}
-				
-				//最后编辑时间
+
+				// 最后编辑时间
 				elems = firstPost.select("i.pstatus");
-				if(null != elems && elems.size() > 0){
-					String  modifyTime = StringUtil.convertToStandardDateTime(elems.first().html());
+				if (null != elems && elems.size() > 0) {
+					String modifyTime = StringUtil
+							.convertToStandardDateTime(elems.first().html());
 					article.setModifyTime(modifyTime);
-//					logger.info(modifyTime);
+					// logger.info(modifyTime);
 				}
 			}
 		}
 		return article;
 	}
 
-	public static Article getArticleDetail(String html, Article article, Map<Integer,String> existThreadMap) {
-		
+	public static Article getArticleDetail(String html, Article article,
+			Map<Integer, String> existThreadMap) {
+
 		Document doc = Jsoup.parse(html);
 		Elements postlist = doc.select("#postlist");
-		
-		if(null != postlist){
+
+		if (null != postlist) {
 			Element firstPost = postlist.first();
-			if(null != firstPost){
-				//帖子首次发表时间
+			if (null != firstPost) {
+				// 帖子首次发表时间
 				Elements elems = firstPost.select("em[id]");
-				if(null != elems && elems.size() > 0){
-					String postTime = StringUtil.convertToStandardDateTime(elems.first().html());
+				if (null != elems && elems.size() > 0) {
+					String postTime = StringUtil
+							.convertToStandardDateTime(elems.first().html());
 					article.setPostTime(postTime);
-//					logger.info(postTime);
+					// logger.info(postTime);
 				}
-				
-				//帖子内容
+
+				// 帖子内容
 				elems = firstPost.select("div.t_fsz");
-				if(null != elems && elems.size() > 0){
+				if (null != elems && elems.size() > 0) {
 					String content = elems.first().text();
 					article.setContent(content);
-//					logger.info(content);
+					// logger.info(content);
 				}
-				
-				//最后编辑时间
+
+				// 最后编辑时间
 				elems = firstPost.select("i.pstatus");
-				if(null != elems && elems.size() > 0){
-					String  modifyTime = StringUtil.convertToStandardDateTime(elems.first().html());
+				if (null != elems && elems.size() > 0) {
+					String modifyTime = StringUtil
+							.convertToStandardDateTime(elems.first().html());
 					article.setModifyTime(modifyTime);
-//					logger.info(modifyTime);
+					// logger.info(modifyTime);
 				}
 			}
 		}
 		return article;
 	}
-	
-	public static void getMatchList(String html){
-		
+
+	/**
+	 * 获取网易竞彩足球比赛信息
+	 * @param html
+	 */
+	public static List<SmgFootball> getMatchList(String html) {
+
 		Document doc = Jsoup.parse(html);
 		Elements matchList = doc.select("div.dataBody.unAttention");
-		
-		for(Element elem : matchList){
+		List<SmgFootball> list = new ArrayList<SmgFootball>();
+
+		for (Element elem : matchList) {
 			Elements children = elem.children();
-			for(Element child : children){
-//				logger.info(child.attr("gameDate"));
-//				child.select("dd");
-//				logger.info(child.select("dd"));
-				
-				SmgFootball sf = new SmgFootball();
-				Elements dds = child.select("dd");
-				for(Element dd : dds){
-//					logger.info(dd.attributes());
-					Attributes attrs = dd.attributes();
-//					logger.info(attrs.get("matchnumcn"));
-//					sf.seti
-//					isstop
+			for (Element child : children) {
+				Elements dls = child.select("dl");
+				for (Element dl : dls) {
+					String gameDate = dl.attr("gameDate");
+					gameDate = gameDate.substring(0, 4) + "-" + gameDate.substring(4, 6) + "-" + gameDate.substring(6, 8);
+					Elements dds = dl.select("dd");
+					for (Element dd : dds) {
+						if(!dd.hasAttr("matchcode")){
+							continue;
+						}
+						SmgFootball sf = new SmgFootball();
+						Attributes attrs = dd.attributes();
+
+						sf.setGameDate(gameDate);
+						sf.setIsStop(attrs.get("isstop"));
+						sf.setMatchCode(attrs.get("matchcode"));
+						sf.setMatchNumCn(attrs.get("matchnumcn"));
+						sf.setStartTime(DateUtil.TimeStamp2Date(attrs
+								.get("starttime")));
+						sf.setEndTime(DateUtil.TimeStamp2Date(attrs.get("endtime")));
+						sf.setIsAttention(attrs.get("isattention"));
+						sf.setHomeTeamName(attrs.get("hostname"));
+						sf.setAwayTeamName(attrs.get("guestname"));
+						sf.setLeagueId(attrs.get("leagueid"));
+						sf.setHomeTeamId(attrs.get("hostteamid"));
+						sf.setAwayTeamId(attrs.get("visitteamid"));
+						sf.setMatchId(attrs.get("matchid"));
+						sf.setLeagueName(attrs.get("leaguename"));
+						sf.setIsHot(attrs.get("ishot"));
+						sf.setScore(attrs.get("score"));
+
+						Elements spans = dd.select("span");
+						for (Element span : spans) {
+							// 联赛链接
+							if (span.hasClass("co2")) {
+								sf.setLeagueLink(span.child(0).attr("href"));
+							}
+
+							// 主客队排名
+							if (span.hasClass("co4")) {
+								Element a = span.child(0);
+								sf.setMatchLink(a.attr("href"));
+								Elements is = a.select("i");
+								if(is.size() == 2){
+									sf.setHomeTeamRank(is.get(0).html().replaceAll("\\[", StringUtils.EMPTY).replaceAll("]", StringUtils.EMPTY));
+									sf.setAwayTeamRank(is.get(1).html().replaceAll("\\[", StringUtils.EMPTY).replaceAll("]", StringUtils.EMPTY));
+								}
+							}
+
+							// 让球数
+							if (span.hasClass("co5")) {
+								Elements ems = span.children();
+								for (Element em : ems) {
+									if (em.hasClass("line2")) {
+										BigDecimal bd = new BigDecimal(em.text());
+										sf.setConcedePoints(bd);
+									}
+								}
+							}
+
+							// 赔率
+							if (span.hasClass("co6_1")) {
+								/**
+								 * 非让球
+								 */
+								Elements line1s = span.select("div.line1");
+								if(line1s.size() == 1){
+									Elements ems = line1s.first().select("em");
+									if (ems.size() == 3) {
+										String winSp = ems.get(0).attr("sp");
+										if (StringUtil.isValidSp(winSp)) {
+											// 构造以字符串内容为值的BigDecimal类型的变量bd
+											BigDecimal bd = new BigDecimal(
+													winSp);
+											// 设置小数位数，第一个变量是小数位数，第二个变量是取舍方法(四舍五入)
+											// bd=bd.setScale(2,
+											// BigDecimal.ROUND_HALF_UP);
+											sf.setWinOdds(bd);
+										}
+										String drawSp = ems.get(1).attr("sp");
+										if (StringUtil.isValidSp(drawSp)) {
+											sf.setDrawOdds(new BigDecimal(drawSp));
+										}
+										String loseSp = ems.get(2).attr("sp");
+										if (StringUtil.isValidSp(loseSp)) {
+											sf.setLoseOdds(new BigDecimal(loseSp));
+										}
+									}
+								}
+								/**
+								 * 让球
+								 */
+								Elements line2s = span.select("div.line2");
+								if(line2s.size() == 1){
+									Elements ems = line2s.first().select("em");
+									if (ems.size() == 3) {
+										String concedeWinSp = ems.get(0).attr("sp");
+										if (StringUtil.isValidSp(concedeWinSp)) {
+											sf.setConcedeWinOdds(new BigDecimal(concedeWinSp));
+										}
+										String concedeDrawSp = ems.get(1).attr("sp");
+										if (StringUtil.isValidSp(concedeDrawSp)) {
+											sf.setConcedeDrawOdds(new BigDecimal(concedeDrawSp));
+										}
+										String concedeLoseSp = ems.get(2).attr("sp");
+										if (StringUtil.isValidSp(concedeLoseSp)) {
+											sf.setConcedeLoseOdds(new BigDecimal(concedeLoseSp));
+										}
+									}
+								}
+							}// end of if (span.hasClass("co6_1"))
+						}// end of for (Element span : spans)
+						logger.info(sf);
+						list.add(sf);
+					}// end of for (Element dd : dds)
 				}
-				
-			}
-		}
-		
-//		if(null != matchList){
-//			Element firstPost = postlist.first();
-//			if(null != firstPost){
-//				logger.info(firstPost.html());
-//			}
-//		}
+
+			}// end of for (Element child : children)
+		}// end of for (Element elem : matchList)
+		logger.info(list.size());
+		return list;
 	}
+	
+	
+	
 
 }
