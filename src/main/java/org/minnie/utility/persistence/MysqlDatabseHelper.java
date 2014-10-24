@@ -29,11 +29,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.DateUtils;
 import org.apache.log4j.Logger;
 import org.minnie.utility.entity.lottery.FiveInEleven;
 import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.netease.Article;
+import org.minnie.utility.module.netease.FootballLeague;
+import org.minnie.utility.module.netease.FootballTeam;
 import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.xinyingba.Video;
 import org.minnie.utility.util.Constant;
@@ -433,7 +434,7 @@ public class MysqlDatabseHelper {
 					sql = "insert into lottery_double_color (phase, red_1, red_2, red_3, red_4, red_5, red_6, blue, year, create_date, update_date) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
-				
+
 				Date myDate = new Date();
 				for (DoubleColor ssq : list) {
 					pst.setInt(1, ssq.getPhase());
@@ -727,7 +728,7 @@ public class MysqlDatabseHelper {
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
 				Date myDate = new Date();
-				
+
 				for (FiveInEleven fie : list) {
 					pst.setInt(1, fie.getPeriod());
 					List<String> red = fie.getRed();
@@ -740,7 +741,7 @@ public class MysqlDatabseHelper {
 					pst.setTimestamp(10, new Timestamp(myDate.getTime()));
 					pst.setTimestamp(11, new Timestamp(myDate.getTime()));
 
-//					logger.info(fie.toString());
+					// logger.info(fie.toString());
 
 					// 把一个SQL命令加入命令列表
 					pst.addBatch();
@@ -801,7 +802,8 @@ public class MysqlDatabseHelper {
 	 * @param date
 	 * @return
 	 */
-	public static List<FiveInEleven> getFiveInElevenList(String category, String date) {
+	public static List<FiveInEleven> getFiveInElevenList(String category,
+			String date) {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * FROM lottery_five_in_eleven WHERE 1 = 1 ");
@@ -850,7 +852,7 @@ public class MysqlDatabseHelper {
 					fie.setLotteryNumber(rs.getString("lottery_number"));
 					fie.setCategory(rs.getString("category"));
 					fie.setDate(rs.getString("period_date"));
-//					logger.info(fie.toString());
+					// logger.info(fie.toString());
 					list.add(fie);
 				}
 				logger.info("已获取11选5结果列表！");
@@ -866,8 +868,10 @@ public class MysqlDatabseHelper {
 		}
 		return list;
 	}
-	
-	public static void batchAddFiveInElevenAdjacent(List<FiveInEleven> adjacentList, String category, String date, String sql) {
+
+	public static void batchAddFiveInElevenAdjacent(
+			List<FiveInEleven> adjacentList, String category, String date,
+			String sql) {
 
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -886,21 +890,21 @@ public class MysqlDatabseHelper {
 					pst.setInt(1, fie.getPeriod());
 					List<String> list = fie.getRed();
 					Collections.sort(list);
-//					int count = 0;
-//					String ballStr = "";
-//					for(String ball : list){
-//						if(count++ > 0){
-//							ballStr += ",";
-//						}
-//						ballStr += ball;
-//					}
-//					pst.setString(2, ballStr);
+					// int count = 0;
+					// String ballStr = "";
+					// for(String ball : list){
+					// if(count++ > 0){
+					// ballStr += ",";
+					// }
+					// ballStr += ball;
+					// }
+					// pst.setString(2, ballStr);
 					pst.setString(2, list.toString());
 					pst.setString(3, category);
 					pst.setString(4, date);
 					pst.setTimestamp(5, new Timestamp(myDate.getTime()));
 					pst.setTimestamp(6, new Timestamp(myDate.getTime()));
-//					logger.info(fie.toString());
+					// logger.info(fie.toString());
 					// 把一个SQL命令加入命令列表
 					pst.addBatch();
 				}
@@ -919,12 +923,14 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closeConnection(conn);
 		}
 	}
-	
-	public static void batchAddFiveInElevenConsecutive(List<FiveInEleven> consecutiveList, String category, String date, String sql) {
-		
+
+	public static void batchAddFiveInElevenConsecutive(
+			List<FiveInEleven> consecutiveList, String category, String date,
+			String sql) {
+
 		Connection conn = null;
 		PreparedStatement pst = null;
-		
+
 		try {
 			conn = MysqlConnectionManager.getConnection();
 			// 关闭事务自动提交
@@ -946,11 +952,11 @@ public class MysqlDatabseHelper {
 					pst.setString(6, date);
 					pst.setTimestamp(7, new Timestamp(myDate.getTime()));
 					pst.setTimestamp(8, new Timestamp(myDate.getTime()));
-//					logger.info(fie.toString());
+					// logger.info(fie.toString());
 					// 把一个SQL命令加入命令列表
 					pst.addBatch();
 				}
-				
+
 				// 执行批量更新
 				pst.executeBatch();
 				// 语句执行完毕，提交本事务
@@ -965,24 +971,27 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closeConnection(conn);
 		}
 	}
-	
+
 	/**
 	 * 删除某日某种分析结果
-	 * @param table	分析表名
-	 * @param date	日期
+	 * 
+	 * @param table
+	 *            分析表名
+	 * @param date
+	 *            日期
 	 * @return
 	 */
 	public static int deleteFiveInElevenAnalysis(String table, String date) {
 
-		if(null == table || StringUtils.isBlank(table)){
+		if (null == table || StringUtils.isBlank(table)) {
 			return -1;
 		}
-		
+
 		Connection conn = null;
 		Statement stmt = null;
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table);
-		if(null != date){
+		if (null != date) {
 			sb.append(" WHERE period_date = '").append(date).append("'");
 		}
 		int result = -1;
@@ -993,7 +1002,7 @@ public class MysqlDatabseHelper {
 				stmt = conn.createStatement();
 				result = stmt.executeUpdate(sb.toString());
 				if (result >= 0) {
-					if(null != date){
+					if (null != date) {
 						logger.info("删除[" + date + "]分析记录！");
 					} else {
 						logger.info("删除分析记录！");
@@ -1010,40 +1019,47 @@ public class MysqlDatabseHelper {
 		}
 		return result;
 	}
-	
+
 	/**
-	 *  删除某日[连号]分析结果
-	 * @param date	日期
+	 * 删除某日[连号]分析结果
+	 * 
+	 * @param date
+	 *            日期
 	 * @return
 	 */
-	public static int deleteFiveInElevenAnalysisByConsecutive(String date){
+	public static int deleteFiveInElevenAnalysisByConsecutive(String date) {
 		return deleteFiveInElevenAnalysis("analysis_fie_consecutive", date);
 	}
-	
+
 	/**
-	 *  删除某日[与上期相同]分析结果
-	 * @param date	日期
+	 * 删除某日[与上期相同]分析结果
+	 * 
+	 * @param date
+	 *            日期
 	 * @return
 	 */
-	public static int deleteFiveInElevenAnalysisByAdjacent(String date){
+	public static int deleteFiveInElevenAnalysisByAdjacent(String date) {
 		return deleteFiveInElevenAnalysis("analysis_fie_adjacent", date);
 	}
-	
+
 	/**
-	 *  删除某日[同号]分析结果
-	 * @param date	日期
+	 * 删除某日[同号]分析结果
+	 * 
+	 * @param date
+	 *            日期
 	 * @return
 	 */
-	public static int deleteFiveInElevenAnalysisBySame(String date){
+	public static int deleteFiveInElevenAnalysisBySame(String date) {
 		return deleteFiveInElevenAnalysis("analysis_fie_same", date);
 	}
-	
-	
-	public static void batchAddFiveInElevenSame(List<FiveInEleven> samePeriodList, String category, String date, String sql) {
-		
+
+	public static void batchAddFiveInElevenSame(
+			List<FiveInEleven> samePeriodList, String category, String date,
+			String sql) {
+
 		Connection conn = null;
 		PreparedStatement pst = null;
-		
+
 		try {
 			conn = MysqlConnectionManager.getConnection();
 			// 关闭事务自动提交
@@ -1054,7 +1070,7 @@ public class MysqlDatabseHelper {
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
 				Date myDate = new Date();
-				
+
 				for (FiveInEleven fie : samePeriodList) {
 					pst.setInt(1, fie.getPeriod());
 					List<String> list = fie.getRed();
@@ -1064,11 +1080,11 @@ public class MysqlDatabseHelper {
 					pst.setString(4, date);
 					pst.setTimestamp(5, new Timestamp(myDate.getTime()));
 					pst.setTimestamp(6, new Timestamp(myDate.getTime()));
-//					logger.info(fie.toString());
+					// logger.info(fie.toString());
 					// 把一个SQL命令加入命令列表
 					pst.addBatch();
 				}
-				
+
 				// 执行批量更新
 				pst.executeBatch();
 				// 语句执行完毕，提交本事务
@@ -1083,7 +1099,7 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closeConnection(conn);
 		}
 	}
-	
+
 	public static Set<String> statsPeriodPerDay(String sql) {
 
 		Connection conn = null;
@@ -1115,7 +1131,7 @@ public class MysqlDatabseHelper {
 		}
 		return set;
 	}
-	
+
 	public static Set<String> getFiveInElevenAnalysisBySame(String sql) {
 
 		Connection conn = null;
@@ -1148,7 +1164,6 @@ public class MysqlDatabseHelper {
 		return set;
 	}
 
-	
 	public static void batchAddLuckFiveInEleven(List<Video> list, String sql) {
 
 		Connection conn = null;
@@ -1193,30 +1208,32 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closeConnection(conn);
 		}
 	}
-	
+
 	/**
 	 * 获取文章ID集合
-	 * @param authorIdArray	作者ID数组
+	 * 
+	 * @param authorIdArray
+	 *            作者ID数组
 	 * @return
 	 */
-	public static Set<Integer> getNeteaseArticleIdSet(Integer [] authorIdArray) {
+	public static Set<Integer> getNeteaseArticleIdSet(Integer[] authorIdArray) {
 
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		Set<Integer> threadIdSet = new HashSet<Integer>();
-		
+
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT id FROM lms_bbs_netease ");
-		if(null != authorIdArray){
+		if (null != authorIdArray) {
 			sb.append("WHERE ");
 			int len = authorIdArray.length;
-			if(len == 1){
+			if (len == 1) {
 				sb.append(" authorId = ").append(authorIdArray[0]);
 			} else {
 				sb.append(" authorId IN (");
-				for(int i = 0; i < len; i++){
-					if(i > 0){
+				for (int i = 0; i < len; i++) {
+					if (i > 0) {
 						sb.append(",");
 					}
 					sb.append(authorIdArray[i]);
@@ -1247,24 +1264,25 @@ public class MysqlDatabseHelper {
 		return threadIdSet;
 	}
 
-	public static Map<Integer,String> getNeteaseThreadTimeMap(Integer [] authorIdArray) {
-		
+	public static Map<Integer, String> getNeteaseThreadTimeMap(
+			Integer[] authorIdArray) {
+
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		Map<Integer,String> map = new HashMap<Integer,String>();
-		
+		Map<Integer, String> map = new HashMap<Integer, String>();
+
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT id,modify_time FROM lms_bbs_netease ");
-		if(null != authorIdArray){
+		if (null != authorIdArray) {
 			sb.append("WHERE ");
 			int len = authorIdArray.length;
-			if(len == 1){
+			if (len == 1) {
 				sb.append(" authorId = ").append(authorIdArray[0]);
 			} else {
 				sb.append(" authorId IN (");
-				for(int i = 0; i < len; i++){
-					if(i > 0){
+				for (int i = 0; i < len; i++) {
+					if (i > 0) {
 						sb.append(",");
 					}
 					sb.append(authorIdArray[i]);
@@ -1272,7 +1290,7 @@ public class MysqlDatabseHelper {
 				sb.append(")");
 			}
 		}
-		
+
 		try {
 			conn = MysqlConnectionManager.getConnection();
 			if (conn != null) {
@@ -1281,9 +1299,10 @@ public class MysqlDatabseHelper {
 				while (rs.next()) {
 					map.put(rs.getInt(1), rs.getString(2));
 				}
-				logger.info("已获取" + Arrays.toString(authorIdArray) + "发表文章<ID,编辑时间>集合");
+				logger.info("已获取" + Arrays.toString(authorIdArray)
+						+ "发表文章<ID,编辑时间>集合");
 			}
-			
+
 		} catch (SQLException e) {
 			logger.error("SQLException[MysqlDatabseHelper->getNeteaseThreadTimeMap(int [] authorIdArray): "
 					+ e.getMessage());
@@ -1294,9 +1313,10 @@ public class MysqlDatabseHelper {
 		}
 		return map;
 	}
-	
+
 	/**
 	 * 批量导入彩民社区文章
+	 * 
 	 * @param articleList
 	 */
 	public static void batchAddNeteaseArticles(List<Article> articleList) {
@@ -1371,15 +1391,17 @@ public class MysqlDatabseHelper {
 
 	/**
 	 * 批量导入彩民社区文章
+	 * 
 	 * @param articleList
 	 */
-	public static void batchAddNeteaseArticles(List<Article> articleList, Set<Integer> existThreadSet) {
-		
+	public static void batchAddNeteaseArticles(List<Article> articleList,
+			Set<Integer> existThreadSet) {
+
 		Connection conn = null;
 		PreparedStatement pstInsert = null;
 		PreparedStatement pstUpdate = null;
-		
-		//新增
+
+		// 新增
 		StringBuffer sqlInsert = new StringBuffer();
 		sqlInsert.append("insert into ");
 		sqlInsert.append(" lms_bbs_netease ");
@@ -1402,8 +1424,8 @@ public class MysqlDatabseHelper {
 		sqlInsert.append("remarks");
 		sqlInsert.append(" ) ");
 		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-		
-		//更新
+
+		// 更新
 		StringBuffer sqlUpdate = new StringBuffer();
 		sqlUpdate.append("update ");
 		sqlUpdate.append(" lms_bbs_netease ");
@@ -1417,38 +1439,41 @@ public class MysqlDatabseHelper {
 		sqlUpdate.append(" update_date = ?,");
 		sqlUpdate.append(" update_by = ? ");
 		sqlUpdate.append("where id = ? ");
-		
+
 		try {
 			conn = MysqlConnectionManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
-			
+
 			if (conn != null) {
-				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert.toString());
-				pstUpdate = (PreparedStatement) conn.prepareStatement(sqlUpdate.toString());
-				
+				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert
+						.toString());
+				pstUpdate = (PreparedStatement) conn.prepareStatement(sqlUpdate
+						.toString());
+
 				for (Article article : articleList) {
 					Integer threadId = article.getThreadId();
 					String content = article.getContent();
-					
-//					logger.info(article);
-//					logger.info(content.length());
-					
-					if(existThreadSet.contains(threadId)){
-						//更新
+
+					// logger.info(article);
+					// logger.info(content.length());
+
+					if (existThreadSet.contains(threadId)) {
+						// 更新
 						pstUpdate.setString(1, article.getModule());
 						pstUpdate.setString(2, article.getSubject());
 						pstUpdate.setString(3, article.getContent());
 						pstUpdate.setString(4, article.getCategory());
 						pstUpdate.setString(5, article.getPostTime());
 						pstUpdate.setString(6, article.getModifyTime());
-						pstUpdate.setString(7, DateUtil.getTime(System.currentTimeMillis()));
+						pstUpdate.setString(7,
+								DateUtil.getTime(System.currentTimeMillis()));
 						pstUpdate.setString(8, "admin");
 						pstUpdate.setInt(9, threadId);
 						// 把一个SQL命令加入命令列表
 						pstUpdate.addBatch();
 					} else {
-						//新增
+						// 新增
 						pstInsert.setInt(1, threadId);
 						pstInsert.setString(2, article.getModule());
 						pstInsert.setString(3, article.getSubject());
@@ -1460,7 +1485,8 @@ public class MysqlDatabseHelper {
 						pstInsert.setString(9, article.getPostTime());
 						pstInsert.setString(10, article.getModifyTime());
 						pstInsert.setInt(11, 1);
-						String dt = DateUtil.getTime(System.currentTimeMillis());
+						String dt = DateUtil
+								.getTime(System.currentTimeMillis());
 						pstInsert.setString(12, dt);
 						pstInsert.setString(13, "admin");
 						pstInsert.setString(14, dt);
@@ -1470,7 +1496,7 @@ public class MysqlDatabseHelper {
 						pstInsert.addBatch();
 					}
 				}
-				
+
 				// 执行批量更新
 				pstUpdate.executeBatch();
 				pstInsert.executeBatch();
@@ -1487,20 +1513,21 @@ public class MysqlDatabseHelper {
 		}
 	}
 
-	public static void batchAddNeteaseArticles(List<Article> articleList, Map<Integer,String> existThreadMap) {
-		
+	public static void batchAddNeteaseArticles(List<Article> articleList,
+			Map<Integer, String> existThreadMap) {
+
 		Connection conn = null;
 		PreparedStatement pstInsert = null;
 		PreparedStatement pstUpdate = null;
-		
+
 		boolean existFlag = true;
-		if(null == existThreadMap){
+		if (null == existThreadMap) {
 			existFlag = false;
 		}
-		
+
 		Set<Integer> existThreadSet = existThreadMap.keySet();
-		
-		//新增
+
+		// 新增
 		StringBuffer sqlInsert = new StringBuffer();
 		sqlInsert.append("insert into ");
 		sqlInsert.append(" lms_bbs_netease ");
@@ -1523,8 +1550,8 @@ public class MysqlDatabseHelper {
 		sqlInsert.append("remarks");
 		sqlInsert.append(" ) ");
 		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-		
-		//更新
+
+		// 更新
 		StringBuffer sqlUpdate = new StringBuffer();
 		sqlUpdate.append("update ");
 		sqlUpdate.append(" lms_bbs_netease ");
@@ -1538,40 +1565,45 @@ public class MysqlDatabseHelper {
 		sqlUpdate.append(" update_date = ?,");
 		sqlUpdate.append(" update_by = ? ");
 		sqlUpdate.append("where id = ? ");
-		
+
 		try {
 			conn = MysqlConnectionManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
-			
+
 			if (conn != null) {
-				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert.toString());
-				pstUpdate = (PreparedStatement) conn.prepareStatement(sqlUpdate.toString());
-				
+				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert
+						.toString());
+				pstUpdate = (PreparedStatement) conn.prepareStatement(sqlUpdate
+						.toString());
+
 				for (Article article : articleList) {
 					Integer threadId = article.getThreadId();
 					String content = article.getContent();
-					
-					if(existFlag && existThreadSet.contains(threadId)){
+
+					if (existFlag && existThreadSet.contains(threadId)) {
 						String currentModifyTime = article.getModifyTime();
 						String lastModifyTime = existThreadMap.get(threadId);
-						
-						if(null != lastModifyTime && null != currentModifyTime && currentModifyTime.compareTo(lastModifyTime) > 0){
-							//更新
+
+						if (null != lastModifyTime
+								&& null != currentModifyTime
+								&& currentModifyTime.compareTo(lastModifyTime) > 0) {
+							// 更新
 							pstUpdate.setString(1, article.getModule());
 							pstUpdate.setString(2, article.getSubject());
 							pstUpdate.setString(3, content);
 							pstUpdate.setString(4, article.getCategory());
 							pstUpdate.setString(5, article.getPostTime());
 							pstUpdate.setString(6, currentModifyTime);
-							pstUpdate.setString(7, DateUtil.getTime(System.currentTimeMillis()));
+							pstUpdate.setString(7, DateUtil.getTime(System
+									.currentTimeMillis()));
 							pstUpdate.setString(8, "admin");
 							pstUpdate.setInt(9, threadId);
 							// 把一个SQL命令加入命令列表
 							pstUpdate.addBatch();
 						}
 					} else {
-						//新增
+						// 新增
 						pstInsert.setInt(1, threadId);
 						pstInsert.setString(2, article.getModule());
 						pstInsert.setString(3, article.getSubject());
@@ -1583,7 +1615,8 @@ public class MysqlDatabseHelper {
 						pstInsert.setString(9, article.getPostTime());
 						pstInsert.setString(10, article.getModifyTime());
 						pstInsert.setInt(11, 1);
-						String dt = DateUtil.getTime(System.currentTimeMillis());
+						String dt = DateUtil
+								.getTime(System.currentTimeMillis());
 						pstInsert.setString(12, dt);
 						pstInsert.setString(13, "admin");
 						pstInsert.setString(14, dt);
@@ -1593,7 +1626,7 @@ public class MysqlDatabseHelper {
 						pstInsert.addBatch();
 					}
 				}
-				
+
 				// 执行批量更新
 				pstUpdate.executeBatch();
 				pstInsert.executeBatch();
@@ -1609,22 +1642,23 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closeConnection(conn);
 		}
 	}
-	
-	public static List<Article> persistAndToMail(List<Article> articleList, Map<Integer,String> existThreadMap) {
-		
+
+	public static List<Article> persistAndToMail(List<Article> articleList,
+			Map<Integer, String> existThreadMap) {
+
 		Connection conn = null;
 		PreparedStatement pstInsert = null;
 		PreparedStatement pstUpdate = null;
-		
+
 		boolean existFlag = true;
-		if(null == existThreadMap){
+		if (null == existThreadMap) {
 			existFlag = false;
 		}
-		
+
 		List<Article> mailList = new ArrayList<Article>();
 		Set<Integer> existThreadSet = existThreadMap.keySet();
-		
-		//新增
+
+		// 新增
 		StringBuffer sqlInsert = new StringBuffer();
 		sqlInsert.append("insert into ");
 		sqlInsert.append(" lms_bbs_netease ");
@@ -1647,8 +1681,8 @@ public class MysqlDatabseHelper {
 		sqlInsert.append("remarks");
 		sqlInsert.append(" ) ");
 		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-		
-		//更新
+
+		// 更新
 		StringBuffer sqlUpdate = new StringBuffer();
 		sqlUpdate.append("update ");
 		sqlUpdate.append(" lms_bbs_netease ");
@@ -1662,42 +1696,47 @@ public class MysqlDatabseHelper {
 		sqlUpdate.append(" update_date = ?,");
 		sqlUpdate.append(" update_by = ? ");
 		sqlUpdate.append("where id = ? ");
-		
+
 		try {
 			conn = MysqlConnectionManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
-			
+
 			if (conn != null) {
-				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert.toString());
-				pstUpdate = (PreparedStatement) conn.prepareStatement(sqlUpdate.toString());
-				
+				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert
+						.toString());
+				pstUpdate = (PreparedStatement) conn.prepareStatement(sqlUpdate
+						.toString());
+
 				for (Article article : articleList) {
 					Integer threadId = article.getThreadId();
 					String content = article.getContent();
-					
-					if(existFlag && existThreadSet.contains(threadId)){
+
+					if (existFlag && existThreadSet.contains(threadId)) {
 						String currentModifyTime = article.getModifyTime();
 						String lastModifyTime = existThreadMap.get(threadId);
-						
-						if(null != lastModifyTime && null != currentModifyTime && currentModifyTime.compareTo(lastModifyTime) > 0){
-							//更新
+
+						if (null != lastModifyTime
+								&& null != currentModifyTime
+								&& currentModifyTime.compareTo(lastModifyTime) > 0) {
+							// 更新
 							pstUpdate.setString(1, article.getModule());
 							pstUpdate.setString(2, article.getSubject());
 							pstUpdate.setString(3, content);
 							pstUpdate.setString(4, article.getCategory());
 							pstUpdate.setString(5, article.getPostTime());
 							pstUpdate.setString(6, currentModifyTime);
-							pstUpdate.setString(7, DateUtil.getTime(System.currentTimeMillis()));
+							pstUpdate.setString(7, DateUtil.getTime(System
+									.currentTimeMillis()));
 							pstUpdate.setString(8, "admin");
 							pstUpdate.setInt(9, threadId);
 							// 把一个SQL命令加入命令列表
 							pstUpdate.addBatch();
-							//加入待发邮件列表
+							// 加入待发邮件列表
 							mailList.add(article);
 						}
 					} else {
-						//新增
+						// 新增
 						pstInsert.setInt(1, threadId);
 						pstInsert.setString(2, article.getModule());
 						pstInsert.setString(3, article.getSubject());
@@ -1709,7 +1748,8 @@ public class MysqlDatabseHelper {
 						pstInsert.setString(9, article.getPostTime());
 						pstInsert.setString(10, article.getModifyTime());
 						pstInsert.setInt(11, 1);
-						String dt = DateUtil.getTime(System.currentTimeMillis());
+						String dt = DateUtil
+								.getTime(System.currentTimeMillis());
 						pstInsert.setString(12, dt);
 						pstInsert.setString(13, "admin");
 						pstInsert.setString(14, dt);
@@ -1717,11 +1757,11 @@ public class MysqlDatabseHelper {
 						pstInsert.setNull(16, Types.VARCHAR);
 						// 把一个SQL命令加入命令列表
 						pstInsert.addBatch();
-						//加入待发邮件列表
+						// 加入待发邮件列表
 						mailList.add(article);
 					}
 				}
-				
+
 				// 执行批量更新
 				pstUpdate.executeBatch();
 				pstInsert.executeBatch();
@@ -1738,5 +1778,418 @@ public class MysqlDatabseHelper {
 		}
 		return mailList;
 	}
-	
+
+	/**
+	 * 批量导入足球赛事
+	 * 
+	 * @param footballLeagueList
+	 *            赛事列表
+	 */
+	public static void batchAddFootballLeague(
+			List<FootballLeague> footballLeagueList) {
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("insert into ");
+		sb.append(" lms_football_league ");
+		sb.append(" ( ");
+		sb.append("id,");
+		sb.append("name,");
+		sb.append("category,");
+		sb.append("country,");
+		sb.append("continental,");
+		sb.append("link,");
+		sb.append("del_flag,");
+		sb.append("create_date,");
+		sb.append("update_by,");
+		sb.append("update_date,");
+		sb.append("create_by,");
+		sb.append("remarks");
+		sb.append(" ) ");
+		sb.append(" values (?,?,?,?,?,?,?,?,?,?,?,?)");
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+
+			if (conn != null) {
+				pst = (PreparedStatement) conn.prepareStatement(sb.toString());
+				for (FootballLeague league : footballLeagueList) {
+					pst.setLong(1, league.getId());
+					pst.setString(2, league.getName());
+					pst.setString(3, league.getCategory());
+					pst.setString(4, league.getCountry());
+					pst.setString(5, league.getContinental());
+					pst.setString(6, league.getLink());
+					pst.setInt(7, 1);
+					String dt = DateUtil.getTime(System.currentTimeMillis());
+					pst.setString(8, dt);
+					pst.setString(9, "admin");
+					pst.setString(10, dt);
+					pst.setString(11, "admin");
+					pst.setNull(12, Types.VARCHAR);
+					// 把一个SQL命令加入命令列表
+					pst.addBatch();
+					// logger.info(league);
+				}
+
+				// 执行批量更新
+				pst.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入足球赛事成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddFootballLeague(List<FootballLeague> footballLeagueList)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pst);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
+
+	/**
+	 * 获取足球赛事列表
+	 * 
+	 * @param sql
+	 * @return
+	 */
+	public static List<FootballLeague> getFootballLeagueList(String sql) {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<FootballLeague> list = new ArrayList<FootballLeague>();
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				if (null == sql || StringUtils.isBlank(sql)) {
+					sql = "SELECT id,name,category,country,continental,link FROM lms_football_league";
+				}
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					FootballLeague league = new FootballLeague();
+					league.setId(rs.getLong(1));
+					league.setName(rs.getString(2));
+					league.setCategory(rs.getString(3));
+					league.setCountry(rs.getString(4));
+					league.setContinental(rs.getString(5));
+					league.setLink(rs.getString(6));
+
+					list.add(league);
+				}
+				logger.info("已获取足球赛事信息");
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getFootballLeagueList(String sql)]: "
+					+ e.getMessage());
+			// e.printStackTrace();
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return list;
+	}
+
+	/**
+	 * 批量导入球队信息
+	 * 
+	 * @param teamList
+	 *            球队列表
+	 * @param existIdSet
+	 */
+	public static void batchAddFootballTeam(List<FootballTeam> teamList,
+			Set<Long> existIdSet) {
+
+		Connection conn = null;
+		PreparedStatement pstInsert = null;
+		PreparedStatement pstUpdate = null;
+
+		boolean existFlag = true;
+		if (null == existIdSet) {
+			existFlag = false;
+		}
+
+		// 新增
+		StringBuffer sqlInsert = new StringBuffer();
+		sqlInsert.append("insert into ");
+		sqlInsert.append(" lms_football_team ");
+		sqlInsert.append(" ( ");
+		sqlInsert.append("id,");
+		sqlInsert.append("name,");
+		sqlInsert.append("full_name,");
+		sqlInsert.append("league_id,");
+		sqlInsert.append("rank,");
+		sqlInsert.append("city,");
+		sqlInsert.append("home_court,");
+		sqlInsert.append("head_coach,");
+		sqlInsert.append("link,");
+		sqlInsert.append("brief_introduction,");
+		sqlInsert.append("del_flag,");
+		sqlInsert.append("create_date,");
+		sqlInsert.append("create_by,");
+		sqlInsert.append("update_date,");
+		sqlInsert.append("update_by,");
+		sqlInsert.append("remarks");
+		sqlInsert.append(" ) ");
+		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+		// 更新
+		StringBuffer sqlUpdate = new StringBuffer();
+		sqlUpdate.append("update ");
+		sqlUpdate.append(" lms_football_team ");
+		sqlUpdate.append("set ");
+		sqlUpdate.append(" name = ?,");
+		sqlUpdate.append(" full_name = ?,");
+		sqlUpdate.append(" league_id = ?,");
+		sqlUpdate.append(" rank = ?,");
+		sqlUpdate.append(" city = ?,");
+		sqlUpdate.append(" home_court = ?,");
+		sqlUpdate.append(" head_coach = ?,");
+		sqlUpdate.append(" link = ?, ");
+		sqlUpdate.append(" brief_introduction = ?, ");
+		sqlUpdate.append(" update_date = ?,");
+		sqlUpdate.append(" update_by = ? ");
+		sqlUpdate.append("where id = ? ");
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+
+			if (conn != null) {
+				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert
+						.toString());
+				pstUpdate = (PreparedStatement) conn.prepareStatement(sqlUpdate
+						.toString());
+
+				for (FootballTeam team : teamList) {
+					Long id = team.getId();
+
+					if (existFlag && existIdSet.contains(id)) {
+						// 更新
+						pstUpdate.setString(1, team.getName());
+						pstUpdate.setString(2, team.getFullName());
+						pstUpdate.setLong(3, team.getLeagueId());
+						pstUpdate.setString(4, team.getRank());
+						pstUpdate.setString(5, team.getCity());
+						pstUpdate.setString(6, team.getHomeCourt());
+						pstUpdate.setString(7, team.getHeadCoach());
+						pstUpdate.setString(8, team.getLink());
+						pstUpdate.setString(9, team.getBriefIntroduction());
+						pstUpdate.setString(10,
+								DateUtil.getTime(System.currentTimeMillis()));
+						pstUpdate.setString(11, "admin");
+						pstUpdate.setLong(12, team.getId());
+						// 把一个SQL命令加入命令列表
+						pstUpdate.addBatch();
+					} else {
+						// 新增
+						pstInsert.setLong(1, team.getId());
+						pstInsert.setString(2, team.getName());
+						pstInsert.setString(3, team.getFullName());
+						pstInsert.setLong(4, team.getLeagueId());
+						pstInsert.setString(5, team.getRank());
+						pstInsert.setString(6, team.getCity());
+						pstInsert.setString(7, team.getHomeCourt());
+						pstInsert.setString(8, team.getHeadCoach());
+						pstInsert.setString(9, team.getLink());
+						pstInsert.setString(10, team.getBriefIntroduction());
+						pstInsert.setInt(11, 1);
+						String dt = DateUtil
+								.getTime(System.currentTimeMillis());
+						pstInsert.setString(12, dt);
+						pstInsert.setString(13, "admin");
+						pstInsert.setString(14, dt);
+						pstInsert.setString(15, "admin");
+						pstInsert.setNull(16, Types.VARCHAR);
+						// 把一个SQL命令加入命令列表
+						pstInsert.addBatch();
+					}
+				}
+
+				// 执行批量更新
+				pstUpdate.executeBatch();
+				pstInsert.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("批量导入球队信息成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddFootballTeam(List<FootballTeam> teamList, Set<Long> existIdSet)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pstInsert);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
+
+	public static List<FootballTeam> getFootballTeamList(String sql) {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<FootballTeam> list = new ArrayList<FootballTeam>();
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				if (StringUtils.isBlank(sql)) {
+					sql = "SELECT id,name,full_name,league_id,rank,city,home_court,head_coach,link,brief_introduction FROM lms_football_team";
+				}
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					FootballTeam team = new FootballTeam();
+					team.setId(rs.getLong(1));
+					team.setName(rs.getString(2));
+					team.setFullName(rs.getString(3));
+					team.setLeagueId(rs.getLong(4));
+					team.setRank(rs.getString(5));
+					team.setCity(rs.getString(6));
+					team.setHomeCourt(rs.getString(7));
+					team.setHomeCourt(rs.getString(8));
+					team.setLink(rs.getString(9));
+					team.setBriefIntroduction(rs.getString(10));
+					list.add(team);
+				}
+				logger.info("已获取球队信息");
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getFootballTeamList(String sql)]: "
+					+ e.getMessage());
+			// e.printStackTrace();
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return list;
+	}
+
+	/**
+	 * 获取球队ID集合
+	 * 
+	 * @param sql
+	 * @return
+	 */
+	public static Set<Long> getExistFootballTeamIdSet(String sql) {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		Set<Long> set = new HashSet<Long>();
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				if (StringUtils.isBlank(sql)) {
+					sql = "SELECT id FROM lms_football_team";
+				}
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					set.add(rs.getLong(1));
+				}
+				logger.info("已获取球队ID集合信息");
+			}
+
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->getExistIdSet(String sql)]: "
+					+ e.getMessage());
+			// e.printStackTrace();
+		} finally {
+			MysqlConnectionManager.closeResultSet(rs);
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return set;
+	}
+
+	public static void incrementalAddFootballTeam(List<FootballTeam> teamList) {
+
+		Connection conn = null;
+		PreparedStatement pstInsert = null;
+
+		// 新增
+		StringBuffer sqlInsert = new StringBuffer();
+		sqlInsert.append("insert into ");
+		sqlInsert.append(" lms_football_team ");
+		sqlInsert.append(" ( ");
+		sqlInsert.append("id,");
+		sqlInsert.append("name,");
+		sqlInsert.append("full_name,");
+		sqlInsert.append("league_id,");
+		sqlInsert.append("rank,");
+		sqlInsert.append("city,");
+		sqlInsert.append("home_court,");
+		sqlInsert.append("head_coach,");
+		sqlInsert.append("link,");
+		sqlInsert.append("brief_introduction,");
+		sqlInsert.append("del_flag,");
+		sqlInsert.append("create_date,");
+		sqlInsert.append("create_by,");
+		sqlInsert.append("update_date,");
+		sqlInsert.append("update_by,");
+		sqlInsert.append("remarks");
+		sqlInsert.append(" ) ");
+		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+
+			if (conn != null) {
+				pstInsert = (PreparedStatement) conn.prepareStatement(sqlInsert
+						.toString());
+
+				for (FootballTeam team : teamList) {
+					Long id = team.getId();
+
+					// 新增
+					pstInsert.setLong(1, team.getId());
+					pstInsert.setString(2, team.getName());
+					pstInsert.setString(3, team.getFullName());
+					pstInsert.setLong(4, team.getLeagueId());
+					pstInsert.setString(5, team.getRank());
+					pstInsert.setString(6, team.getCity());
+					pstInsert.setString(7, team.getHomeCourt());
+					pstInsert.setString(8, team.getHeadCoach());
+					pstInsert.setString(9, team.getLink());
+					pstInsert.setString(10, team.getBriefIntroduction());
+					pstInsert.setInt(11, 1);
+					String dt = DateUtil.getTime(System.currentTimeMillis());
+					pstInsert.setString(12, dt);
+					pstInsert.setString(13, "admin");
+					pstInsert.setString(14, dt);
+					pstInsert.setString(15, "admin");
+					pstInsert.setNull(16, Types.VARCHAR);
+					// 把一个SQL命令加入命令列表
+					pstInsert.addBatch();
+				}
+
+				// 执行批量更新
+				pstInsert.executeBatch();
+				// 语句执行完毕，提交本事务
+				conn.commit();
+				logger.info("增量导入球队信息成功！");
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException[MysqlDatabseHelper->batchAddFootballTeam(List<FootballTeam> teamList, Set<Long> existIdSet)]: "
+					+ e.getMessage());
+		} finally {
+			MysqlConnectionManager.closePreparedStatement(pstInsert);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+	}
+
 }

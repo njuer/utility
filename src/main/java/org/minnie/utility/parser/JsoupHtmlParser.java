@@ -1,5 +1,6 @@
 package org.minnie.utility.parser;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -34,6 +35,7 @@ import org.minnie.utility.entity.lottery.ShiShiCaiPredict;
 import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.netease.Article;
 import org.minnie.utility.module.netease.FootballLeague;
+import org.minnie.utility.module.netease.FootballTeam;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
 import org.minnie.utility.module.netease.SmgFootball;
@@ -41,6 +43,7 @@ import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.yangshengsuo.Regimen;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.DateUtil;
+import org.minnie.utility.util.ImageUtil;
 import org.minnie.utility.util.StringUtil;
 
 /**
@@ -51,7 +54,60 @@ public class JsoupHtmlParser {
 
 	private static Logger logger = Logger.getLogger(JsoupHtmlParser.class
 			.getName());
-
+	
+	private static  Map<String,String> map = new HashMap<String,String>();
+	static{
+	map.put("英格兰","England");
+	map.put("意大利","Italy");
+	map.put("西班牙","Spain");
+	map.put("德国","Germany");
+	map.put("法国","France");
+	map.put("葡萄牙","Portugal");
+	map.put("荷兰","Netherlands");
+	map.put("丹麦","Denmark");
+	map.put("挪威","Norway");
+	map.put("瑞典","Sweden");
+	map.put("芬兰","Finland");
+	map.put("苏格兰","Scotland");
+	map.put("乌克兰","Ukraine");
+	map.put("比利时","Belgium");
+	map.put("捷克","Czech");
+	map.put("土耳其","Turkey");
+	map.put("希腊","Greece");
+	map.put("保加利亚","Bulgaria");
+	map.put("瑞士","Switzerland");
+	map.put("以色列","Israel");
+	map.put("塞尔维亚","Serbia");
+	map.put("奥地利","Austria");
+	map.put("波兰","Poland");
+	map.put("爱尔兰","Ireland");
+	map.put("匈牙利","Hungary");
+	map.put("斯洛伐克","Slovakia");
+	map.put("斯洛文尼亚","Slovenia");
+	map.put("美国","USA");
+	map.put("加拿大","Canada");
+	map.put("墨西哥","Mexico");
+	map.put("巴西","Brazil");
+	map.put("阿根廷","Argentina");
+	map.put("乌拉圭","Uruguay");
+	map.put("巴拉圭","Paraguay");
+	map.put("智利","Chile");
+	map.put("秘鲁","Peru");
+	map.put("哥伦比亚","Columbia");
+	map.put("厄瓜多尔","Ecuador");
+	map.put("玻利维亚","Bolivia");
+	map.put("委内瑞拉","Venezuela");
+	map.put("中国","China");
+	map.put("韩国","Korea");
+	map.put("日本","Japan");
+	map.put("澳大利亚","Australia");
+	map.put("新加坡","Singapore");
+	map.put("沙特","SaudiArabia");
+	map.put("摩洛哥","Morocco");
+	map.put("喀麦隆","Cameroon");
+	map.put("南非","SouthAfrica");
+	}
+	
 	/**
 	 * @param args
 	 */
@@ -1495,91 +1551,286 @@ public class JsoupHtmlParser {
 		return list;
 	}
 	
+	private static final String LEAGUE_EUROPE = "euroLeague";
+	private static final String LEAGUE_CENTRAL_NORTH_AMERICA = "cnCupAmericaLeague";
+	private static final String LEAGUE_SOUTH_AMERICA = "sCupAmericaLeague";
+	private static final String LEAGUE_ASIA = "asiaLeague";
+	private static final String LEAGUE_AFRICA = "africaLeague";
+	
+	private static final String CUP_EUROPE = "euroCup";
+	private static final String CUP_CENTRAL_NORTH_AMERICA = "cnCupAmericaCup";
+	private static final String CUP_SOUTH_AMERICA = "sCupAmericaCup";
+	private static final String CUP_ASIA = "asiaCup";
+	private static final String CUP_AFRICA = "africaCup";
+	private static final String CUP_WORLD = "worldCup";
+
+	
+	private static final String IMAGE_PATH = System.getProperty("user.dir") + File.separator + "image";
+	/**
+	 * 获取赛事列表
+	 * @param html
+	 * @return
+	 */
 	public static List<FootballLeague> getLeagueList(String html) {
 		
-		Map<String,String> map = new HashMap<String,String>();
-		map.put("英格兰","England");
-		map.put("意大利","Italy");
-		map.put("西班牙","Spain");
-		map.put("德国","Germany");
-		map.put("法国","France");
-		map.put("葡萄牙","Portugal");
-		map.put("荷兰","Netherlands");
-		map.put("丹麦","Denmark");
-		map.put("挪威","Norway");
-		map.put("瑞典","Sweden");
-		map.put("芬兰","Finland");
-		map.put("苏格兰","Scotland");
-		map.put("乌克兰","Ukraine");
-		map.put("比利时","Belgium");
-		map.put("捷克","Czech");
-		map.put("土耳其","Turkey");
-		map.put("希腊","Greece");
-		map.put("保加利亚","Bulgaria");
-		map.put("瑞士","Switzerland");
-		map.put("以色列","Israel");
-		map.put("塞尔维亚","Serbia");
-		map.put("奥地利","Austria");
-		map.put("波兰","Poland");
-		map.put("爱尔兰","Ireland");
-		map.put("匈牙利","Hungary");
-		map.put("斯洛伐克","Slovakia");
-		map.put("斯洛文尼亚","Slovenia");
-		map.put("美国","USA");
-		map.put("加拿大","Canada");
-		map.put("墨西哥","Mexico");
-		map.put("巴西","Brazil");
-		map.put("阿根廷","Argentina");
-		map.put("乌拉圭","Uruguay");
-		map.put("巴拉圭","Paraguay");
-		map.put("智利","Chile");
-		map.put("秘鲁","Peru");
-		map.put("哥伦比亚","Columbia");
-		map.put("厄瓜多尔","Ecuador");
-		map.put("玻利维亚","Bolivia");
-		map.put("委内瑞拉","Venezuela");
-		map.put("中国","China");
-		map.put("韩国","Korea");
-		map.put("日本","Japan");
-		map.put("澳大利亚","Australia");
-		map.put("新加坡","Singapore");
-		map.put("沙特","SaudiArabia");
-		map.put("摩洛哥","Morocco");
-		map.put("喀麦隆","Cameroon");
-		map.put("南非","SouthAfrica");
-
-
+		Set<String> picUrlSet = new HashSet<String>();
 		
 		Document doc = Jsoup.parse(html);
-//		Elements leagueList = doc.select("div.league_con.stip_lib");
 		Elements leagueList = doc.select("div.matchList");
 		List<FootballLeague> list = new ArrayList<FootballLeague>();
 		for (Element elem : leagueList) {
-			Elements leagueBox = elem.select("div.leagueBox");
-			if(leagueBox.size() == 1){
-				Elements leagues = leagueBox.first().select("div.league_con.stip_lib");
+			/**
+			 * 联赛
+			 */
+			Elements leagueBoxes = elem.select("div.leagueBox");
+			for(Element leagueBox : leagueBoxes){
+				Elements leagues = leagueBox.select("div.league_con.stip_lib");
 				for (Element league : leagues) {
 					Element elemCountry = league.child(0);
-					FootballLeague fl = new FootballLeague();
+					String continentalCn = null;
+					String country = null;
+					
 					String continental = league.attr("tip");
-					continental = continental.substring(1, continental.indexOf("League"));
+					continental = continental.replaceAll("[\\#\\d]", StringUtils.EMPTY);
+					if(LEAGUE_EUROPE.equals(continental)){
+						continentalCn = "欧洲";
+					} else if(LEAGUE_CENTRAL_NORTH_AMERICA.equals(continental)){
+						continentalCn = "中北美洲";
+					} else if(LEAGUE_SOUTH_AMERICA.equals(continental)){
+						continentalCn = "南美洲";
+					} else if(LEAGUE_ASIA.equals(continental)){
+						continentalCn = "亚洲";
+					} else if(LEAGUE_AFRICA.equals(continental)){
+						continentalCn = "非洲";
+					} 
 					if(elemCountry.hasAttr("href")){
-						String leagueName = elemCountry.select("span.leagueName").first().text();
+						country = elemCountry.select("span.leagueName").first().text();
 						String leagueLogoLink = elemCountry.select("span.leagueLogo>img").first().attr("data-src");
+						int symbolQuestion = leagueLogoLink.indexOf("?");
+						if(symbolQuestion >= 0){
+							leagueLogoLink = leagueLogoLink.substring(0, symbolQuestion);
+						}
+						if(!picUrlSet.contains(leagueLogoLink)){
+							ImageUtil.save2File(IMAGE_PATH, "league", leagueLogoLink);
+							picUrlSet.add(leagueLogoLink);
+						}
+					}
+					
+					Elements leagueCons = league.child(1).select("div.league_con");
+					for (Element con : leagueCons) {
+						Element a = con.child(0);
+						String link = a.attr("href");
+						String id = link.substring(link.lastIndexOf("/") + 1, link.lastIndexOf(".html"));
+						if(!StringUtils.isNumeric(id)){
+							continue;
+						}
+						FootballLeague fl = new FootballLeague();
+						fl.setId(Long.valueOf(id));
+						fl.setLink(link);
+						fl.setName(a.select("span.leagueName").first().text());
+						fl.setCategory("league");
+						fl.setContinental(continentalCn);
+						fl.setCountry(country);
+						String leagueLogoLink = a.select("span.leagueLogo>img").first().attr("data-src");
+						int symbolQuestion = leagueLogoLink.indexOf("?");
+						if(symbolQuestion >= 0){
+							leagueLogoLink = leagueLogoLink.substring(0, symbolQuestion);
+						}
+						if(!picUrlSet.contains(leagueLogoLink)){
+							ImageUtil.save2File(IMAGE_PATH, "league", leagueLogoLink);
+							picUrlSet.add(leagueLogoLink);
+						}
+						list.add(fl);
+					}
 
-						String country = map.get(leagueName);
-						logger.info(leagueName);
-						
-//						logger.info(leagueName + "->" + leagueLink);
+				}
+			}// end of 联赛
+			
+			/**
+			 * 杯赛
+			 */
+			Elements cupBoxes = elem.select("div.cupBox");
+			for(Element cupBox : cupBoxes){
+				Elements cups = cupBox.select("div.league_con.stip_lib");
+				for (Element cup : cups) {
+					String continentalCn = null;
+					String continental = cup.attr("tip");
+					continental = continental.replaceAll("[\\#\\d]", StringUtils.EMPTY);
+					
+					if(CUP_EUROPE.equals(continental)){
+						continentalCn = "欧洲";
+					} else if(CUP_CENTRAL_NORTH_AMERICA.equals(continental)){
+						continentalCn = "中北美洲";
+					} else if(CUP_SOUTH_AMERICA.equals(continental)){
+						continentalCn = "南美洲";
+					} else if(CUP_ASIA.equals(continental)){
+						continentalCn = "亚洲";
+					} else if(CUP_AFRICA.equals(continental)){
+						continentalCn = "非洲";
+					}
+					
+					Elements leagueCons = cup.select("div.league_con");
+					for (Element con : leagueCons) {
+						Element a = con.child(0);
+						String link = a.attr("href");
+						String id = link.substring(link.lastIndexOf("/") + 1, link.lastIndexOf(".html"));
+						if(!StringUtils.isNumeric(id)){
+							continue;
+						}
+						FootballLeague fl = new FootballLeague();
+						fl.setId(Long.valueOf(id));
+						fl.setCategory("cup");
+						fl.setContinental(continentalCn);
+						fl.setLink(link);
+						fl.setName(a.select("span.leagueName.noSub").first().text());
+						String leagueLogoLink = a.select("span.leagueLogo>img").first().attr("data-src");
+						int symbolQuestion = leagueLogoLink.indexOf("?");
+						if(symbolQuestion >= 0){
+							leagueLogoLink = leagueLogoLink.substring(0, symbolQuestion);
+						}
+						if(!picUrlSet.contains(leagueLogoLink)){
+							ImageUtil.save2File(IMAGE_PATH, "league", leagueLogoLink);
+							picUrlSet.add(leagueLogoLink);
+						}
+						list.add(fl);
 					}
 				}
-			}
+			}// end of 杯赛
 			
-//			logger.info(elem.select("span.leagueName").first().text());
+			/**
+			 * 国际赛事
+			 */
+			Elements worldBoxes = elem.select("div.worldBox");
+			for(Element worldBox : worldBoxes){
+				Elements cups = worldBox.select("div.league_con.stip_lib");
+				for (Element cup : cups) {
+//					String continental = cup.attr("tip");
+//					continental = continental.replaceAll("[\\#\\d]", StringUtils.EMPTY);
+//					if(CUP_WORLD.equals(continental)){
+//						fl.setContinental("国际");
+//					}
+					
+					Elements leagueCons = cup.select("div.league_con");
+					for (Element con : leagueCons) {
+						Element a = con.child(0);
+						String link = a.attr("href");
+						String id = link.substring(link.lastIndexOf("/") + 1, link.lastIndexOf(".html"));
+						if(!StringUtils.isNumeric(id)){
+							continue;
+						}
+						FootballLeague fl = new FootballLeague();
+						fl.setCategory("cup");
+						fl.setId(Long.valueOf(id));
+						fl.setLink(link);
+						fl.setName(a.select("span.leagueName.noSub").first().text());
+						String leagueLogoLink = a.select("span.leagueLogo>img").first().attr("data-src");
+						int symbolQuestion = leagueLogoLink.indexOf("?");
+						if(symbolQuestion >= 0){
+							leagueLogoLink = leagueLogoLink.substring(0, symbolQuestion);
+						}
+						if(!picUrlSet.contains(leagueLogoLink)){
+							ImageUtil.save2File(IMAGE_PATH, "league", leagueLogoLink);
+							picUrlSet.add(leagueLogoLink);
+						}
+						list.add(fl);
+					}
+				}
+			}// end of 国际赛事
 		}
-
-		return null;
+		return list;
 	}
 	
 
+	/**
+	 * 获取球队链接列表
+	 * @param html
+	 * @return
+	 */
+	public static List<String> getTeamList(String html) {
+		
+		List<String> list = new ArrayList<String>();
+		Document doc = Jsoup.parse(html);
+		Elements div = doc.select("div.teameInfo.sign");
+		if(div.size() > 0){
+			Elements teams = div.first().select("a");
+			for(Element team : teams){
+				logger.info(team.attr("href") + "->" + team.text());
+				list.add(team.attr("href"));
+			}
+		}
+		
+		return list;
+	}
+
+	public static FootballTeam getTeamDetail(String html, Long teamId, Long leagueId, String link) {
+		
+		FootballTeam team = null;
+		Document doc = Jsoup.parse(html);
+		Elements div = doc.select("div.teamheader.clearfix");
+		if(div.size() > 0){
+			Element teamheader = div.first();
+			team = new FootballTeam();
+			team.setId(teamId);
+			team.setLeagueId(leagueId);
+			team.setLink(link);
+			/**
+			 * logo
+			 */
+			Elements teamLogo = teamheader.select("span.teamLogo>img");
+			if(teamLogo.size() > 0){
+				String logoLink = teamLogo.first().attr("src");
+				
+				int symbolQuestion = logoLink.indexOf("?");
+				if(symbolQuestion >= 0){
+					logoLink = logoLink.substring(0, symbolQuestion);
+				}
+				ImageUtil.save2File(IMAGE_PATH, "team", logoLink);
+			}
+			/**
+			 * 详情
+			 */
+			Elements teamDetail = teamheader.select("div.teamDetail>p");
+			if(teamDetail.size() == 4){
+				//球队名称
+				team.setName(teamDetail.get(0).child(0).html());
+				//球队联赛排名
+				String rank = teamDetail.get(1).text();
+				rank = rank.substring(rank.indexOf("排名：") + 3);
+				team.setRank(rank);
+				//全称、所在城市
+				Elements em2 = teamDetail.get(2).children();
+				if(em2.size() == 2){
+					String fullName = em2.get(0).text();
+					fullName = fullName.substring(fullName.indexOf("全称：") + 3);
+					team.setFullName(fullName);
+					
+					String city = em2.get(1).text();
+					city = city.substring(city.indexOf("所在城市：") + 5);
+					team.setCity(city);
+				}
+				//球队主场、主教练
+				Elements em3 = teamDetail.get(3).children();
+				if(em3.size() == 2){
+					String homeCourt = em3.get(0).text();
+					homeCourt = homeCourt.substring(homeCourt.indexOf("球队主场：") + 5);
+					team.setHomeCourt(homeCourt);
+					
+					String headCoach = em3.get(1).text();
+					headCoach = headCoach.substring(headCoach.indexOf("主教练：") + 4);
+					team.setHeadCoach(headCoach);
+				}
+			}
+			
+			Elements brief = teamheader.select("div.teamDetail>div.summary.clearfix");
+			String briefContent = brief.first().child(1).text();
+			if(!"暂无[查看详情]".equals(briefContent)){
+				team.setBriefIntroduction("intro");
+			}
+//			logger.info(brief.first().child(1).text());
+
+		}
+		logger.info(team);
+		return team;
+	}
+	
 }
