@@ -340,5 +340,45 @@ public class FileUtil {
 		}
 
 	}
+	
+	/**
+	 * 创建单个文件
+	 * @param descFileName 文件名，包含路径
+	 * @return 如果创建成功，则返回true，否则返回false
+	 */
+	public static boolean createFile(String descFileName) {
+		File file = new File(descFileName);
+		if (file.exists()) {
+			logger.debug("文件 " + descFileName + " 已存在!");
+			return false;
+		}
+		if (descFileName.endsWith(File.separator)) {
+			logger.debug(descFileName + " 为目录，不能创建目录!");
+			return false;
+		}
+		if (!file.getParentFile().exists()) {
+			// 如果文件所在的目录不存在，则创建目录
+			if (!file.getParentFile().mkdirs()) {
+				logger.debug("创建文件所在的目录失败!");
+				return false;
+			}
+		}
+
+		// 创建文件
+		try {
+			if (file.createNewFile()) {
+				logger.debug(descFileName + " 文件创建成功!");
+				return true;
+			} else {
+				logger.debug(descFileName + " 文件创建失败!");
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.debug(descFileName + " 文件创建失败!");
+			return false;
+		}
+
+	}
 
 }

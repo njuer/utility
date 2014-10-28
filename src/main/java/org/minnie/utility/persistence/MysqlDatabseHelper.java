@@ -9,8 +9,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -30,6 +33,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.minnie.autocode.NamingRuleConvert;
 import org.minnie.utility.entity.lottery.FiveInEleven;
 import org.minnie.utility.entity.lottery.SuperLotto;
 import org.minnie.utility.module.netease.Article;
@@ -46,6 +50,77 @@ public class MysqlDatabseHelper {
 			.getName());
 
 	public static Pattern urlPattern = Pattern.compile(Constant.REG_URL);
+	
+	public static List<String[]> getTableInfo(String jdbcTable) {
+		
+		Statement stmt = null;
+		ResultSet rs = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSetMetaData rsmd = null;
+		DatabaseMetaData dmd = null;
+		
+		List<String[]> list = new ArrayList<String[]>();
+		Set<String> ignoreColumnSet = new HashSet<String>();
+		ignoreColumnSet.add("id");//主键
+		ignoreColumnSet.add("name");//名称
+		ignoreColumnSet.add("remarks");//备注
+		ignoreColumnSet.add("createBy");//创建者
+		ignoreColumnSet.add("createDate");//创建日期
+		ignoreColumnSet.add("updateBy");//更新者
+		ignoreColumnSet.add("updateDate");//更新日期
+		ignoreColumnSet.add("delFlag");//删除标记（0：正常；1：删除；2：审核）
+		
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM " + jdbcTable);
+			rs = pstmt.executeQuery();
+			rsmd = rs.getMetaData(); // 获取字段名
+			dmd = conn.getMetaData();
+			
+			// 获取字段注释
+			ResultSet rsColumns = dmd.getColumns(null, "%", jdbcTable, "%");
+			List<String> comments = new ArrayList<String>();
+			while (rsColumns.next()) {
+//				System.out.println(rsColumns.getString("COLUMN_NAME") + "----" + rsColumns.getString("REMARKS"));
+				comments.add(rsColumns.getString("REMARKS"));
+			}
+
+			
+			if (rsmd != null) {
+				int count = rsmd.getColumnCount();
+				for (int i = 1; i <= count; i++) {
+					String javaType = rsmd.getColumnClassName(i);
+					int columnDisplaySize = rsmd.getColumnDisplaySize(i);
+					String columnName = rsmd.getColumnName(i);
+					String propertyName = NamingRuleConvert.replaceUnderlineAndfirstToUpper(columnName, "_", "");
+					if(ignoreColumnSet.contains(propertyName)){
+						continue;
+					}
+//					String len = null;
+					javaType = javaType.substring(javaType.lastIndexOf(".") + 1);
+					if ("Timestamp".equals(javaType)) {
+						javaType = "Date";
+					}
+//					if ("String".equals(javaType)) {
+//						len = String.valueOf(columnDisplaySize);
+//					}
+					String[] str = new String[] {javaType, propertyName, columnName, comments.get(i - 1), String.valueOf(columnDisplaySize)};
+					list.add(str);
+				}
+			}
+		} catch (SQLException ex2) {
+			ex2.printStackTrace();
+		} catch (Exception ex2) {
+			ex2.printStackTrace();
+		} finally {
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closePreparedStatement(pstmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		
+		return list;
+	}
 
 	/**
 	 * 批量导入影片信息[不包含缺二进制海报图片]
@@ -1913,7 +1988,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pstUpdate = null;
 
 		boolean existFlag = true;
-		if (null == existIdSet) {
+		if (null == existIdSet || existIdSet.size() == 0) {
 			existFlag = false;
 		}
 
@@ -2190,6 +2265,48 @@ public class MysqlDatabseHelper {
 			MysqlConnectionManager.closePreparedStatement(pstInsert);
 			MysqlConnectionManager.closeConnection(conn);
 		}
+	}
+	
+	/**
+	 * 删除某表数据
+	 * @param table
+	 * @param whereClause
+	 * @return
+	 */
+	public static int deleteFromTable(String table, String whereClause) {
+
+		if (null == table || StringUtils.isBlank(table)) {
+			return -1;
+		}
+
+		Connection conn = null;
+		Statement stmt = null;
+		StringBuilder sb = new StringBuilder();
+		sb.append("DELETE FROM ").append(table);
+		if (StringUtils.isNotBlank(whereClause)) {
+			sb.append(" WHERE ").append(whereClause);
+		}
+		int result = -1;
+
+		try {
+			conn = MysqlConnectionManager.getConnection();
+			if (conn != null) {
+				stmt = conn.createStatement();
+				result = stmt.executeUpdate(sb.toString());
+				if (result >= 0) {
+					logger.info("删除记录成功！");
+				} else {
+					logger.info("删除记录失败！");
+				}
+			}
+
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		} finally {
+			MysqlConnectionManager.closeStatement(stmt);
+			MysqlConnectionManager.closeConnection(conn);
+		}
+		return result;
 	}
 
 }
