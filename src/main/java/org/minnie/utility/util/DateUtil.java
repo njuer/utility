@@ -17,7 +17,7 @@ public class DateUtil {
 	// 获取Calendar实例
 	private static Calendar calendar = Calendar.getInstance();
 
-	public static SimpleDateFormat standardDateFormat = new SimpleDateFormat(
+	public static SimpleDateFormat standardDateTimeFormat = new SimpleDateFormat(
 			Constant.DATE_FORMAT_STANDARD);
 	public static SimpleDateFormat neteaselotteryDateFormat = new SimpleDateFormat(
 			Constant.DATE_FORMAT_NETEASE_LOTTERY_FIVE_IN_ELEVEN);
@@ -61,7 +61,7 @@ public class DateUtil {
 	 */
 	public static String getTime(long currentTimeMillis) {
 		Date dateTime = new Date(currentTimeMillis);
-		return standardDateFormat.format(dateTime);
+		return standardDateTimeFormat.format(dateTime);
 	}
 
 	public static String getDate() {
@@ -234,4 +234,21 @@ public class DateUtil {
 		return null;
 
 	}
+	
+	/**
+	 * 回溯过去日期(不包括当天)
+	 * @param BacktrackingDays	回溯天数
+	 * @return
+	 */
+	public static List<String> getLastDate(int BacktrackingDays){
+		List<String> list = new ArrayList<String>();
+		Calendar cal = Calendar.getInstance(); // 获取Calendar实例
+		
+		for(int i = 0; i < BacktrackingDays; i++){
+			list.add(dateFormat.format(cal.getTime()));
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+		}
+		return list;
+	}
+	
 }

@@ -1,6 +1,7 @@
 package org.minnie.utility.module.netease;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,12 +10,15 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.minnie.utility.parser.HttpSimulation;
 import org.minnie.utility.parser.JsoupHtmlParser;
 import org.minnie.utility.persistence.MysqlDatabseHelper;
 import org.minnie.utility.util.Constant;
+import org.minnie.utility.util.DateUtil;
+import org.minnie.utility.util.ExcelUtil;
 
 /**
  * 竞彩足球
@@ -50,24 +54,11 @@ public class SmgFootballApp {
 //		init();
 //		getLeagueList();
 //		initTeamList();
-		incrementalGetTeamList();
+//		incrementalGetTeamList();
 		
-//		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-//		String link = "http://qiudui.caipiao.163.com/1/0000/661/scpl.html";
-//		Set<Long> existIdSet = MysqlDatabseHelper.getExistFootballTeamIdSet(null);
-//		try {
-//			URL teamUrl = new URL(link);
-//			String path = teamUrl.getPath();
-//			String resp = hs.getResponseBodyByGet(teamUrl.getHost(), path, nvps);
-//			String [] arr = path.split("\\/");
-//			FootballTeam team = JsoupHtmlParser.getTeamDetail(resp, Long.valueOf(arr[3]), Long.valueOf(arr[1]), link);
-//			List<FootballTeam> list = new ArrayList<FootballTeam>();
-//			list.add(team);
-//			MysqlDatabseHelper.batchAddFootballTeam(list, existIdSet);
-//		} catch (MalformedURLException e) {
-//			logger.error(e.getMessage());
-//		}
 		
+		String dir = "F:" + File.separator + "temp" + File.separator + "lottery" + File.separator + "match";
+		generateMatch(2, dir);
 		
 	}
 	
@@ -76,7 +67,7 @@ public class SmgFootballApp {
 //		http://caipiao.163.com/order/jczq-hunhe/?betDate=2014-10-07
 		
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-//		nvps.add(new BasicNameValuePair("betDate", "2014-10-07"));
+//		nvps.add(new BasicNameValuePair("betDate", "2014-10-28"));
 		
 		String response = hs.getResponseBodyByGet("caipiao.163.com", "/order/jczq-hunhe/", nvps);
 		
@@ -166,5 +157,27 @@ public class SmgFootballApp {
 		}
 	}
 	
-
+	/**
+	 * 生成每日赛事(结果)Excel
+	 * @param BacktrackingDays	回溯天数
+	 * @param dir	文件存放目录
+	 */
+	public static void generateMatch(int BacktrackingDays, String dir){
+		
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		List<String> dateList = DateUtil.getLastDate(BacktrackingDays);
+		int size = dateList.size();
+		for(int i = 0; i < size; i++){
+			String date = dateList.get(i);
+			nvps.clear();
+			if(i > 0){
+				nvps.add(new BasicNameValuePair("betDate", date));
+			}
+			String response = hs.getResponseBodyByGet("caipiao.163.com", "/order/jczq-hunhe/", nvps);
+			List<SmgFootball> matchList = JsoupHtmlParser.getMatchList(response);
+			ExcelUtil.generateDailyMatch(matchList, dir, date);
+		}
+	}
+	
+	
 }

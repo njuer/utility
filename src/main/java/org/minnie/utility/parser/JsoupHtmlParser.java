@@ -1475,6 +1475,10 @@ public class JsoupHtmlParser {
 									sf.setHomeTeamRank(is.get(0).html().replaceAll("\\[", StringUtils.EMPTY).replaceAll("]", StringUtils.EMPTY));
 									sf.setAwayTeamRank(is.get(1).html().replaceAll("\\[", StringUtils.EMPTY).replaceAll("]", StringUtils.EMPTY));
 								}
+								Elements elemFinalScore = span.select("div.finalScore");
+								if(elemFinalScore.size() == 1){
+									sf.setScore(elemFinalScore.first().text());
+								}
 							}
 
 							// 让球数
