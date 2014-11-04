@@ -192,6 +192,8 @@ public class ${ClassName}Dao {
 					sb.append("update_date,");	// 更新日期
 					sb.append("update_by,");		// 更新者
 					sb.append("remarks");		// 备注
+					sb.append(" FROM ");
+					sb.append(" ${tableName} ");		// 表名
 					sql = sb.toString();
 				}
 				rs = stmt.executeQuery(sql);

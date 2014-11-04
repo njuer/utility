@@ -39,6 +39,7 @@ import org.minnie.utility.module.netease.FootballTeam;
 import org.minnie.utility.module.netease.NeteasePage;
 import org.minnie.utility.module.netease.Picture;
 import org.minnie.utility.module.netease.SmgFootball;
+import org.minnie.utility.module.netease.entity.FootballMatch;
 import org.minnie.utility.module.sohu.DoubleColor;
 import org.minnie.utility.module.yangshengsuo.Regimen;
 import org.minnie.utility.util.Constant;
@@ -1549,6 +1550,154 @@ public class JsoupHtmlParser {
 					}// end of for (Element dd : dds)
 				}
 
+			}// end of for (Element child : children)
+		}// end of for (Element elem : matchList)
+		logger.info(list.size());
+		return list;
+	}
+
+	/**
+	 * 
+	 * @param html
+	 * @return
+	 */
+	public static List<FootballMatch> getFootballMatchList(String html) {
+		
+		Document doc = Jsoup.parse(html);
+		Elements matchList = doc.select("div.dataBody.unAttention");
+		List<FootballMatch> list = new ArrayList<FootballMatch>();
+		
+		for (Element elem : matchList) {
+			Elements children = elem.children();
+			for (Element child : children) {
+				Elements dls = child.select("dl");
+				for (Element dl : dls) {
+					String gameDate = dl.attr("gameDate");
+					gameDate = gameDate.substring(0, 4) + "-" + gameDate.substring(4, 6) + "-" + gameDate.substring(6, 8);
+					Elements dds = dl.select("dd");
+					for (Element dd : dds) {
+						if(!dd.hasAttr("matchcode")){
+							continue;
+						}
+						
+						
+						Attributes attrs = dd.attributes();
+						String matchId = attrs.get("matchid");
+						FootballMatch match = new FootballMatch();
+						
+						if(!StringUtils.isNumeric(matchId)){
+							continue;
+						}
+						match.setId(Long.valueOf(matchId));
+						match.setGameDate(gameDate);
+						match.setIsStop(attrs.get("isstop"));
+						match.setMatchCode(attrs.get("matchcode"));
+						match.setMatchNumCn(attrs.get("matchnumcn"));
+						match.setStartTime(DateUtil.TimeStamp2DateString(attrs.get("starttime")));
+						match.setEndTime(DateUtil.TimeStamp2DateString(attrs.get("endtime")));
+						match.setIsAttention(attrs.get("isattention"));
+						match.setHomeTeamName(attrs.get("hostname"));
+						match.setAwayTeamName(attrs.get("guestname"));
+						match.setLeagueId(attrs.get("leagueid"));
+						match.setHomeTeamId(attrs.get("hostteamid"));
+						match.setAwayTeamId(attrs.get("visitteamid"));
+//						match.setMatchId(matchId);
+						match.setId(Long.valueOf(matchId));
+						match.setLeagueName(attrs.get("leaguename"));
+						match.setIsHot(attrs.get("ishot"));
+						String score = attrs.get("score");
+						match.setScore(StringUtil.getScore(score));
+						
+						Elements spans = dd.select("span");
+						for (Element span : spans) {
+							// 联赛链接
+							if (span.hasClass("co2")) {
+								match.setLeagueLink(span.child(0).attr("href"));
+							}
+							
+							// 主客队排名
+							if (span.hasClass("co4")) {
+								Element a = span.child(0);
+								match.setMatchLink(a.attr("href"));
+								Elements is = a.select("i");
+								if(is.size() == 2){
+									match.setHomeTeamRank(is.get(0).html().replaceAll("\\[", StringUtils.EMPTY).replaceAll("]", StringUtils.EMPTY));
+									match.setAwayTeamRank(is.get(1).html().replaceAll("\\[", StringUtils.EMPTY).replaceAll("]", StringUtils.EMPTY));
+								}
+								Elements elemFinalScore = span.select("div.finalScore");
+								if(elemFinalScore.size() == 1){
+									match.setScore(elemFinalScore.first().text());
+								}
+							}
+							
+							// 让球数
+							if (span.hasClass("co5")) {
+								Elements ems = span.children();
+								for (Element em : ems) {
+									if (em.hasClass("line2")) {
+										BigDecimal bd = new BigDecimal(em.text());
+										match.setConcedePoints(bd);
+									}
+								}
+							}
+							
+							// 赔率
+							if (span.hasClass("co6_1")) {
+								/**
+								 * 非让球
+								 */
+								Elements line1s = span.select("div.line1");
+								if(line1s.size() == 1){
+									Elements ems = line1s.first().select("em");
+									if (ems.size() == 3) {
+										String winSp = ems.get(0).attr("sp");
+										if (StringUtil.isValidSp(winSp)) {
+											// 构造以字符串内容为值的BigDecimal类型的变量bd
+											BigDecimal bd = new BigDecimal(
+													winSp);
+											// 设置小数位数，第一个变量是小数位数，第二个变量是取舍方法(四舍五入)
+											// bd=bd.setScale(2,
+											// BigDecimal.ROUND_HALF_UP);
+											match.setWinOdds(bd);
+										}
+										String drawSp = ems.get(1).attr("sp");
+										if (StringUtil.isValidSp(drawSp)) {
+											match.setDrawOdds(new BigDecimal(drawSp));
+										}
+										String loseSp = ems.get(2).attr("sp");
+										if (StringUtil.isValidSp(loseSp)) {
+											match.setLoseOdds(new BigDecimal(loseSp));
+										}
+									}
+								}
+								/**
+								 * 让球
+								 */
+								Elements line2s = span.select("div.line2");
+								if(line2s.size() == 1){
+									Elements ems = line2s.first().select("em");
+									if (ems.size() == 3) {
+										String concedeWinSp = ems.get(0).attr("sp");
+										if (StringUtil.isValidSp(concedeWinSp)) {
+											match.setConcedeWinOdds(new BigDecimal(concedeWinSp));
+										}
+										String concedeDrawSp = ems.get(1).attr("sp");
+										if (StringUtil.isValidSp(concedeDrawSp)) {
+											match.setConcedeDrawOdds(new BigDecimal(concedeDrawSp));
+										}
+										String concedeLoseSp = ems.get(2).attr("sp");
+										if (StringUtil.isValidSp(concedeLoseSp)) {
+											match.setConcedeLoseOdds(new BigDecimal(concedeLoseSp));
+										}
+									}
+								}
+							}// end of if (span.hasClass("co6_1"))
+						}// end of for (Element span : spans)
+						logger.info(match);
+						list.add(match);
+					}// end of for (Element dd : dds)
+				}
+				
 			}// end of for (Element child : children)
 		}// end of for (Element elem : matchList)
 		logger.info(list.size());

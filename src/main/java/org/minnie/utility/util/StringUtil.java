@@ -21,6 +21,8 @@ public class StringUtil {
 			Pattern.CASE_INSENSITIVE);
 	public static Pattern neteaseBbsDatetimePattern = Pattern.compile(Constant.REG_NETEASE_BBS_DATETIME,
 			Pattern.CASE_INSENSITIVE);
+	public static Pattern scorePattern = Pattern.compile(Constant.REG_SOCCER_SCORE,
+			Pattern.CASE_INSENSITIVE);
 	
 
 	/**
@@ -188,6 +190,14 @@ public class StringUtil {
 			return matcher.matches();
 		}
 		return false;
+	}
+	
+	public static String getScore(String src) {
+		Matcher matcher = scorePattern.matcher(src);
+		if (matcher.find()) {
+			return matcher.group();
+		}
+		return null;
 	}
 	
 }

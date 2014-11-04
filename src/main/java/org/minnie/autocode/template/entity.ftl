@@ -1,6 +1,3 @@
-/**
- * There are <a href="https://github.com/thinkgem/jeesite">JeeSite</a> code generation
- */
 package ${packageName}.${moduleName}.entity${subModuleName};
 
 import java.util.Date;
@@ -21,9 +18,9 @@ public class ${ClassName}{
     </#list>
 	private String remarks;	// 备注
 	private String createBy;	// 创建者
-	private Date createDate;// 创建日期
+	private String createDate;// 创建日期
 	private String updateBy;	// 更新者
-	private Date updateDate;// 更新日期
+	private String updateDate;// 更新日期
 	private String delFlag; // 删除标记（0：正常；1：删除；2：审核）
 
 	public ${ClassName}() {
@@ -78,11 +75,11 @@ public class ${ClassName}{
 		this.createBy = createBy;
 	}
 
-	public Date getCreateDate() {
+	public String getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(Date createDate) {
+	public void setCreateDate(String createDate) {
 		this.createDate = createDate;
 	}
 
@@ -94,11 +91,11 @@ public class ${ClassName}{
 		this.updateBy = updateBy;
 	}
 
-	public Date getUpdateDate() {
+	public String getUpdateDate() {
 		return updateDate;
 	}
 
-	public void setUpdateDate(Date updateDate) {
+	public void setUpdateDate(String updateDate) {
 		this.updateDate = updateDate;
 	}
 

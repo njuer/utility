@@ -100,7 +100,7 @@ public class MysqlDatabseHelper {
 //					String len = null;
 					javaType = javaType.substring(javaType.lastIndexOf(".") + 1);
 					if ("Timestamp".equals(javaType)) {
-						javaType = "Date";
+						javaType = "String";
 					}
 //					if ("String".equals(javaType)) {
 //						len = String.valueOf(columnDisplaySize);

@@ -62,10 +62,10 @@ public class CodeGenerator {
 		
 		String moduleName = "netease";			// 模块名，例：sys
 		String subModuleName = "";				// 子模块名（可选） 
-		String className = "FootballTeamTwo";			// 类名，例：user
+		String className = "FootballMatch";			// 类名，例：user
 		String classAuthor = "neiplz";		// 类作者，例：ThinkGem
-		String functionName = "球队信息";			// 功能名，例：用户
-		String tableName = "lms_football_team";		//表名，例：sys_dict
+		String functionName = "每日赛事信息";			// 功能名，例：用户
+		String tableName = "lms_football_match";		//表名，例：sys_dict
 		
 		// 是否启用生成工具
 		Boolean isEnable = true;			
@@ -89,12 +89,6 @@ public class CodeGenerator {
 		
 		// 获取文件分隔符
 		String separator = File.separator;
-		
-		
-//		File projectPath = new DefaultResourceLoader().getResource("").getFile();
-//		while(!new File(projectPath.getPath()+separator+"src"+separator+"main").exists()){
-//			projectPath = projectPath.getParentFile();
-//		}
 		
 		// 模板文件路径
 		String tplPath = StringUtils.replace(projectPath+"/src/main/java/org/minnie/autocode/template", "/", separator);

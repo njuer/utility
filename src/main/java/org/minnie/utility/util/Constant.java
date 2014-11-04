@@ -52,6 +52,9 @@ public class Constant {
 	
 	public static final String REG_MAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
 	
+	public static final String REG_SOCCER_SCORE = "\\d{1,2}:\\d{1,2}";
+
+	
 	public static final String DOMAIN_163 = "163.com";
 	public static final String DOMAIN_HUPU = "hupu.com";
 	public static final String DOMAIN_HOOPCHINA = "hoopchina.com";

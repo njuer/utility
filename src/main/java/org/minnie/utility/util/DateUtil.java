@@ -232,7 +232,18 @@ public class DateUtil {
 			}
 		}
 		return null;
+	}
 
+	public static String TimeStamp2DateString(String timestampString) {
+		
+		if(null != timestampString){
+			Matcher matcher = PATTERN_TIMESTAMP.matcher(timestampString);
+			if (matcher.find()) {
+				Long timestamp = Long.parseLong(matcher.group());
+				return new Timestamp(timestamp).toString();
+			}
+		}
+		return null;
 	}
 	
 	/**

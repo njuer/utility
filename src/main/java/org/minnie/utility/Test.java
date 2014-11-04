@@ -2,6 +2,7 @@ package org.minnie.utility;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -33,23 +34,25 @@ public class Test {
 		PropertyConfigurator.configure(System.getProperty("user.dir")
 				+ Constant.LOG_LOG4J_PARAM_FILE);
 
-	    URL hp;
-		try {
-			hp = new URL("http://qiudui.caipiao.163.com/1/7243/1519/scpl.html");
-		    System.out.println("Protocol: " + hp.getProtocol());
-		    System.out.println("Port: " + hp.getPort());
-		    System.out.println("Host: " + hp.getHost());
-		    System.out.println("File: " + hp.getFile());
-		    String path = hp.getPath();
-		    System.out.println("Path: " + path);
-		    System.out.println("Ext:" + hp.toExternalForm());
-		    
-		    String [] arr = path.split("\\/");
-		    System.out.println(Arrays.toString(arr));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//	    URL hp;
+//		try {
+//			hp = new URL("http://qiudui.caipiao.163.com/1/7243/1519/scpl.html");
+//		    System.out.println("Protocol: " + hp.getProtocol());
+//		    System.out.println("Port: " + hp.getPort());
+//		    System.out.println("Host: " + hp.getHost());
+//		    System.out.println("File: " + hp.getFile());
+//		    String path = hp.getPath();
+//		    System.out.println("Path: " + path);
+//		    System.out.println("Ext:" + hp.toExternalForm());
+//		    
+//		    String [] arr = path.split("\\/");
+//		    System.out.println(Arrays.toString(arr));
+//		} catch (MalformedURLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		System.out.println(new Timestamp(1414830420000l).toString());
 
 		
 //		String leagueLogoLink = "http://pimg1.126.net/caipiao_info/images/league/70/645.png?201410230305";

@@ -13,6 +13,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.minnie.utility.module.netease.dao.FootballMatchDao;
+import org.minnie.utility.module.netease.entity.FootballMatch;
 import org.minnie.utility.parser.HttpSimulation;
 import org.minnie.utility.parser.JsoupHtmlParser;
 import org.minnie.utility.persistence.MysqlDatabseHelper;
@@ -58,7 +60,8 @@ public class SmgFootballApp {
 		
 		
 		String dir = "F:" + File.separator + "temp" + File.separator + "lottery" + File.separator + "match";
-		generateMatch(2, dir);
+//		generateMatch(4, dir);
+		persistMatch(15,dir);
 		
 	}
 	
@@ -178,6 +181,28 @@ public class SmgFootballApp {
 			ExcelUtil.generateDailyMatch(matchList, dir, date);
 		}
 	}
+
+	public static void persistMatch(int BacktrackingDays, String dir){
+		
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		List<String> dateList = DateUtil.getLastDate(BacktrackingDays);
+		Set<Long> existIdSet = FootballMatchDao.getExistFootballMatchIdSet(null);
+		int size = dateList.size();
+		for(int i = 0; i < size; i++){
+			String date = dateList.get(i);
+			nvps.clear();
+			if(i > 0){
+				nvps.add(new BasicNameValuePair("betDate", date));
+			}
+			String response = hs.getResponseBodyByGet("caipiao.163.com", "/order/jczq-hunhe/", nvps);
+			List<FootballMatch> matchList = JsoupHtmlParser.getFootballMatchList(response);
+			FootballMatchDao.batchAddFootballMatch(matchList, existIdSet);
+			
+			ExcelUtil.generateDailyFootballMatch(matchList, dir, date);
+		}
+	}
+	
+	
 	
 	
 }
