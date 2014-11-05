@@ -61,7 +61,7 @@ public class SmgFootballApp {
 		
 		String dir = "F:" + File.separator + "temp" + File.separator + "lottery" + File.separator + "match";
 //		generateMatch(4, dir);
-		persistMatch(15,dir);
+		persistMatch(2,dir);
 		
 	}
 	

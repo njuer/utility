@@ -189,7 +189,6 @@ public class FootballMatchDao {
 					if (existFlag && existIdSet.contains(id)) {
 						String isStop = footballMatch.getIsStop();
 						if("1".equals(isStop)){
-							logger.info("1==============");
 							pstUpdateScore.setString(1, "1");// 已出赛果 1:是 0:否
 							pstUpdateScore.setString(2, footballMatch.getScore());// 比分,球赛结束前默认值为让球数
 							pstUpdateScore.setString(3, DateUtil.getTime(System.currentTimeMillis()));
@@ -198,7 +197,6 @@ public class FootballMatchDao {
 							// 把一个SQL命令加入命令列表
 							pstUpdateScore.addBatch();
 						} else {
-							logger.info("2==============");
 							// 更新
 						    pstUpdate.setString(1, footballMatch.getMatchCode());// 比赛代码
 						    pstUpdate.setString(2, footballMatch.getMatchNumCn());// 周几第几场
@@ -233,7 +231,6 @@ public class FootballMatchDao {
 							pstUpdate.addBatch();
 						}
 					} else {
-						logger.info("3==============");
 						// 新增
 						pstInsert.setLong(1, footballMatch.getId());
 					    pstInsert.setString(2, footballMatch.getMatchCode());// 比赛代码
