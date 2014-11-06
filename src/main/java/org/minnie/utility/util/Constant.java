@@ -84,6 +84,11 @@ public class Constant {
 	//log4j输出文件路径
 	public static final String LOGGING_FILE_PATH = "log4j.appender.R.File";
 	
+	//启动mysql批处理文件路径
+	public static final String MYSQL_START_BAT_PATH = "\\resource\\cmd\\MysqlStart.bat";
+	//关闭mysql批处理文件路径
+	public static final String MYSQL_STOP_BAT_PATH = "\\resource\\cmd\\MysqlStop.bat";
+	
 	
 	
 	public static final String BLANK = "";

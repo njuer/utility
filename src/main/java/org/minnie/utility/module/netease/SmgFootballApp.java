@@ -21,6 +21,7 @@ import org.minnie.utility.persistence.MysqlDatabseHelper;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.DateUtil;
 import org.minnie.utility.util.ExcelUtil;
+import org.minnie.utility.util.SystemServiceUtil;
 
 /**
  * 竞彩足球
@@ -58,11 +59,13 @@ public class SmgFootballApp {
 //		initTeamList();
 //		incrementalGetTeamList();
 		
+		SystemServiceUtil.startMysql();
 		
 		String dir = "F:" + File.separator + "temp" + File.separator + "lottery" + File.separator + "match";
 //		generateMatch(4, dir);
 		persistMatch(2,dir);
 		
+		SystemServiceUtil.stopMysql();
 	}
 	
 	public static void init(){
