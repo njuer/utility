@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.regex.Matcher;
 
 import net.sf.json.JSONObject;
 
@@ -1984,6 +1985,120 @@ public class JsoupHtmlParser {
 		}
 		logger.info(team);
 		return team;
+	}
+	
+	public static Set<String> getLeagueNameCnByCaipiao365(String html) {
+	
+		Set<String> set = new HashSet<String>();
+		Document doc = Jsoup.parse(html);
+		Elements divs = doc.select("div.jczq-kjing");
+		if(divs.size() > 0){
+			Elements options = divs.first().select("select option");
+			for (Element option : options) {
+				String val = option.val();
+				if(!StringUtils.isBlank(val)){
+					set.add(val);
+				}
+			}
+		}
+		return set;
+	}
+	
+	/**
+	 * 获取结果页数
+	 * @param html
+	 * @return
+	 */
+	public static int getTotalPagesByCaipiao365(String html) {
+		
+		int pages = 1;
+		Document doc = Jsoup.parse(html);
+		Elements divs = doc.select("div.page-left");
+		if(divs.size() > 0){
+			Elements hrefs = divs.first().select("[href]");
+			for (Element href : hrefs) {
+				if(href.hasClass("pre")){
+					continue;
+				}
+				String val = href.text();
+				if(StringUtils.isNumeric(val)){
+					int page = Integer.valueOf(val);
+					if(page > pages){
+						pages = page;
+					}
+				}
+			}
+		}
+		return pages;
+	}
+	
+	public static List<FootballMatch> getFootballMatchResult(String html, List<FootballMatch> matchList) {
+		
+		List<FootballMatch> matchResultList = new ArrayList<FootballMatch>();
+		if(null == matchList){
+			return matchResultList;
+		}
+		
+		Map<String, FootballMatch> map = new HashMap<String, FootballMatch>();
+		for(FootballMatch fm : matchList){
+			map.put(fm.getMatchNumCn(), fm);
+		}
+		
+		Document doc = Jsoup.parse(html);
+		Elements divs = doc.select("div.jczq-kjing");
+		if(divs.size() > 0){
+			Elements tbodies = divs.first().select("table>tbody");
+			if(tbodies.size() > 0){
+				Elements trs = tbodies.first().children();
+				for (Element tr : trs) {
+					FootballMatch match = map.get(tr.child(0).text());
+					if(null != match){
+						Matcher matcher = StringUtil.scorePattern.matcher(tr.child(4).text());
+						int count = 0;
+						while (matcher.find()) {
+							switch(count){
+								case 0:
+									String score = matcher.group();//比分
+									match.setScore(score);
+									String[] scores = score.split(":");
+									int total = 0;
+									for(String sc : scores){
+										if(StringUtils.isNumeric(sc)){
+											total += Integer.valueOf(sc);
+										}
+									}
+									match.setGoals(total);//总进球数
+									count++;
+									break;
+								case 1:
+									match.setFisrtHalfScore(matcher.group());// 上半场比分
+									break;
+							}
+						}
+						
+						//胜平负赛果
+						match.setMatchResult(tr.child(6).text());
+						
+						//胜平负赛果
+						match.setConcedeMatchResult(tr.child(8).text());
+						
+						//比分赛果
+						match.setScoreResult(tr.child(9).text());
+						
+						//总进球数赛果
+						match.setGoalsResult(tr.child(10).text());
+						
+						//半全场赛果
+						match.setHalfFullResult(tr.child(11).text());
+						
+						matchResultList.add(match);
+						logger.info(match);
+					}
+
+				}
+			}
+		}
+		return matchResultList;
 	}
 	
 }

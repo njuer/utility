@@ -1405,13 +1405,13 @@ public class ExcelUtil {
 		//标题：我的分析-半全场
 		cellRangeAddress=new CellRangeAddress(1,1,12,12);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：坦塔罗斯
+		//标题：悟空
 		cellRangeAddress=new CellRangeAddress(0,0,13,14);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：坦塔罗斯-胜负平
+		//标题：悟空-胜负平
 		cellRangeAddress=new CellRangeAddress(1,1,13,13);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：坦塔罗斯-让球胜负平
+		//标题：悟空-让球胜负平
 		cellRangeAddress=new CellRangeAddress(1,1,14,14);
 		sheet.addMergedRegion(cellRangeAddress); 
 		//标题：易眼金睛
@@ -1519,7 +1519,7 @@ public class ExcelUtil {
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("坦塔罗斯");
+		cell.setCellValue("悟空");
 		
 		row1Index ++;
 		// 获得第一行的每15列
@@ -1756,71 +1756,83 @@ public class ExcelUtil {
 		//标题：联赛
 		cellRangeAddress=new CellRangeAddress(0,1,1,1);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：序号
+		//标题：截止时间
 		cellRangeAddress=new CellRangeAddress(0,1,2,2);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：主队
+		//标题：序号
 		cellRangeAddress=new CellRangeAddress(0,1,3,3);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：客队
+		//标题：主队
 		cellRangeAddress=new CellRangeAddress(0,1,4,4);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：让球
+		//标题：客队
 		cellRangeAddress=new CellRangeAddress(0,1,5,5);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：比分
+		//标题：让球
 		cellRangeAddress=new CellRangeAddress(0,1,6,6);
 		sheet.addMergedRegion(cellRangeAddress); 
+		//标题：比分
+		cellRangeAddress=new CellRangeAddress(0,1,7,7);
+		sheet.addMergedRegion(cellRangeAddress); 
 		//标题：东方拆局
-		cellRangeAddress=new CellRangeAddress(0,0,7,8);
+		cellRangeAddress=new CellRangeAddress(0,0,8,9);
 		sheet.addMergedRegion(cellRangeAddress); 
 		//标题：东方拆局-比分
-		cellRangeAddress=new CellRangeAddress(1,1,7,7);
-		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：东方拆局-半全场
 		cellRangeAddress=new CellRangeAddress(1,1,8,8);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：我的分析
-		cellRangeAddress=new CellRangeAddress(0,0,9,12);
-		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：我的分析-比分
+		//标题：东方拆局-半全场
 		cellRangeAddress=new CellRangeAddress(1,1,9,9);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：我的分析-胜负平
+		//标题：我的分析
+		cellRangeAddress=new CellRangeAddress(0,0,10,13);
+		sheet.addMergedRegion(cellRangeAddress); 
+		//标题：我的分析-比分
 		cellRangeAddress=new CellRangeAddress(1,1,10,10);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：我的分析-让球胜负平
+		//标题：我的分析-胜负平
 		cellRangeAddress=new CellRangeAddress(1,1,11,11);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：我的分析-半全场
+		//标题：我的分析-让球胜负平
 		cellRangeAddress=new CellRangeAddress(1,1,12,12);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：坦塔罗斯
-		cellRangeAddress=new CellRangeAddress(0,0,13,14);
-		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：坦塔罗斯-胜负平
+		//标题：我的分析-半全场
 		cellRangeAddress=new CellRangeAddress(1,1,13,13);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：坦塔罗斯-让球胜负平
+		//标题：悟空
+		cellRangeAddress=new CellRangeAddress(0,0,14,15);
+		sheet.addMergedRegion(cellRangeAddress); 
+		//标题：悟空-胜负平
 		cellRangeAddress=new CellRangeAddress(1,1,14,14);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：易眼金睛
-		cellRangeAddress=new CellRangeAddress(0,0,15,16);
-		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：易眼金睛-胜负平
+		//标题：悟空-让球胜负平
 		cellRangeAddress=new CellRangeAddress(1,1,15,15);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：易眼金睛-让球胜负平
+		//标题：易眼金睛
+		cellRangeAddress=new CellRangeAddress(0,0,16,17);
+		sheet.addMergedRegion(cellRangeAddress); 
+		//标题：易眼金睛-胜负平
 		cellRangeAddress=new CellRangeAddress(1,1,16,16);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：小汤圆dodoxian
-		cellRangeAddress=new CellRangeAddress(0,0,17,18);
-		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：小汤圆dodoxian-胜负平
+		//标题：易眼金睛-让球胜负平
 		cellRangeAddress=new CellRangeAddress(1,1,17,17);
 		sheet.addMergedRegion(cellRangeAddress); 
-		//标题：小汤圆dodoxian-让球胜负平
+		//标题：小汤圆dodoxian
+		cellRangeAddress=new CellRangeAddress(0,0,18,19);
+		sheet.addMergedRegion(cellRangeAddress); 
+		//标题：小汤圆dodoxian-胜负平
 		cellRangeAddress=new CellRangeAddress(1,1,18,18);
+		sheet.addMergedRegion(cellRangeAddress); 
+		//标题：小汤圆dodoxian-让球胜负平
+		cellRangeAddress=new CellRangeAddress(1,1,19,19);
+		sheet.addMergedRegion(cellRangeAddress); 
+		//标题：allenlook
+		cellRangeAddress=new CellRangeAddress(0,0,20,21);
+		sheet.addMergedRegion(cellRangeAddress); 
+		//标题：allenlook-胜负平
+		cellRangeAddress=new CellRangeAddress(1,1,20,20);
+		sheet.addMergedRegion(cellRangeAddress); 
+		//标题：allenlook-让球胜负平
+		cellRangeAddress=new CellRangeAddress(1,1,21,21);
 		sheet.addMergedRegion(cellRangeAddress); 
 		
 		row = sheet.createRow(0);
@@ -1843,9 +1855,16 @@ public class ExcelUtil {
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("序号");
+		cell.setCellValue("截止时间");
 		
 		// 获得第一行的每3列
+		cell = row.createCell(row1Index++);
+		// 把这个样式加到单元格里面
+		cell.setCellStyle(cellStyle);
+		// 给单元格设值
+		cell.setCellValue("序号");
+		
+		// 获得第一行的每4列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
@@ -1859,35 +1878,35 @@ public class ExcelUtil {
 //		cellStyle.setFillForegroundColor(HSSFColor.YELLOW.index);
 //		cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		
-		// 获得第一行的每4列
+		// 获得第一行的每5列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
 		cell.setCellValue("主队");
 		
-		// 获得第一行的每5列
+		// 获得第一行的每6列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
 		cell.setCellValue("客队");
 		
-		// 获得第一行的每6列
+		// 获得第一行的每7列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
 		cell.setCellValue("让球");
 		
-		// 获得第一行的每7列
+		// 获得第一行的每8列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
 		cell.setCellValue("比分");
 		
-		// 获得第一行的每8列
+		// 获得第一行的每9列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
@@ -1895,7 +1914,7 @@ public class ExcelUtil {
 		cell.setCellValue("东方拆局");
 		
 		row1Index++;
-		// 获得第一行的每9列
+		// 获得第一行的每10列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
@@ -1904,15 +1923,15 @@ public class ExcelUtil {
 		
 		
 		row1Index += 3;
-		// 获得第一行的每13列
+		// 获得第一行的每14列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("坦塔罗斯");
+		cell.setCellValue("悟空");
 		
 		row1Index ++;
-		// 获得第一行的每15列
+		// 获得第一行的每16列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
@@ -1920,97 +1939,118 @@ public class ExcelUtil {
 		cell.setCellValue("易眼金睛");
 		
 		row1Index ++;
-		// 获得第一行的每17列
+		// 获得第一行的每18列
 		cell = row.createCell(row1Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
 		cell.setCellValue("小汤圆dodoxian");
 		
+		row1Index ++;
+		// 获得第一行的每20列
+		cell = row.createCell(row1Index++);
+		// 把这个样式加到单元格里面
+		cell.setCellStyle(cellStyle);
+		// 给单元格设值
+		cell.setCellValue("allenlook");
 		
 		row2 = sheet.createRow(1);
 		//设置行高度
 		row2.setHeightInPoints(20);
-		int row2Index = 7;
-		
-		// 获得第二行的每8列
-		cell = row2.createCell(row2Index++);
-		// 把这个样式加到单元格里面
-		cell.setCellStyle(cellStyle);
-		// 给单元格设值
-		cell.setCellValue("比分");
+		int row2Index = 8;
 		
 		// 获得第二行的每9列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("半全场");
+		cell.setCellValue("比分");
 		
 		// 获得第二行的每10列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("比分");
+		cell.setCellValue("半全场");
 		
 		// 获得第二行的每11列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("胜平负");
+		cell.setCellValue("比分");
 		
 		// 获得第二行的每12列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("让球胜平负");
+		cell.setCellValue("胜平负");
 		
 		// 获得第二行的每13列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("半全场");
+		cell.setCellValue("让球胜平负");
 		
 		// 获得第二行的每14列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("胜平负");
+		cell.setCellValue("半全场");
 		
 		// 获得第二行的每15列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("让球胜平负");
+		cell.setCellValue("胜平负");
 		
 		// 获得第二行的每16列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("胜平负");
+		cell.setCellValue("让球胜平负");
 		
 		// 获得第二行的每17列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("让球胜平负");
+		cell.setCellValue("胜平负");
 		
 		// 获得第二行的每18列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
 		// 给单元格设值
-		cell.setCellValue("胜平负");
+		cell.setCellValue("让球胜平负");
 		
 		// 获得第二行的每19列
+		cell = row2.createCell(row2Index++);
+		// 把这个样式加到单元格里面
+		cell.setCellStyle(cellStyle);
+		// 给单元格设值
+		cell.setCellValue("胜平负");
+		
+		// 获得第二行的每20列
+		cell = row2.createCell(row2Index++);
+		// 把这个样式加到单元格里面
+		cell.setCellStyle(cellStyle);
+		// 给单元格设值
+		cell.setCellValue("让球胜平负");
+		
+		// 获得第二行的每21列
+		cell = row2.createCell(row2Index++);
+		// 把这个样式加到单元格里面
+		cell.setCellStyle(cellStyle);
+		// 给单元格设值
+		cell.setCellValue("胜平负");
+		
+		// 获得第二行的每22列
 		cell = row2.createCell(row2Index++);
 		// 把这个样式加到单元格里面
 		cell.setCellStyle(cellStyle);
@@ -2052,37 +2092,44 @@ public class ExcelUtil {
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyle);
 			// 给单元格设值
-			cell.setCellValue(match.getMatchNumCn());
+			cell.setCellValue(match.getEndTime());
 			
 			// 获得这一行的每3列
 			cell = row.createCell(index++);
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyle);
 			// 给单元格设值
-			cell.setCellValue(match.getLeagueName());
+			cell.setCellValue(match.getMatchNumCn());
 			
 			// 获得这一行的每4列
 			cell = row.createCell(index++);
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyle);
 			// 给单元格设值
-			cell.setCellValue(match.getHomeTeamName());
+			cell.setCellValue(match.getLeagueName());
 			
 			// 获得这一行的每5列
 			cell = row.createCell(index++);
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyle);
 			// 给单元格设值
-			cell.setCellValue(match.getAwayTeamName());
+			cell.setCellValue(match.getHomeTeamName());
 			
 			// 获得这一行的每6列
 			cell = row.createCell(index++);
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyle);
 			// 给单元格设值
-			cell.setCellValue(match.getConcedePoints().toString());
+			cell.setCellValue(match.getAwayTeamName());
 			
 			// 获得这一行的每7列
+			cell = row.createCell(index++);
+			// 把这个样式加到单元格里面
+			cell.setCellStyle(cellStyle);
+			// 给单元格设值
+			cell.setCellValue(match.getConcedePoints().toString());
+			
+			// 获得这一行的每8列
 			cell = row.createCell(index++);
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyle);

@@ -32,7 +32,6 @@ public class FootballMatch{
     private String isAttention;	// 是否关注 0:未关注 1:已关注
     private String isStop;	// 已出赛果 1:是 0:否
     private String isHot;	// 是否特点赛事 1:是 0:否
-    private String score;	// 比分,球赛结束前默认值为让球数
     private BigDecimal winOdds;	// 主胜赔率
     private BigDecimal drawOdds;	// 主平赔率
     private BigDecimal loseOdds;	// 主负赔率
@@ -40,6 +39,17 @@ public class FootballMatch{
     private BigDecimal concedeWinOdds;	// 让球主胜赔率
     private BigDecimal concedeDrawOdds;	// 让球主平赔率
     private BigDecimal concedeLoseOdds;	// 让球主负赔率
+    
+    private String score;	// 比分,球赛结束前默认值为让球数
+    private String fisrtHalfScore;// 上半场比分
+    private String scoreResult;//比分赛果
+	private String matchResult;//胜平负赛果
+    private String concedeMatchResult;//让球胜平负赛果
+    private String halfFullResult;//半全场赛果
+    private Integer goals;//总进球数
+    private String goalsResult;//总进球数赛果
+
+    
 	private String remarks;	// 备注
 	private String createBy;	// 创建者
 	private String createDate;// 创建日期
@@ -64,231 +74,270 @@ public class FootballMatch{
 		this.id = id;
 	}
 
-//	public String getName() {
-//		return name;
-//	}
-//
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-//	
-//    public String getMatchId() {
-//        return matchId;
-//    }
-//
-//    public void setMatchId(String matchId) {
-//        this.matchId = matchId;
-//    }
-    
-    public String getMatchCode() {
-        return matchCode;
-    }
+	public String getMatchCode() {
+		return matchCode;
+	}
 
-    public void setMatchCode(String matchCode) {
-        this.matchCode = matchCode;
-    }
-    
-    public String getMatchNumCn() {
-        return matchNumCn;
-    }
+	public void setMatchCode(String matchCode) {
+		this.matchCode = matchCode;
+	}
 
-    public void setMatchNumCn(String matchNumCn) {
-        this.matchNumCn = matchNumCn;
-    }
-    
-    public String getGameDate() {
-        return gameDate;
-    }
+	public String getMatchNumCn() {
+		return matchNumCn;
+	}
 
-    public void setGameDate(String gameDate) {
-        this.gameDate = gameDate;
-    }
-    
-    public String getMatchLink() {
-        return matchLink;
-    }
+	public void setMatchNumCn(String matchNumCn) {
+		this.matchNumCn = matchNumCn;
+	}
 
-    public void setMatchLink(String matchLink) {
-        this.matchLink = matchLink;
-    }
-    
-    public String getStartTime() {
-        return startTime;
-    }
+	public String getGameDate() {
+		return gameDate;
+	}
 
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-    
-    public String getEndTime() {
-        return endTime;
-    }
+	public void setGameDate(String gameDate) {
+		this.gameDate = gameDate;
+	}
 
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
-    
-    public String getHomeTeamId() {
-        return homeTeamId;
-    }
+	public String getMatchLink() {
+		return matchLink;
+	}
 
-    public void setHomeTeamId(String homeTeamId) {
-        this.homeTeamId = homeTeamId;
-    }
-    
-    public String getHomeTeamName() {
-        return homeTeamName;
-    }
+	public void setMatchLink(String matchLink) {
+		this.matchLink = matchLink;
+	}
 
-    public void setHomeTeamName(String homeTeamName) {
-        this.homeTeamName = homeTeamName;
-    }
-    
-    public String getHomeTeamRank() {
-        return homeTeamRank;
-    }
+	public String getStartTime() {
+		return startTime;
+	}
 
-    public void setHomeTeamRank(String homeTeamRank) {
-        this.homeTeamRank = homeTeamRank;
-    }
-    
-    public String getAwayTeamId() {
-        return awayTeamId;
-    }
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
 
-    public void setAwayTeamId(String awayTeamId) {
-        this.awayTeamId = awayTeamId;
-    }
-    
-    public String getAwayTeamName() {
-        return awayTeamName;
-    }
+	public String getEndTime() {
+		return endTime;
+	}
 
-    public void setAwayTeamName(String awayTeamName) {
-        this.awayTeamName = awayTeamName;
-    }
-    
-    public String getAwayTeamRank() {
-        return awayTeamRank;
-    }
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
 
-    public void setAwayTeamRank(String awayTeamRank) {
-        this.awayTeamRank = awayTeamRank;
-    }
-    
-    public String getLeagueId() {
-        return leagueId;
-    }
+	public String getHomeTeamId() {
+		return homeTeamId;
+	}
 
-    public void setLeagueId(String leagueId) {
-        this.leagueId = leagueId;
-    }
-    
-    public String getLeagueName() {
-        return leagueName;
-    }
+	public void setHomeTeamId(String homeTeamId) {
+		this.homeTeamId = homeTeamId;
+	}
 
-    public void setLeagueName(String leagueName) {
-        this.leagueName = leagueName;
-    }
-    
-    public String getLeagueLink() {
-        return leagueLink;
-    }
+	public String getHomeTeamName() {
+		return homeTeamName;
+	}
 
-    public void setLeagueLink(String leagueLink) {
-        this.leagueLink = leagueLink;
-    }
-    
-    public String getIsAttention() {
-        return isAttention;
-    }
+	public void setHomeTeamName(String homeTeamName) {
+		this.homeTeamName = homeTeamName;
+	}
 
-    public void setIsAttention(String isAttention) {
-        this.isAttention = isAttention;
-    }
-    
-    public String getIsStop() {
-        return isStop;
-    }
+	public String getHomeTeamRank() {
+		return homeTeamRank;
+	}
 
-    public void setIsStop(String isStop) {
-        this.isStop = isStop;
-    }
-    
-    public String getIsHot() {
-        return isHot;
-    }
+	public void setHomeTeamRank(String homeTeamRank) {
+		this.homeTeamRank = homeTeamRank;
+	}
 
-    public void setIsHot(String isHot) {
-        this.isHot = isHot;
-    }
-    
-    public String getScore() {
-        return score;
-    }
+	public String getAwayTeamId() {
+		return awayTeamId;
+	}
 
-    public void setScore(String score) {
-        this.score = score;
-    }
-    
-    public BigDecimal getWinOdds() {
-        return winOdds;
-    }
+	public void setAwayTeamId(String awayTeamId) {
+		this.awayTeamId = awayTeamId;
+	}
 
-    public void setWinOdds(BigDecimal winOdds) {
-        this.winOdds = winOdds;
-    }
-    
-    public BigDecimal getDrawOdds() {
-        return drawOdds;
-    }
+	public String getAwayTeamName() {
+		return awayTeamName;
+	}
 
-    public void setDrawOdds(BigDecimal drawOdds) {
-        this.drawOdds = drawOdds;
-    }
-    
-    public BigDecimal getLoseOdds() {
-        return loseOdds;
-    }
+	public void setAwayTeamName(String awayTeamName) {
+		this.awayTeamName = awayTeamName;
+	}
 
-    public void setLoseOdds(BigDecimal loseOdds) {
-        this.loseOdds = loseOdds;
-    }
-    
-    public BigDecimal getConcedePoints() {
-        return concedePoints;
-    }
+	public String getAwayTeamRank() {
+		return awayTeamRank;
+	}
 
-    public void setConcedePoints(BigDecimal concedePoints) {
-        this.concedePoints = concedePoints;
-    }
-    
-    public BigDecimal getConcedeWinOdds() {
-        return concedeWinOdds;
-    }
+	public void setAwayTeamRank(String awayTeamRank) {
+		this.awayTeamRank = awayTeamRank;
+	}
 
-    public void setConcedeWinOdds(BigDecimal concedeWinOdds) {
-        this.concedeWinOdds = concedeWinOdds;
-    }
-    
-    public BigDecimal getConcedeDrawOdds() {
-        return concedeDrawOdds;
-    }
+	public String getLeagueId() {
+		return leagueId;
+	}
 
-    public void setConcedeDrawOdds(BigDecimal concedeDrawOdds) {
-        this.concedeDrawOdds = concedeDrawOdds;
-    }
-    
-    public BigDecimal getConcedeLoseOdds() {
-        return concedeLoseOdds;
-    }
+	public void setLeagueId(String leagueId) {
+		this.leagueId = leagueId;
+	}
 
-    public void setConcedeLoseOdds(BigDecimal concedeLoseOdds) {
-        this.concedeLoseOdds = concedeLoseOdds;
-    }
-    
-    
+	public String getLeagueName() {
+		return leagueName;
+	}
+
+	public void setLeagueName(String leagueName) {
+		this.leagueName = leagueName;
+	}
+
+	public String getLeagueLink() {
+		return leagueLink;
+	}
+
+	public void setLeagueLink(String leagueLink) {
+		this.leagueLink = leagueLink;
+	}
+
+	public String getIsAttention() {
+		return isAttention;
+	}
+
+	public void setIsAttention(String isAttention) {
+		this.isAttention = isAttention;
+	}
+
+	public String getIsStop() {
+		return isStop;
+	}
+
+	public void setIsStop(String isStop) {
+		this.isStop = isStop;
+	}
+
+	public String getIsHot() {
+		return isHot;
+	}
+
+	public void setIsHot(String isHot) {
+		this.isHot = isHot;
+	}
+
+	public BigDecimal getWinOdds() {
+		return winOdds;
+	}
+
+	public void setWinOdds(BigDecimal winOdds) {
+		this.winOdds = winOdds;
+	}
+
+	public BigDecimal getDrawOdds() {
+		return drawOdds;
+	}
+
+	public void setDrawOdds(BigDecimal drawOdds) {
+		this.drawOdds = drawOdds;
+	}
+
+	public BigDecimal getLoseOdds() {
+		return loseOdds;
+	}
+
+	public void setLoseOdds(BigDecimal loseOdds) {
+		this.loseOdds = loseOdds;
+	}
+
+	public BigDecimal getConcedePoints() {
+		return concedePoints;
+	}
+
+	public void setConcedePoints(BigDecimal concedePoints) {
+		this.concedePoints = concedePoints;
+	}
+
+	public BigDecimal getConcedeWinOdds() {
+		return concedeWinOdds;
+	}
+
+	public void setConcedeWinOdds(BigDecimal concedeWinOdds) {
+		this.concedeWinOdds = concedeWinOdds;
+	}
+
+	public BigDecimal getConcedeDrawOdds() {
+		return concedeDrawOdds;
+	}
+
+	public void setConcedeDrawOdds(BigDecimal concedeDrawOdds) {
+		this.concedeDrawOdds = concedeDrawOdds;
+	}
+
+	public BigDecimal getConcedeLoseOdds() {
+		return concedeLoseOdds;
+	}
+
+	public void setConcedeLoseOdds(BigDecimal concedeLoseOdds) {
+		this.concedeLoseOdds = concedeLoseOdds;
+	}
+
+	public String getScore() {
+		return score;
+	}
+
+	public void setScore(String score) {
+		this.score = score;
+	}
+
+	public String getFisrtHalfScore() {
+		return fisrtHalfScore;
+	}
+
+	public void setFisrtHalfScore(String fisrtHalfScore) {
+		this.fisrtHalfScore = fisrtHalfScore;
+	}
+
+	public String getScoreResult() {
+		return scoreResult;
+	}
+
+	public void setScoreResult(String scoreResult) {
+		this.scoreResult = scoreResult;
+	}
+
+	public String getMatchResult() {
+		return matchResult;
+	}
+
+	public void setMatchResult(String matchResult) {
+		this.matchResult = matchResult;
+	}
+
+	public String getConcedeMatchResult() {
+		return concedeMatchResult;
+	}
+
+	public void setConcedeMatchResult(String concedeMatchResult) {
+		this.concedeMatchResult = concedeMatchResult;
+	}
+
+	public String getHalfFullResult() {
+		return halfFullResult;
+	}
+
+	public void setHalfFullResult(String halfFullResult) {
+		this.halfFullResult = halfFullResult;
+	}
+
+	public Integer getGoals() {
+		return goals;
+	}
+
+	public void setGoals(Integer goals) {
+		this.goals = goals;
+	}
+
+	public String getGoalsResult() {
+		return goalsResult;
+	}
+
+	public void setGoalsResult(String goalsResult) {
+		this.goalsResult = goalsResult;
+	}
+
 	public String getRemarks() {
 		return remarks;
 	}
@@ -296,7 +345,7 @@ public class FootballMatch{
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
-	
+
 	public String getCreateBy() {
 		return createBy;
 	}
@@ -349,14 +398,18 @@ public class FootballMatch{
 				+ awayTeamRank + ", leagueId=" + leagueId + ", leagueName="
 				+ leagueName + ", leagueLink=" + leagueLink + ", isAttention="
 				+ isAttention + ", isStop=" + isStop + ", isHot=" + isHot
-				+ ", score=" + score + ", winOdds=" + winOdds + ", drawOdds="
-				+ drawOdds + ", loseOdds=" + loseOdds + ", concedePoints="
-				+ concedePoints + ", concedeWinOdds=" + concedeWinOdds
-				+ ", concedeDrawOdds=" + concedeDrawOdds + ", concedeLoseOdds="
-				+ concedeLoseOdds + ", remarks=" + remarks + ", createBy="
-				+ createBy + ", createDate=" + createDate + ", updateBy="
-				+ updateBy + ", updateDate=" + updateDate + ", delFlag="
-				+ delFlag + "]";
+				+ ", winOdds=" + winOdds + ", drawOdds=" + drawOdds
+				+ ", loseOdds=" + loseOdds + ", concedePoints=" + concedePoints
+				+ ", concedeWinOdds=" + concedeWinOdds + ", concedeDrawOdds="
+				+ concedeDrawOdds + ", concedeLoseOdds=" + concedeLoseOdds
+				+ ", score=" + score + ", fisrtHalfScore=" + fisrtHalfScore
+				+ ", scoreResult=" + scoreResult + ", matchResult="
+				+ matchResult + ", concedeMatchResult=" + concedeMatchResult
+				+ ", halfFullResult=" + halfFullResult + ", goals=" + goals
+				+ ", goalsResult=" + goalsResult + ", remarks=" + remarks
+				+ ", createBy=" + createBy + ", createDate=" + createDate
+				+ ", updateBy=" + updateBy + ", updateDate=" + updateDate
+				+ ", delFlag=" + delFlag + "]";
 	}
-	
+
 }
