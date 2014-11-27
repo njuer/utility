@@ -1,5 +1,5 @@
 @echo off
-title  MySQL服务启动中....
+title  MySQL服务关闭中....
 color 2f
 echo MySQL 关闭服务....请稍后
 net stop MySQL536

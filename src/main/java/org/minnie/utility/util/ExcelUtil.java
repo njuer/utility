@@ -16,18 +16,21 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.minnie.utility.entity.lottery.FiveInEleven;
 import org.minnie.utility.module.netease.SmgFootball;
@@ -1110,6 +1113,10 @@ public class ExcelUtil {
 		cellStyle.setAlignment(align);
 		// 设置左右
 		cellStyle.setVerticalAlignment(verticalAlign);
+		
+		//设置单元格格式:文本
+		DataFormat dataFormat = wb.createDataFormat();
+		cellStyle.setDataFormat(dataFormat.getFormat("@"));
 
 		return cellStyle;
 	}
