@@ -67,9 +67,10 @@ public class SmgFootballApp {
 		
 		 String dir = "F:" + File.separator + "temp" + File.separator +
 		 "lottery" + File.separator + "match";
-//		 persistMatch(15,dir);
+		 
 //		 initMatchResult(3,dir);
-		 updateMatchResult("2014-11-11");
+		 persistMatch(3,dir);
+//		 updateMatchResult("2014-12-06");
 		
 		 SystemServiceUtil.stopMysql();
 

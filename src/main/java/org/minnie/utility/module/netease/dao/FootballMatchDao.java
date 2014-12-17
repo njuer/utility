@@ -14,7 +14,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.minnie.utility.module.netease.entity.FootballMatch;
-import org.minnie.utility.persistence.MysqlConnectionManager;
+import org.minnie.utility.persistence.MysqlConnectionPoolManager;
 import org.minnie.utility.util.DateUtil;
 
 /**
@@ -213,7 +213,7 @@ public class FootballMatchDao {
 		sqlUpdateScore.append("where id = ? "); // 比赛ID
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -388,7 +388,7 @@ public class FootballMatchDao {
 						// pstInsert.setString(34,
 						// footballMatch.getScoreResult());// 比分赛果
 
-						pstInsert.setString(28, "1");// 删除标记（0：正常；1：删除；2：审核）
+						pstInsert.setString(28, "0");// 删除标记（0：正常；1：删除；2：审核）
 						String dt = DateUtil
 								.getTime(System.currentTimeMillis());
 						pstInsert.setString(29, dt);// 创建日期
@@ -412,10 +412,10 @@ public class FootballMatchDao {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pstInsert);
-			MysqlConnectionManager.closePreparedStatement(pstUpdate);
-			MysqlConnectionManager.closePreparedStatement(pstUpdateScore);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pstInsert);
+			MysqlConnectionPoolManager.closePreparedStatement(pstUpdate);
+			MysqlConnectionPoolManager.closePreparedStatement(pstUpdateScore);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -446,7 +446,7 @@ public class FootballMatchDao {
 		sqlUpdateScore.append("where id = ? ");		//比赛ID
 		
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 			
@@ -478,8 +478,8 @@ public class FootballMatchDao {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pstUpdateScore);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pstUpdateScore);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -497,7 +497,7 @@ public class FootballMatchDao {
 		List<FootballMatch> list = new ArrayList<FootballMatch>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (null == sql || StringUtils.isBlank(sql)) {
@@ -579,9 +579,9 @@ public class FootballMatchDao {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return list;
 	}
@@ -643,7 +643,7 @@ public class FootballMatchDao {
 		}
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				rs = stmt.executeQuery(sb.toString());
@@ -691,9 +691,9 @@ public class FootballMatchDao {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return list;
 	}
@@ -706,7 +706,7 @@ public class FootballMatchDao {
 		Set<String> set = new HashSet<String>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				rs = stmt
@@ -718,9 +718,9 @@ public class FootballMatchDao {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return set;
 	}
@@ -733,7 +733,7 @@ public class FootballMatchDao {
 		Set<Long> set = new HashSet<Long>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (StringUtils.isBlank(sql)) {
@@ -749,9 +749,9 @@ public class FootballMatchDao {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return set;
 	}
@@ -781,7 +781,7 @@ public class FootballMatchDao {
 		sb.append(" ORDER BY game_date");
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				rs = stmt.executeQuery(sb.toString());
@@ -794,9 +794,9 @@ public class FootballMatchDao {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return list;
 	}

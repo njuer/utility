@@ -73,7 +73,16 @@ public class Constant {
 	public static final String TAG_EM_VALUE_YEAR = "年代:";
 	
 	//数据连接池--c3p0配置文件--Mysql
+	public static final String DB_POOL_CONFIGURE_C3P0 = "\\resource\\dbpool\\c3p0.properties";
+
+	//数据连接池--c3p0配置文件--Mysql
 	public static final String DB_POOL_CONFIGURE_C3P0_MYSQL = "\\resource\\dbpool\\c3p0mysql.properties";
+	
+	//数据连接池--c3p0配置文件--SQL Server
+	public static final String DB_POOL_CONFIGURE_C3P0_SQL_SERVER = "\\resource\\dbpool\\c3p0SqlServer.properties";
+	
+	//数据连接池--c3p0配置文件--Oracle
+	public static final String DB_POOL_CONFIGURE_C3P0_ORACLE = "\\resource\\dbpool\\c3p0Oracle.properties";
 	
 	//日志配置文件
 	public static final String LOG_LOG4J_PARAM_FILE = "\\resource\\log\\log4j.properties";

@@ -1632,15 +1632,15 @@ public class JsoupHtmlParser {
 							}
 							
 							// 让球数
-							if (span.hasClass("co5")) {
-								Elements ems = span.children();
-								for (Element em : ems) {
-									if (em.hasClass("line2")) {
-										BigDecimal bd = new BigDecimal(em.text());
-										match.setConcedePoints(bd);
-									}
-								}
-							}
+//							if (span.hasClass("co5")) {
+//								Elements ems = span.children();
+//								for (Element em : ems) {
+//									if (em.hasClass("line2")) {
+//										BigDecimal bd = new BigDecimal(em.text());
+//										match.setConcedePoints(bd);
+//									}
+//								}
+//							}
 							
 							// 赔率
 							if (span.hasClass("co6_1")) {
@@ -1650,8 +1650,8 @@ public class JsoupHtmlParser {
 								Elements line1s = span.select("div.line1");
 								if(line1s.size() == 1){
 									Elements ems = line1s.first().select("em");
-									if (ems.size() == 3) {
-										String winSp = ems.get(0).attr("sp");
+									if (ems.size() == 4) {
+										String winSp = ems.get(1).attr("sp");
 										if (StringUtil.isValidSp(winSp)) {
 											// 构造以字符串内容为值的BigDecimal类型的变量bd
 											BigDecimal bd = new BigDecimal(
@@ -1661,11 +1661,11 @@ public class JsoupHtmlParser {
 											// BigDecimal.ROUND_HALF_UP);
 											match.setWinOdds(bd);
 										}
-										String drawSp = ems.get(1).attr("sp");
+										String drawSp = ems.get(2).attr("sp");
 										if (StringUtil.isValidSp(drawSp)) {
 											match.setDrawOdds(new BigDecimal(drawSp));
 										}
-										String loseSp = ems.get(2).attr("sp");
+										String loseSp = ems.get(3).attr("sp");
 										if (StringUtil.isValidSp(loseSp)) {
 											match.setLoseOdds(new BigDecimal(loseSp));
 										}
@@ -1677,16 +1677,18 @@ public class JsoupHtmlParser {
 								Elements line2s = span.select("div.line2");
 								if(line2s.size() == 1){
 									Elements ems = line2s.first().select("em");
-									if (ems.size() == 3) {
-										String concedeWinSp = ems.get(0).attr("sp");
+									if (ems.size() == 4) {
+										String concedePoints = ems.get(0).text();
+										match.setConcedePoints(new BigDecimal(concedePoints));
+										String concedeWinSp = ems.get(1).attr("sp");
 										if (StringUtil.isValidSp(concedeWinSp)) {
 											match.setConcedeWinOdds(new BigDecimal(concedeWinSp));
 										}
-										String concedeDrawSp = ems.get(1).attr("sp");
+										String concedeDrawSp = ems.get(2).attr("sp");
 										if (StringUtil.isValidSp(concedeDrawSp)) {
 											match.setConcedeDrawOdds(new BigDecimal(concedeDrawSp));
 										}
-										String concedeLoseSp = ems.get(2).attr("sp");
+										String concedeLoseSp = ems.get(3).attr("sp");
 										if (StringUtil.isValidSp(concedeLoseSp)) {
 											match.setConcedeLoseOdds(new BigDecimal(concedeLoseSp));
 										}

@@ -25,9 +25,9 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * @author wuf
  * 
  */
-public class MysqlConnectionManager {
+public class MysqlConnectionPoolManager {
 
-	private static Logger logger = Logger.getLogger(MysqlConnectionManager.class
+	private static Logger logger = Logger.getLogger(MysqlConnectionPoolManager.class
 			.getName());
 
 	private static ComboPooledDataSource ds;
@@ -36,7 +36,7 @@ public class MysqlConnectionManager {
 	
 	public static int batchSize = 50;
 
-	private MysqlConnectionManager() {
+	private MysqlConnectionPoolManager() {
 
 	}
 
@@ -117,9 +117,15 @@ public class MysqlConnectionManager {
 		
 	}
 
-	public static Connection getConnection() throws SQLException {
-		return ds.getConnection();
+	public static Connection getConnection(){
+		try {
+			return ds.getConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
+	
 
 	/**
 	 * 关闭ResultSet
@@ -200,5 +206,6 @@ public class MysqlConnectionManager {
 			logger.error(e.getMessage());
 		}
 	}
+
 
 }

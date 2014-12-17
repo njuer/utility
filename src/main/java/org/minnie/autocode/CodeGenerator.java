@@ -14,7 +14,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.PropertyConfigurator;
-import org.minnie.utility.persistence.MysqlDatabseHelper;
+import org.minnie.utility.persistence.ConnectionManager;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.DateUtil;
 import org.minnie.utility.util.FileUtil;
@@ -60,12 +60,12 @@ public class CodeGenerator {
 		// packageName 包名，这里如果更改包名，请在applicationContext.xml和srping-mvc.xml中配置base-package、packagesToScan属性，来指定多个（共4处需要修改）。
 		String packageName = "org.minnie.utility.module";
 		
-		String moduleName = "netease";			// 模块名，例：sys
+		String moduleName = "test";			// 模块名，例：sys
 		String subModuleName = "";				// 子模块名（可选） 
-		String className = "FootballMatch";			// 类名，例：user
+		String className = "SysUserInfo";			// 类名，例：user
 		String classAuthor = "neiplz";		// 类作者，例：ThinkGem
-		String functionName = "每日赛事信息";			// 功能名，例：用户
-		String tableName = "lms_football_match";		//表名，例：sys_dict
+		String functionName = "系统用户";			// 功能名，例：用户
+		String tableName = "JCY_TM";		//表名，例：sys_dict
 		
 		// 是否启用生成工具
 		Boolean isEnable = true;			
@@ -85,7 +85,7 @@ public class CodeGenerator {
 		
 		Set<String> moduleSet = new HashSet<String>();
 		moduleSet.add("Entity");
-		moduleSet.add("Dao");
+//		moduleSet.add("Dao");
 		
 		// 获取文件分隔符
 		String separator = File.separator;
@@ -123,21 +123,18 @@ public class CodeGenerator {
 //
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 		
-		List<String[]> orm = MysqlDatabseHelper.getTableInfo(tableName);
-		for (int i = 0 ; i < orm.size() ; i++) {
+//		List<String[]> orm = MysqlDatabseHelper.getTableInfo(tableName);
+		ConnectionManager cm = new ConnectionManager();
+		List<TableMetaInfo> metaInfoList = cm.getColumnInfo(tableName);
+		for(TableMetaInfo meta : metaInfoList){
 			Map<String, Object> tmp = new HashMap<String, Object>();
-			String jType = orm.get(i)[0];
-			String variableName = orm.get(i)[1];
-			String columnName = orm.get(i)[2];
-			String comment = orm.get(i)[3];
-			String len = orm.get(i)[4];
-//			tmp.put("index", i);
-			tmp.put("propertyName", variableName);
-			tmp.put("javaType", jType);
-			tmp.put("columnName", columnName);
-			tmp.put("methodName", NamingRuleConvert.firstLetterToUpperCase(variableName));
-			tmp.put("comment", comment);
-			tmp.put("length", len);
+			String propertyName = meta.getPropertyName();
+			tmp.put("propertyName", propertyName);
+			tmp.put("javaType", meta.getClazzName());
+			tmp.put("columnName", meta.getColumnName());
+			tmp.put("methodName", NamingRuleConvert.firstLetterToUpperCase(propertyName));
+			tmp.put("comment", meta.getRemark());
+			tmp.put("length", meta.getColumnDisplaySize());
 			result.add(tmp);
 		}
 		model.put("propertyList", result);

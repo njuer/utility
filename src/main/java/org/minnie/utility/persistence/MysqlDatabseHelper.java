@@ -71,7 +71,7 @@ public class MysqlDatabseHelper {
 		ignoreColumnSet.add("delFlag");//删除标记（0：正常；1：删除；2：审核）
 		
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			pstmt = conn.prepareStatement("SELECT * FROM " + jdbcTable);
 			rs = pstmt.executeQuery();
 			rsmd = rs.getMetaData(); // 获取字段名
@@ -113,9 +113,9 @@ public class MysqlDatabseHelper {
 		} catch (Exception ex2) {
 			ex2.printStackTrace();
 		} finally {
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closePreparedStatement(pstmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closePreparedStatement(pstmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		
 		return list;
@@ -133,7 +133,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -167,8 +167,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddVideo]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -184,7 +184,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -234,8 +234,8 @@ public class MysqlDatabseHelper {
 		// + e.getMessage());
 		// }
 		finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -254,7 +254,7 @@ public class MysqlDatabseHelper {
 		List<Video> list = new ArrayList<Video>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (null == sql || StringUtils.isBlank(sql)) {
@@ -277,9 +277,9 @@ public class MysqlDatabseHelper {
 					+ e.getMessage());
 			// e.printStackTrace();
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return list;
 	}
@@ -298,7 +298,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -310,7 +310,7 @@ public class MysqlDatabseHelper {
 				pst = (PreparedStatement) conn.prepareStatement(sql);
 
 				int size = list.size();
-				int batchSize = MysqlConnectionManager.batchSize;
+				int batchSize = MysqlConnectionPoolManager.batchSize;
 				logger.info("batchSize = " + batchSize);
 				for (int i = 0; i < size; i++) {
 					Video video = list.get(i);
@@ -408,8 +408,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchUpdateImage]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -420,7 +420,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -431,7 +431,7 @@ public class MysqlDatabseHelper {
 				}
 				pst = (PreparedStatement) conn.prepareStatement(sql);
 
-				int batchSize = MysqlConnectionManager.batchSize;
+				int batchSize = MysqlConnectionPoolManager.batchSize;
 				logger.info("batchSize = " + batchSize);
 
 				File sourceDir = new File(sourceFileDirectory);
@@ -484,8 +484,8 @@ public class MysqlDatabseHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -500,7 +500,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 			if (conn != null) {
@@ -537,8 +537,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddLotteryDoubleColor]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -557,7 +557,7 @@ public class MysqlDatabseHelper {
 		sql += tableName;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				result = stmt.executeUpdate(sql);
@@ -570,8 +570,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->truncate]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return result;
 	}
@@ -606,7 +606,7 @@ public class MysqlDatabseHelper {
 		List<DoubleColor> list = new ArrayList<DoubleColor>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				rs = stmt.executeQuery(sql);
@@ -631,9 +631,9 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->getDoubleColorLotteryList(String sql)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return list;
 	}
@@ -646,7 +646,7 @@ public class MysqlDatabseHelper {
 		Map<Integer, DoubleColor> map = new HashMap<Integer, DoubleColor>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				rs = stmt.executeQuery(sql);
@@ -672,9 +672,9 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->getDoubleColorLotteryList(String sql)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return map;
 	}
@@ -699,7 +699,7 @@ public class MysqlDatabseHelper {
 		DoubleColor ssq = new DoubleColor();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 
@@ -723,9 +723,9 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->getVideoList]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return ssq;
 	}
@@ -741,7 +741,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 			if (conn != null) {
@@ -777,8 +777,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddLotterySuperLotto]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -793,7 +793,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 			if (conn != null) {
@@ -831,8 +831,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddLotteryFiveInEleven]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -844,7 +844,7 @@ public class MysqlDatabseHelper {
 		Map<String, Integer> map = new HashMap<String, Integer>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (null == sql || StringUtils.isBlank(sql)) {
@@ -862,9 +862,9 @@ public class MysqlDatabseHelper {
 					+ e.getMessage());
 			// e.printStackTrace();
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return map;
 	}
@@ -906,7 +906,7 @@ public class MysqlDatabseHelper {
 		List<FiveInEleven> list = new ArrayList<FiveInEleven>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (null == sql || StringUtils.isBlank(sql)) {
@@ -936,9 +936,9 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->getDoubleColorLotteryList(String sql)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return list;
 	}
@@ -951,7 +951,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 			if (conn != null) {
@@ -993,8 +993,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddLotteryFiveInEleven]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -1006,7 +1006,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 			if (conn != null) {
@@ -1041,8 +1041,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddLotteryFiveInEleven]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -1071,7 +1071,7 @@ public class MysqlDatabseHelper {
 		int result = -1;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				result = stmt.executeUpdate(sb.toString());
@@ -1088,8 +1088,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->deleteFiveInElevenConsecutiveByDate(String date)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return result;
 	}
@@ -1135,7 +1135,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 			if (conn != null) {
@@ -1169,8 +1169,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddFiveInElevenSame(List<FiveInEleven> samePeriodList, String category, String date, String sql)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -1182,7 +1182,7 @@ public class MysqlDatabseHelper {
 		Set<String> set = new HashSet<String>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (null == sql || StringUtils.isBlank(sql)) {
@@ -1199,9 +1199,9 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->getVideoList]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return set;
 	}
@@ -1214,7 +1214,7 @@ public class MysqlDatabseHelper {
 		Set<String> set = new HashSet<String>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (null == sql || StringUtils.isBlank(sql)) {
@@ -1231,9 +1231,9 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->getDoubleColorLotteryList(String sql)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return set;
 	}
@@ -1244,7 +1244,7 @@ public class MysqlDatabseHelper {
 		PreparedStatement pst = null;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -1278,8 +1278,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddVideo]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -1317,7 +1317,7 @@ public class MysqlDatabseHelper {
 		}
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				rs = stmt.executeQuery(sb.toString());
@@ -1331,9 +1331,9 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->getNeteaseArticleIdSet(int [] authorIdArray)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return threadIdSet;
 	}
@@ -1366,7 +1366,7 @@ public class MysqlDatabseHelper {
 		}
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				rs = stmt.executeQuery(sb.toString());
@@ -1381,9 +1381,9 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->getNeteaseThreadTimeMap(int [] authorIdArray): "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return map;
 	}
@@ -1421,7 +1421,7 @@ public class MysqlDatabseHelper {
 		sb.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -1458,8 +1458,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddNeteaseArticles(List<Article> articleList)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -1515,7 +1515,7 @@ public class MysqlDatabseHelper {
 		sqlUpdate.append("where id = ? ");
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -1582,8 +1582,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddNeteaseArticles(List<Article> articleList)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pstInsert);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pstInsert);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -1641,7 +1641,7 @@ public class MysqlDatabseHelper {
 		sqlUpdate.append("where id = ? ");
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -1712,8 +1712,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddNeteaseArticles(List<Article> articleList)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pstInsert);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pstInsert);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -1772,7 +1772,7 @@ public class MysqlDatabseHelper {
 		sqlUpdate.append("where id = ? ");
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -1847,8 +1847,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->persistAndToMail(List<Article> articleList)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pstInsert);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pstInsert);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return mailList;
 	}
@@ -1885,7 +1885,7 @@ public class MysqlDatabseHelper {
 		sb.append(" values (?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -1920,8 +1920,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddFootballLeague(List<FootballLeague> footballLeagueList)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pst);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pst);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -1939,7 +1939,7 @@ public class MysqlDatabseHelper {
 		List<FootballLeague> list = new ArrayList<FootballLeague>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (null == sql || StringUtils.isBlank(sql)) {
@@ -1965,9 +1965,9 @@ public class MysqlDatabseHelper {
 					+ e.getMessage());
 			// e.printStackTrace();
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return list;
 	}
@@ -2034,7 +2034,7 @@ public class MysqlDatabseHelper {
 		sqlUpdate.append("where id = ? ");
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -2100,8 +2100,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddFootballTeam(List<FootballTeam> teamList, Set<Long> existIdSet)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pstInsert);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pstInsert);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 
@@ -2113,7 +2113,7 @@ public class MysqlDatabseHelper {
 		List<FootballTeam> list = new ArrayList<FootballTeam>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (StringUtils.isBlank(sql)) {
@@ -2142,9 +2142,9 @@ public class MysqlDatabseHelper {
 					+ e.getMessage());
 			// e.printStackTrace();
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return list;
 	}
@@ -2163,7 +2163,7 @@ public class MysqlDatabseHelper {
 		Set<Long> set = new HashSet<Long>();
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				if (StringUtils.isBlank(sql)) {
@@ -2181,9 +2181,9 @@ public class MysqlDatabseHelper {
 					+ e.getMessage());
 			// e.printStackTrace();
 		} finally {
-			MysqlConnectionManager.closeResultSet(rs);
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeResultSet(rs);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return set;
 	}
@@ -2218,7 +2218,7 @@ public class MysqlDatabseHelper {
 		sqlInsert.append(" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			// 关闭事务自动提交
 			conn.setAutoCommit(false);
 
@@ -2261,8 +2261,8 @@ public class MysqlDatabseHelper {
 			logger.error("SQLException[MysqlDatabseHelper->batchAddFootballTeam(List<FootballTeam> teamList, Set<Long> existIdSet)]: "
 					+ e.getMessage());
 		} finally {
-			MysqlConnectionManager.closePreparedStatement(pstInsert);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closePreparedStatement(pstInsert);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 	}
 	
@@ -2288,7 +2288,7 @@ public class MysqlDatabseHelper {
 		int result = -1;
 
 		try {
-			conn = MysqlConnectionManager.getConnection();
+			conn = MysqlConnectionPoolManager.getConnection();
 			if (conn != null) {
 				stmt = conn.createStatement();
 				result = stmt.executeUpdate(sb.toString());
@@ -2302,8 +2302,8 @@ public class MysqlDatabseHelper {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		} finally {
-			MysqlConnectionManager.closeStatement(stmt);
-			MysqlConnectionManager.closeConnection(conn);
+			MysqlConnectionPoolManager.closeStatement(stmt);
+			MysqlConnectionPoolManager.closeConnection(conn);
 		}
 		return result;
 	}

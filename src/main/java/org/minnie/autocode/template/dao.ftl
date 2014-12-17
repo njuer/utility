@@ -128,16 +128,16 @@ public class ${ClassName}Dao {
 					    <#assign y=y+1 />
 					    </#list>
 					    <#assign y=y+1 />
-						pstInsert.setString(${y}, "1");// 删除标记（0：正常；1：删除；2：审核）
+						pstInsert.setString(${y}, "0");// 删除标记（0：正常；1：删除；2：审核）
 						String dt = DateUtil.getTime(System.currentTimeMillis());
 						<#assign y=y+1 />
 						pstInsert.setString(${y}, dt);// 创建日期
 						<#assign y=y+1 />
-						pstInsert.setString(${y}, "admin");// 创建者
+						pstInsert.setString(${y}, "1");// 创建者
 						<#assign y=y+1 />
 						pstInsert.setString(${y}, dt);// 更新日期
 						<#assign y=y+1 />
-						pstInsert.setString(${y}, "admin");// 更新者
+						pstInsert.setString(${y}, "1");// 更新者
 						<#assign y=y+1 />
 						pstInsert.setNull(${y}, Types.VARCHAR);// 备注
 						// 把一个SQL命令加入命令列表

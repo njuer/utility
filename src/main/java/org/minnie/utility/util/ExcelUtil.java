@@ -2134,7 +2134,11 @@ public class ExcelUtil {
 			// 把这个样式加到单元格里面
 			cell.setCellStyle(cellStyle);
 			// 给单元格设值
-			cell.setCellValue(match.getConcedePoints().toString());
+//			BigDecimal concedePoints = match.getConcedePoints();
+//			if(null != concedePoints){
+//				cell.setCellValue(match.getConcedePoints().toString());
+//			}
+			cell.setCellValue(String.valueOf(match.getConcedePoints()));
 			
 			// 获得这一行的每8列
 			cell = row.createCell(index++);
