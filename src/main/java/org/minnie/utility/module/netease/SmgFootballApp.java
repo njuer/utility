@@ -69,7 +69,7 @@ public class SmgFootballApp {
 		 "lottery" + File.separator + "match";
 		 
 //		 initMatchResult(3,dir);
-		 persistMatch(3,dir);
+		 persistMatch(4,dir);
 //		 updateMatchResult("2014-12-06");
 		
 		 SystemServiceUtil.stopMysql();

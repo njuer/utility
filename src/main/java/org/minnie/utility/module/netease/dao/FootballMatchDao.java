@@ -250,7 +250,7 @@ public class FootballMatchDao {
 							// footballMatch.getScoreResult());// 比分赛果
 							pstUpdateScore.setString(3, DateUtil.getTime(System
 									.currentTimeMillis()));
-							pstUpdateScore.setString(4, "admin");
+							pstUpdateScore.setString(4, "1");
 							pstUpdateScore.setLong(5, footballMatch.getId());
 							// 把一个SQL命令加入命令列表
 							pstUpdateScore.addBatch();
@@ -323,7 +323,7 @@ public class FootballMatchDao {
 							// footballMatch.getScoreResult());// 比分赛果
 							pstUpdate.setString(27, DateUtil.getTime(System
 									.currentTimeMillis()));
-							pstUpdate.setString(28, "admin");
+							pstUpdate.setString(28, "1");
 							pstUpdate.setLong(29, id);
 							// 把一个SQL命令加入命令列表
 							pstUpdate.addBatch();
@@ -392,9 +392,9 @@ public class FootballMatchDao {
 						String dt = DateUtil
 								.getTime(System.currentTimeMillis());
 						pstInsert.setString(29, dt);// 创建日期
-						pstInsert.setString(30, "admin");// 创建者
+						pstInsert.setString(30, "1");// 创建者
 						pstInsert.setString(31, dt);// 更新日期
-						pstInsert.setString(32, "admin");// 更新者
+						pstInsert.setString(32, "1");// 更新者
 						pstInsert.setNull(33, Types.VARCHAR);// 备注
 						// 把一个SQL命令加入命令列表
 						pstInsert.addBatch();
