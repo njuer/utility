@@ -24,6 +24,7 @@ import org.minnie.utility.persistence.MysqlDatabseHelper;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.DateUtil;
 import org.minnie.utility.util.ExcelUtil;
+import org.minnie.utility.util.FileUtil;
 import org.minnie.utility.util.SystemServiceUtil;
 
 /**
@@ -69,7 +70,7 @@ public class SmgFootballApp {
 		 "lottery" + File.separator + "match";
 		 
 //		 initMatchResult(3,dir);
-		 persistMatch(4,dir);
+		 persistMatch(2,dir);
 //		 updateMatchResult("2014-12-06");
 		
 		 SystemServiceUtil.stopMysql();
@@ -230,9 +231,14 @@ public class SmgFootballApp {
 					"/order/jczq-hunhe/", nvps);
 			List<FootballMatch> matchList = JsoupHtmlParser
 					.getFootballMatchList(response);
-			FootballMatchDao.batchAddFootballMatch(matchList, existIdSet);
+			
+			if(matchList.size() > 0){
+				FootballMatchDao.batchAddFootballMatch(matchList, existIdSet);
 
-			ExcelUtil.generateDailyFootballMatch(matchList, dir, date);
+				ExcelUtil.generateDailyFootballMatch(matchList, dir, date);
+				
+				FileUtil.copyFile(dir + File.separator  + date + ".xlsx", dir + File.separator  + ".." + File.separator + "analysis"+ File.separator  +date + "-analysis.xlsx");
+			}
 		}
 	}
 
