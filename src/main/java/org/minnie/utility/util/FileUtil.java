@@ -552,7 +552,62 @@ public class FileUtil {
 			logger.debug("删除目录 " + dirName + " 失败!");
 			return false;
 		}
+	}
+	
+	/**
+	 * Read all available bytes from the given file
+	 * 
+	 * @param file
+	 *            File
+	 * @return byte[]
+	 */
+	public static byte[] readBytesFromFile(File file) {
+		
+		long file_size_long = -1;
+		byte[] file_bytes = null;
+		InputStream file_stream;
 
+		try {
+			file_stream = new FileInputStream(file);
+
+			if (!file.exists()) {
+				logger.error("Error: [TorrentFileHandler.java] The file \"" + file.getName() + "\" does not exist. Please make sure you have the correct path to the file.");
+				return null;
+			}
+
+			if (!file.canRead()) {
+				logger.error("Error: [TorrentFileHandler.java] Cannot read from \"" + file.getName() + "\". Please make sure the file permissions are set correctly.");
+				return null;
+			}
+
+			file_size_long = file.length();
+
+			if (file_size_long > Integer.MAX_VALUE) {
+				logger.error("Error: [TorrentFileHandler.java] The file \"" + file.getName() + "\" is too large to be read by this class.");
+				return null;
+			}
+			file_bytes = new byte[(int) file_size_long];
+			int file_offset = 0;
+			int bytes_read = 0;
+
+			while (file_offset < file_bytes.length && (bytes_read = file_stream.read(file_bytes, file_offset, file_bytes.length - file_offset)) >= 0) {
+				file_offset += bytes_read;
+			}
+			if (file_offset < file_bytes.length) {
+				throw new IOException("Could not completely read file \"" + file.getName() + "\".");
+			}
+
+			file_stream.close();
+
+		} catch (FileNotFoundException e) {
+			logger.error("Error: [TorrentFileHandler.java] The file \"" + file.getName() + "\" does not exist. Please make sure you have the correct path to the file.");
+			return null;
+		} catch (IOException e) {
+			logger.error("Error: [TorrentFileHandler.java] There was a general, unrecoverable I/O error while reading from \"" + file.getName() + "\".");
+			logger.error(e.getMessage());
+		}
+
+		return file_bytes;
 	}
 
 }

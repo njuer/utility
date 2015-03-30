@@ -171,9 +171,7 @@ public class ConnectionManager {
 					String columnName = rsmd.getColumnName(i);//字段名称
 					metaInfo.setColumnName(columnName);
 					
-					String propertyName = NamingRuleConvert
-							.replaceUnderlineAndfirstToUpper(columnName, "_",
-									"");
+					String propertyName = NamingRuleConvert.field2Variable(columnName, "_", "");
 					
 					if (ignoreColumnSet.contains(propertyName)) {
 						continue;
@@ -184,12 +182,17 @@ public class ConnectionManager {
 					String columnClassName = rsmd.getColumnClassName(i);//对应Java完整类名
 					metaInfo.setFullyQualifiedName(columnClassName);
 					
-					metaInfo.setColumnDisplaySize(rsmd.getColumnDisplaySize(i));//字段长度
+					int colDisplaySize = rsmd.getColumnDisplaySize(i);
+					metaInfo.setColumnDisplaySize(colDisplaySize);//字段长度
 					
 					String clazzName = columnClassName
 							.substring(columnClassName.lastIndexOf(".") + 1);
-					if ("Timestamp".equals(clazzName)) {
+					if ("Timestamp".equals(clazzName) || "Date".equals(clazzName)) {
 						clazzName = "String";
+					} else if("Long".equals(clazzName)) {
+						if(colDisplaySize <= 11){
+							clazzName = "Integer";
+						}
 					}
 					metaInfo.setClazzName(clazzName);//对应Java类名
 

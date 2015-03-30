@@ -1,5 +1,8 @@
 package org.minnie.utility.util;
 
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -200,4 +203,151 @@ public class StringUtil {
 		return null;
 	}
 	
+    /**
+     * Compute the SHA-1 hash of the bytes in the given buffer
+     * @param hashThis ByteBuffer
+     * @return byte[]
+     */
+    public static byte[] hash(ByteBuffer hashThis){
+        try{
+            byte[] hash = new byte[20];
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            md.update(hashThis);
+            return md.digest();
+        }catch(NoSuchAlgorithmException nsae){}
+        return null;
+    }
+    
+
+    /**
+     * Compute the SHA-1 hash of the given byte array
+     * @param hashThis byte[]
+     * @return byte[]
+     */
+    public static byte[] hash(byte[] hashThis) {
+        try {
+            byte[] hash = new byte[20];
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+
+            hash = md.digest(hashThis);
+            return hash;
+        } catch (NoSuchAlgorithmException nsae) {
+            System.err.println("SHA-1 algorithm is not available...");
+            System.exit(2);
+        }
+        return null;
+    }
+    
+    /**
+    *
+    * Convert a byte[] array to readable string format. This makes the "hex"
+    * readable!
+    *
+    * @author Jeff Boyle
+    *
+    * @return result String buffer in String format
+    *
+    * @param in
+    *            byte[] buffer to convert to string format
+    *
+    */
+   // Taken from http://www.devx.com/tips/Tip/13540
+   public static String byteArrayToByteString(byte in[]) {
+       byte ch = 0x00;
+       int i = 0;
+       if (in == null || in.length <= 0)
+           return null;
+
+       String pseudo[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                         "A", "B", "C", "D", "E", "F"};
+       StringBuffer out = new StringBuffer(in.length * 2);
+
+       while (i < in.length) {
+           ch = (byte) (in[i] & 0xF0); // Strip off high nibble
+           ch = (byte) (ch >>> 4); // shift the bits down
+           ch = (byte) (ch & 0x0F); // must do this is high order bit is on!
+           out.append(pseudo[(int) ch]); // convert the nibble to a String
+           // Character
+           ch = (byte) (in[i] & 0x0F); // Strip off low nibble
+           out.append(pseudo[(int) ch]); // convert the nibble to a String
+           // Character
+           i++;
+       }
+
+       String rslt = new String(out);
+
+       return rslt;
+   }
+   
+   /**
+    * Convert a byte array to a URL encoded string
+    * @param in byte[]
+    * @return String
+    */
+   public static String byteArrayToURLString(byte in[]) {
+       byte ch = 0x00;
+       int i = 0;
+       if (in == null || in.length <= 0)
+           return null;
+
+       String pseudo[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                         "A", "B", "C", "D", "E", "F"};
+       StringBuffer out = new StringBuffer(in.length * 2);
+
+       while (i < in.length) {
+           // First check to see if we need ASCII or HEX
+           if ((in[i] >= '0' && in[i] <= '9')
+               || (in[i] >= 'a' && in[i] <= 'z')
+               || (in[i] >= 'A' && in[i] <= 'Z') || in[i] == '$'
+               || in[i] == '-' || in[i] == '_' || in[i] == '.'
+               || in[i] == '!') {
+               out.append((char) in[i]);
+               i++;
+           } else {
+               out.append('%');
+               ch = (byte) (in[i] & 0xF0); // Strip off high nibble
+               ch = (byte) (ch >>> 4); // shift the bits down
+               ch = (byte) (ch & 0x0F); // must do this is high order bit is
+               // on!
+               out.append(pseudo[(int) ch]); // convert the nibble to a
+               // String Character
+               ch = (byte) (in[i] & 0x0F); // Strip off low nibble
+               out.append(pseudo[(int) ch]); // convert the nibble to a
+               // String Character
+               i++;
+           }
+       }
+
+       String rslt = new String(out);
+
+       return rslt;
+   }
+   
+
+   /**
+    * Return a subarray of the byte array in parameter.
+    * @param b The original array
+    * @param offset Begin index of the subarray
+    * @param length Length of the subarray
+    * @return byte[]
+    */
+   public static byte[] subArray(byte[] b, int offset, int length){
+       byte[] sub = new byte[length];
+       for(int i = offset; i < offset + length; i++)
+           sub[i-offset] = b[i];
+       return sub;
+   }
+	
+   /**
+    * Concatenate the 2 byte arrays
+    * @param b1 byte[]
+    * @param b2 byte[]
+    * @return byte[]
+    */
+   public static byte[] concat(byte[] b1, byte[] b2) {
+       byte[] b3 = new byte[b1.length + b2.length];
+       System.arraycopy(b1, 0, b3, 0, b1.length);
+       System.arraycopy(b2, 0, b3, b1.length, b2.length);
+       return b3;
+   }
 }

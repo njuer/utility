@@ -1,5 +1,7 @@
 package org.minnie.autocode;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 public class NamingRuleConvert {
 	private static final char[] hexDigit = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
@@ -90,41 +92,41 @@ public class NamingRuleConvert {
 		return s;
 	}
 
-	public static String firstLetterToUpperCase(String s) {
-		char c = String.valueOf(s.charAt(0)).toUpperCase().charAt(0);
-		char[] charArray = s.toCharArray();
-		charArray[0] = c;
-		return String.valueOf(charArray);
-	}
+//	public static String firstLetterToUpperCase(String s) {
+//		char c = String.valueOf(s.charAt(0)).toUpperCase().charAt(0);
+//		char[] charArray = s.toCharArray();
+//		charArray[0] = c;
+//		return String.valueOf(charArray);
+//	}
 
-	public static String firstLetterToLowerCase(String s) {
-		char c = String.valueOf(s.charAt(0)).toLowerCase().charAt(0);
-		char[] charArray = s.toCharArray();
-		charArray[0] = c;
-		return String.valueOf(charArray);
-	}
+//	public static String firstLetterToLowerCase(String s) {
+//		char c = String.valueOf(s.charAt(0)).toLowerCase().charAt(0);
+//		char[] charArray = s.toCharArray();
+//		charArray[0] = c;
+//		return String.valueOf(charArray);
+//	}
 	
 	/**
 	 * 替换字符串并让它的下一个字母为大写
 	 * 
-	 * @param srcStr
-	 * @param org
-	 * @param ob
+	 * @param source
+	 * @param original
+	 * @param replacement
 	 * @return
 	 */
-	public static String replaceUnderlineAndfirstToUpper(String srcStr, String org, String ob) {
-		String newString = "";
-		int first = 0;
-		while (srcStr.indexOf(org) != -1) {
-			first = srcStr.indexOf(org);
-			if (first != srcStr.length()) {
-				newString = newString + srcStr.substring(0, first) + ob;
-				srcStr = srcStr.substring(first + org.length(), srcStr.length());
-				srcStr = firstLetterToUpperCase(srcStr);
+	public static String field2Variable(String source, String original, String replacement) {
+		StringBuffer target = new StringBuffer();
+		int index = -1;
+		int originalLen = original.length();
+		while ((index = source.indexOf(original)) != -1) {
+			if (index != source.length()) {
+				target.append(source.substring(0, index)).append(replacement);
+				source = source.substring(index + originalLen, source.length());
+				source = WordUtils.capitalize(source);
 			}
 		}
-		newString = newString + srcStr;
-		return newString;
+		target.append(source);
+		return target.toString();
 	}
 
 	public static String native2Ascii(String str) {
@@ -195,7 +197,8 @@ public class NamingRuleConvert {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(new StringBuilder().append("result5=").append(ascii2Native("&#x589e;&#x52a0;&#x5408;&#x89c4;&#x80a1;&#x7968;")).toString());
-		System.out.println(replaceUnderlineAndfirstToUpper("ni_hao_abc","_",""));
+//		System.out.println(new StringBuilder().append("result5=").append(ascii2Native("&#x589e;&#x52a0;&#x5408;&#x89c4;&#x80a1;&#x7968;")).toString());
+		System.out.println(field2Variable("ni_hao_abc_","_",""));
+//		System.out.println(WordUtils.uncapitalize("TwoFile"));
 	}
 }

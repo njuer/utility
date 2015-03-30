@@ -7,10 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.SystemServiceUtil;
+
 
 public class Test {
 	public static Pattern urlPattern = Pattern
@@ -29,7 +31,8 @@ public class Test {
 		PropertyConfigurator.configure(System.getProperty("user.dir")
 				+ Constant.LOG_LOG4J_PARAM_FILE);
 
-		logger.info(SystemServiceUtil.getResponse("ping www.baidu.com"));
+//		logger.info(SystemServiceUtil.getResponse("ping www.baidu.com"));
+		logger.info(WordUtils.capitalize("qyzch"));
 		
 //		String command = "ping www.baidu.com";
 //		try {

@@ -92,7 +92,7 @@ public class MysqlDatabseHelper {
 					String javaType = rsmd.getColumnClassName(i);
 					int columnDisplaySize = rsmd.getColumnDisplaySize(i);
 					String columnName = rsmd.getColumnName(i);
-					String propertyName = NamingRuleConvert.replaceUnderlineAndfirstToUpper(columnName, "_", "");
+					String propertyName = NamingRuleConvert.field2Variable(columnName, "_", "");
 					if(ignoreColumnSet.contains(propertyName)){
 						continue;
 					}

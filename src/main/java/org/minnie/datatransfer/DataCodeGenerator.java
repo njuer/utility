@@ -1,10 +1,11 @@
-package org.minnie.autocode;
+package org.minnie.datatransfer;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,8 @@ import java.util.Set;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.PropertyConfigurator;
+import org.minnie.autocode.NamingRuleConvert;
+import org.minnie.autocode.TableMetaInfo;
 import org.minnie.utility.persistence.ConnectionManager;
 import org.minnie.utility.util.Constant;
 import org.minnie.utility.util.DateUtil;
@@ -35,11 +38,11 @@ import freemarker.template.Template;
 /**
  * 代码生成器 改进版
  * @author neiplz
- * @version 2014-10-24
+ * @version 2015-03-21
  */
-public class CodeGenerator {
+public class DataCodeGenerator {
 	
-	private static Logger logger = LoggerFactory.getLogger(CodeGenerator.class);
+	private static Logger logger = LoggerFactory.getLogger(DataCodeGenerator.class);
 	// 获取工程路径
 	private static String projectPath = System.getProperty("user.dir");
 
@@ -59,14 +62,14 @@ public class CodeGenerator {
 		// 目录生成结构：{packageName}/{moduleName}/{dao,entity,service,web}/{subModuleName}/{className}
 		
 		// packageName 包名，这里如果更改包名，请在applicationContext.xml和srping-mvc.xml中配置base-package、packagesToScan属性，来指定多个（共4处需要修改）。
-		String packageName = "org.minnie.utility.module";
+		String packageName = "org.minnie.datatransfer";
 		
-		String moduleName = "test";			// 模块名，例：sys
+		String moduleName = "pop";			// 模块名，例：sys
 		String subModuleName = "";				// 子模块名（可选） 
-		String className = "JsjZmcDftj";			// 类名，例：user
+		String className = "Resume";			// 类名，例：user
 		String classAuthor = "neiplz";		// 类作者，例：ThinkGem
-		String functionName = "照明出电费基础数据";			// 功能名，例：用户
-		String tableName = "JSJ_ZMC_DFTJ";		//表名，例：sys_dict
+		String functionName = "简历";			// 功能名，例：用户
+		String tableName = "yxrc_job_resumes";		//表名，例：sys_dict
 		
 		// 是否启用生成工具
 		Boolean isEnable = true;			
@@ -86,13 +89,13 @@ public class CodeGenerator {
 		
 		Set<String> moduleSet = new HashSet<String>();
 		moduleSet.add("Entity");
-//		moduleSet.add("Dao");
+		moduleSet.add("Dao");
 		
 		// 获取文件分隔符
 		String separator = File.separator;
 		
 		// 模板文件路径
-		String tplPath = StringUtils.replace(projectPath+"/src/main/java/org/minnie/autocode/template", "/", separator);
+		String tplPath = StringUtils.replace(projectPath+"/src/main/java/org/minnie/datatransfer/pop/template", "/", separator);
 		logger.info("Template Path: {}", tplPath);
 		
 		// Java文件路径
@@ -126,7 +129,8 @@ public class CodeGenerator {
 		
 //		List<String[]> orm = MysqlDatabseHelper.getTableInfo(tableName);
 		ConnectionManager cm = new ConnectionManager();
-		List<TableMetaInfo> metaInfoList = cm.getColumnInfo(tableName);
+		Connection connection = cm.getConnection(Constant.DB_POOL_CONFIGURE_C3P0_MYSQL);
+		List<TableMetaInfo> metaInfoList = cm.getColumnInfo(connection, tableName);
 		for(TableMetaInfo meta : metaInfoList){
 			Map<String, Object> tmp = new HashMap<String, Object>();
 			String propertyName = meta.getPropertyName();

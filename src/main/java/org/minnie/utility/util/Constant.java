@@ -1,6 +1,26 @@
 package org.minnie.utility.util;
 
+import java.nio.charset.Charset;
+
 public class Constant {
+	
+    public static final String DEFAULT_ENCODING = "UTF8";
+    public static final String BYTE_ENCODING = "ISO-8859-1";
+    public static Charset BYTE_CHARSET;
+    public static Charset DEFAULT_CHARSET;
+    public static final String CLIENT = "jBittorrentAPI 1.0";
+
+    static {
+        try {
+
+            BYTE_CHARSET = Charset.forName(BYTE_ENCODING);
+            DEFAULT_CHARSET = Charset.forName(DEFAULT_ENCODING);
+
+        } catch (Throwable e) {
+
+            e.printStackTrace();
+        }
+    }
 	
 //	public static final String URL_XINYINGBA_MOVIE_2014_FILE = "C:\\dianying2014.html";
 	public static final String URL_XINYINGBA = "http://www.xinyingba.com";
