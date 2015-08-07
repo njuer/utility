@@ -77,9 +77,9 @@ public class TorrentFile {
     public String hashAsUrl;
     public long total_length;
 
-    public List piece_hash_values_as_binary;
-    public List piece_hash_values_as_hex;
-    public List piece_hash_values_as_url;
+    public List pieceHashAsBinary;
+    public List pieceHashAsHex;
+    public List pieceHashAsUrl;
 
     /**
      * Create the TorrentFile object and initiate its instance variables
@@ -92,9 +92,9 @@ public class TorrentFile {
         path = new ArrayList<String>();
         length = new ArrayList<Long>();
 
-        piece_hash_values_as_binary = new ArrayList();
-        piece_hash_values_as_url = new ArrayList();
-        piece_hash_values_as_hex = new ArrayList();
+        pieceHashAsBinary = new ArrayList();
+        pieceHashAsUrl = new ArrayList();
+        pieceHashAsHex = new ArrayList();
         hashAsBinary = new byte[20];
         hashAsUrl = new String();
         hashAsHex = new String();

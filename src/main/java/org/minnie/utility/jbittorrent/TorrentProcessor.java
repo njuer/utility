@@ -155,9 +155,9 @@ public class TorrentProcessor {
 
 				for (int i = 0; i < piecesHash2.length / 20; i++) {
 					byte[] temp = StringUtil.subArray(piecesHash2, i * 20, 20);
-					this.torrent.piece_hash_values_as_binary.add(temp);
-					this.torrent.piece_hash_values_as_hex.add(StringUtil.byteArrayToByteString(temp));
-					this.torrent.piece_hash_values_as_url.add(StringUtil.byteArrayToURLString(temp));
+					this.torrent.pieceHashAsBinary.add(temp);
+					this.torrent.pieceHashAsHex.add(StringUtil.byteArrayToByteString(temp));
+					this.torrent.pieceHashAsUrl.add(StringUtil.byteArrayToURLString(temp));
 				}
 			} else
 				return null;
@@ -435,7 +435,7 @@ public class TorrentProcessor {
 		ByteBuffer bb = ByteBuffer.allocate((int)torrent.pieceLength);
 //		int index = 0;
 		long total = 0;
-		torrent.piece_hash_values_as_binary.clear();
+		torrent.pieceHashAsBinary.clear();
 		for (int i = 0; i < torrent.path.size(); i++) {
 			total += torrent.length.get(i);
 			File f = new File((String) torrent.path.get(i));
@@ -447,7 +447,7 @@ public class TorrentProcessor {
 					while ((read = fis.read(data, 0, bb.remaining())) != -1) {
 						bb.put(data, 0, read);
 						if (bb.remaining() == 0) {
-							torrent.piece_hash_values_as_binary.add(StringUtil.hash(bb.array()));
+							torrent.pieceHashAsBinary.add(StringUtil.hash(bb.array()));
 							bb.clear();
 						}
 					}
@@ -457,7 +457,7 @@ public class TorrentProcessor {
 			}
 		}
 		if (bb.remaining() != bb.capacity())
-			torrent.piece_hash_values_as_binary.add(StringUtil.hash(StringUtil.subArray(bb.array(), 0, bb.capacity() - bb.remaining())));
+			torrent.pieceHashAsBinary.add(StringUtil.hash(StringUtil.subArray(bb.array(), 0, bb.capacity() - bb.remaining())));
 	}
 
 	/**
@@ -510,8 +510,8 @@ public class TorrentProcessor {
 		}
 		info.put("piece length", torrent.pieceLength);
 		byte[] pieces = new byte[0];
-		for (int i = 0; i < torrent.piece_hash_values_as_binary.size(); i++)
-			pieces = StringUtil.concat(pieces, (byte[]) torrent.piece_hash_values_as_binary.get(i));
+		for (int i = 0; i < torrent.pieceHashAsBinary.size(); i++)
+			pieces = StringUtil.concat(pieces, (byte[]) torrent.pieceHashAsBinary.get(i));
 		info.put("pieces", pieces);
 		map.put("info", info);
 		try {

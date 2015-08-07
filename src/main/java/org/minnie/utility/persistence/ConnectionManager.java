@@ -156,7 +156,7 @@ public class ConnectionManager {
 			rsmd = rs.getMetaData(); // 获取字段名
 			dmd = conn.getMetaData();
 
-			ResultSet rsColumns = dmd.getColumns(null, "%", tableName, "%");
+			ResultSet rsColumns = dmd.getColumns(conn.getCatalog(), "%", tableName, "%");
 
 			while (rsColumns.next()) {
 				remarkMap.put(rsColumns.getString("COLUMN_NAME"),

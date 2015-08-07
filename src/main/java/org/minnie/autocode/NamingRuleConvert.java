@@ -117,14 +117,17 @@ public class NamingRuleConvert {
 	public static String field2Variable(String source, String original, String replacement) {
 		StringBuffer target = new StringBuffer();
 		int index = -1;
+		source = source.toLowerCase();
 		int originalLen = original.length();
-		while ((index = source.indexOf(original)) != -1) {
+		
+		while ((index = source.indexOf(original)) >= 0) {
 			if (index != source.length()) {
 				target.append(source.substring(0, index)).append(replacement);
 				source = source.substring(index + originalLen, source.length());
 				source = WordUtils.capitalize(source);
 			}
 		}
+		
 		target.append(source);
 		return target.toString();
 	}

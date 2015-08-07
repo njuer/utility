@@ -63,10 +63,10 @@ public class CodeGenerator {
 		
 		String moduleName = "test";			// 模块名，例：sys
 		String subModuleName = "";				// 子模块名（可选） 
-		String className = "JsjZmcDftj";			// 类名，例：user
+		String className = "MzjPopCensus";			// 类名，例：user
 		String classAuthor = "neiplz";		// 类作者，例：ThinkGem
-		String functionName = "照明出电费基础数据";			// 功能名，例：用户
-		String tableName = "JSJ_ZMC_DFTJ";		//表名，例：sys_dict
+		String functionName = "户籍人口信息";			// 功能名，例：用户
+		String tableName = "POP_CENSUS";		//表名，例：sys_dict
 		
 		// 是否启用生成工具
 		Boolean isEnable = true;			
