@@ -13,8 +13,7 @@ public class Test {
 		 * 读取log4j配置
 		 */
 		// BasicConfigurator.configure();// 默认配置
-		PropertyConfigurator.configure(System.getProperty("user.dir")
-				+ Constant.LOG_LOG4J_PARAM_FILE);
+		PropertyConfigurator.configure(System.getProperty("user.dir") + Constant.LOG_LOG4J_PARAM_FILE);
 
 		ConnectionManager cm = new ConnectionManager();
 //		Connection conn = cm.getConnection();
